@@ -1,0 +1,78 @@
+<?php
+
+namespace App\Policies;
+
+use App\Models\PklApplication;
+use App\Models\User;
+use App\Policies\Concerns\ResolvesCompanyAccess;
+
+class PklApplicationPolicy
+{
+    use ResolvesCompanyAccess;
+
+    public function viewAny(User $user): bool
+    {
+        return in_array($user->role, [
+            'admin',
+            'teacher',
+            'student',
+        ], true);
+    }
+
+    public function view(User $user, PklApplication $application): bool
+    {
+        if (in_array($user->role, [
+            'admin',
+            'teacher',
+        ], true)) {
+            return true;
+        }
+
+        if ($user->role === 'student') {
+            return $application->student_id === $user->id;
+        }
+
+        // Company melihat lamaran yang ditujukan ke perusahaannya
+        // (diperlukan untuk proses review lamaran).
+        if ($user->role === 'company') {
+            return $this->isAuthorizedForCompany($user, $application->company_id);
+        }
+
+        return false;
+    }
+
+    public function create(User $user): bool
+    {
+        return $user->role === 'student';
+    }
+
+    public function update(User $user, PklApplication $application): bool
+    {
+        if ($user->role === 'admin') {
+            return true;
+        }
+
+        return $user->role === 'student'
+            && $application->student_id === $user->id;
+    }
+
+    public function delete(User $user, PklApplication $application): bool
+    {
+        if ($user->role === 'admin') {
+            return true;
+        }
+
+        return $user->role === 'student'
+            && $application->student_id === $user->id;
+    }
+
+    public function restore(User $user, PklApplication $application): bool
+    {
+        return false;
+    }
+
+    public function forceDelete(User $user, PklApplication $application): bool
+    {
+        return false;
+    }
+}
