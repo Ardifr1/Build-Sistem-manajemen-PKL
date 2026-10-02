@@ -1,12 +1,14 @@
-function TambahPengguna(){
+import SectionCard from "../../components/admin/SectionCard.jsx";
+import StatusBadge from "../../components/admin/StatusBadge.jsx";
+import ProgressBar from "../../components/admin/ProgressBar.jsx";
+import StatCard from "../../components/admin/StatCard.jsx";
+
+function TambahPengguna({ onNavigate }){
+  const goBack = () => onNavigate?.("akun");
   return (
     <div className="admin-page">
-      <div className="page-head">
-        <div>
-          <div className="page-kicker">Admin 03b — Tambah Pengguna</div>
-          <div className="page-title">Tambah Pengguna Baru</div>
-          <div className="page-sub">Form akun baru • Undangan email otomatis • Draft • Belum tersimpan</div>
-        </div>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12,flexWrap:"wrap",gap:10}}>
+        <button type="button" className="btn btn-ghost" onClick={goBack}>← Kembali ke Akun Pengguna</button>
         <span className="badge-top">Draft • Belum tersimpan</span>
       </div>
 
@@ -17,8 +19,7 @@ function TambahPengguna(){
       </div>
 
       <div className="grid-2">
-        <div className="card">
-          <div className="section-title">Pilih Role • menentukan field & akses otomatis</div>
+        <SectionCard title="Pilih Role • menentukan field & akses otomatis">
           <div className="role-grid">
             <div className="role-card active"><b>Siswa</b><div className="muted">NIS • Kelas • Jurusan</div></div>
             <div className="role-card"><b>Guru</b><div className="muted">NIP • Mapel • Pembimbing</div></div>
@@ -49,34 +50,36 @@ function TambahPengguna(){
           </div>
 
           <div style={{display:"flex",gap:10,justifyContent:"flex-end",marginTop:18,flexWrap:"wrap"}}>
-            <button className="btn btn-ghost">Batal</button>
-            <button className="btn btn-light">Simpan Draft</button>
-            <button className="btn btn-primary">✓ Simpan Akun</button>
+            <button type="button" className="btn btn-ghost" onClick={goBack}>Batal</button>
+            <button type="button" className="btn btn-light">Simpan Draft</button>
+            <button type="button" className="btn btn-primary" onClick={goBack}>✓ Simpan Akun</button>
           </div>
-        </div>
+        </SectionCard>
 
         <div style={{display:"grid",gap:14,alignContent:"start"}}>
-          <div className="card">
-            <div className="section-title">Pratinjau Akun</div>
+          <SectionCard title="Pratinjau Akun">
             <div style={{display:"flex",gap:12,alignItems:"center"}}>
               <span className="avatar" style={{width:52,height:52,fontSize:18}}>RA</span>
-              <div><b>Rina Amelia</b><div className="muted">rina@smkn1.sch.id • XII RPL 1</div><div style={{marginTop:6}}><span className="pill pill-blue">Siswa</span> <span className="pill pill-green" style={{marginLeft:6}}>Aktif</span></div></div>
+              <div><b>Rina Amelia</b><div className="muted">rina@smkn1.sch.id • XII RPL 1</div><div style={{marginTop:6}}><span className="pill pill-blue">Siswa</span> <StatusBadge status="Aktif" /></div></div>
             </div>
             <div className="muted" style={{marginTop:12}}>Kredensial sementara<br/>username: rina.amelia<br/>password: PKM2026-xxxx • kirim via email</div>
-          </div>
-          <div className="card" style={{background:"#1E3A8A",color:"#fff",borderColor:"#1E3A8A"}}>
-            <div className="section-title" style={{color:"#fff"}}>✓ Kelengkapan Form</div>
+            <div style={{marginTop:12}}>
+              <StatCard label="Kelengkapan" value="80%" hint="4 dari 5 field wajib" />
+            </div>
+          </SectionCard>
+
+          <SectionCard title="✓ Kelengkapan Form" dark>
             <ul style={{margin:0,paddingLeft:18,lineHeight:1.9,fontSize:13.5}}>
               <li>Nama lengkap terisi</li><li>Email valid & unik</li><li>NIS + Kelas dipilih</li><li>Password ≥ 8 karakter</li><li>Role Siswa terkunci</li>
             </ul>
-            <div className="muted" style={{color:"#DBEAFE",marginTop:8}}>4 dari 5 • 80% lengkap</div>
-            <div className="progress" style={{marginTop:8,background:"rgba(255,255,255,.25)"}}><span style={{width:"80%",background:"#fff"}}/></div>
-          </div>
-          <div className="card">
-            <div className="section-title">Butuh banyak akun?</div>
+            <div style={{color:"#DBEAFE",marginTop:8,fontSize:13}}>4 dari 5 • 80% lengkap</div>
+            <ProgressBar value={80} variant="white" onDark style={{marginTop:8}} />
+          </SectionCard>
+
+          <SectionCard title="Butuh banyak akun?">
             <p className="muted">Upload CSV / Excel berisi Nama, Email, NIS. Template tersedia.</p>
             <button className="btn btn-light" style={{width:"100%",marginTop:8}}>Seret file / Klik • Unduh template</button>
-          </div>
+          </SectionCard>
         </div>
       </div>
     </div>

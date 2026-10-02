@@ -1,0 +1,11 @@
+.topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;padding:18px 22px 16px;background:#fff;border-bottom:1px solid #E2E8F0;position:sticky;top:0;z-index:20}
+.topbar-left{min-width:220px;flex:1}
+.topbar-kicker{font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:#1E3A8A;font-weight:800}
+.topbar-title{font-size:22px;line-height:1.15;font-weight:800;margin:4px 0 2px;color:#0F172A}
+.topbar-sub{color:#64748B;font-size:13.5px}
+.topbar-right{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.topbar-search{display:flex;align-items:center;gap:8px;height:40px;border:1px solid #E2E8F0;border-radius:999px;padding:0 12px;background:#F8FAFC;min-width:260px}
+.topbar-search-icon{color:#64748B;font-size:15px;line-height:1}
+.topbar-search-input{border:0;outline:0;background:transparent;font-size:13.5px;width:100%;color:#0F172A}
+.topbar-search-input::placeholder{color:#94A3B8}
+@media(max-width:900px){.topbar{padding:14px}.topbar-search{min-width:200px;flex:1}}

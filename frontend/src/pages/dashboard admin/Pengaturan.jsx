@@ -1,16 +1,28 @@
+import StatCard from "../../components/admin/StatCard.jsx";
+import StatusBadge from "../../components/admin/StatusBadge.jsx";
+import SectionCard from "../../components/admin/SectionCard.jsx";
+import ProgressBar from "../../components/admin/ProgressBar.jsx";
+
 function Pengaturan(){
+  const tech=[
+    {title:"Frontend: React", desc:"Mockup ini siap diadaptasi", status:"Aktif"},
+    {title:"Backend: Laravel + Sanctum", desc:"Role otomatis dari API", status:"Aktif"},
+    {title:"Database: MySQL", desc:"Users, perusahaan, jurnal", status:"Aktif"},
+    {title:"AI: Filter", desc:"Hanya bantu revisi jurnal", status:"Diproses"},
+    {title:"Storage: Local", desc:"CV & portofolio siswa", status:"Aktif"},
+  ];
   return (
     <div className="admin-page">
-      <div className="page-head">
-        <div>
-          <div className="page-kicker">Admin 10 — Pengaturan</div>
-          <div className="page-title">Pengaturan Data Sistem</div>
-          <div className="page-sub">Master data • Teknologi • Notifikasi</div>
-        </div>
+      <div className="grid-3" style={{marginBottom:14}}>
+        <StatCard label="Sekolah" value="SMKN 1" hint="SMKN 1 Jakarta" />
+        <StatCard label="Tahun Ajaran" value="2026" hint="Ganjil aktif" hintClassName="stat-hint" />
+        <StatCard label="Kelengkapan Master" value="86%">
+          <ProgressBar value={86} variant="green" style={{marginTop:6}} />
+        </StatCard>
       </div>
+
       <div className="grid-2">
-        <div className="card">
-          <div className="section-title">Data Master Sekolah</div>
+        <SectionCard title="Data Master Sekolah">
           <div style={{display:"grid",gap:12}}>
             <div><label className="f-label">Nama Sekolah</label><input className="input" defaultValue="SMKN 1 Jakarta"/></div>
             <div><label className="f-label">Tahun Ajaran Aktif</label><select className="select"><option>2026 Ganjil</option><option>2026 Genap</option></select></div>
@@ -18,18 +30,23 @@ function Pengaturan(){
             <div><label className="f-label">Bobot Nilai</label><input className="input" defaultValue="Industri 60% • Guru 40% • Jurnal 20%"/></div>
           </div>
           <button className="btn btn-primary" style={{width:"100%",marginTop:14}}>Simpan Pengaturan</button>
-        </div>
-        <div className="card" style={{background:"#1E3A8A",color:"#fff",borderColor:"#1E3A8A"}}>
-          <div className="section-title" style={{color:"#fff"}}>Teknologi & Aturan PRD</div>
+        </SectionCard>
+
+        <SectionCard title="Teknologi & Aturan PRD" dark>
           <div style={{display:"grid",gap:8}}>
-            <div className="card" style={{padding:12}}><b>Frontend: React</b><div className="muted">Mockup ini siap diadaptasi</div></div>
-            <div className="card" style={{padding:12}}><b>Backend: Laravel + Sanctum</b><div className="muted">Role otomatis dari API</div></div>
-            <div className="card" style={{padding:12}}><b>Database: MySQL</b><div className="muted">Users, perusahaan, jurnal</div></div>
-            <div className="card" style={{padding:12}}><b>AI: Filter</b><div className="muted">Hanya bantu revisi jurnal</div></div>
-            <div className="card" style={{padding:12}}><b>Storage: Local</b><div className="muted">CV & portofolio siswa</div></div>
+            {tech.map((t)=>(
+              <div key={t.title} className="card" style={{padding:12}}>
+                <div style={{display:"flex",justifyContent:"space-between",gap:10,alignItems:"center"}}>
+                  <b>{t.title}</b>
+                  <StatusBadge status={t.status} />
+                </div>
+                <div className="muted">{t.desc}</div>
+              </div>
+            ))}
           </div>
-          <p className="muted" style={{color:"#DBEAFE",marginTop:10}}>Status PRD: Menunggu / Diproses / Diterima / Ditolak • Draft / Menunggu Verifikasi / Disetujui / Perlu Perbaikan.</p>
-        </div>
+          <p style={{color:"#DBEAFE",marginTop:10,fontSize:13}}>Status PRD: Menunggu / Diproses / Diterima / Ditolak • Draft / Menunggu Verifikasi / Disetujui / Perlu Perbaikan.</p>
+          <ProgressBar value={72} variant="white" onDark style={{marginTop:8}} />
+        </SectionCard>
       </div>
     </div>
   );

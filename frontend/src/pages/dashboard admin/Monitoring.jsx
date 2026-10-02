@@ -1,3 +1,9 @@
+import StatCard from "../../components/admin/StatCard.jsx";
+import StatusBadge from "../../components/admin/StatusBadge.jsx";
+import SectionCard from "../../components/admin/SectionCard.jsx";
+import ProgressBar from "../../components/admin/ProgressBar.jsx";
+import DataTable from "../../components/admin/DataTable.jsx";
+
 function Monitoring(){
   const stats=[
     {label:"Pengajuan", value:"486", pct:78},
@@ -7,40 +13,59 @@ function Monitoring(){
     {label:"Jurnal Harian", value:"640", pct:87},
   ];
   const rows=[
-    {name:"Rina", stage:"Disetujui Sekolah", progress:"Absen 96% • Jurnal 12/12", action:"Lihat"},
-    {name:"Bagas", stage:"Menunggu Penempatan", progress:"Absen 88% • Jurnal 8/12", action:"Ingatkan"},
-    {name:"Sinta", stage:"Perlu Perbaikan (2)", progress:"Revisi AI dipakai", action:"Lihat"},
-    {name:"Dimas", stage:"Interview 24 Sep", progress:"Tes lolos", action:"Kirim"},
+    {name:"Rina", stage:"Disetujui Sekolah", progress:"Absen 96% • Jurnal 12/12", action:"Lihat", status:"Disetujui Sekolah"},
+    {name:"Bagas", stage:"Menunggu Penempatan", progress:"Absen 88% • Jurnal 8/12", action:"Ingatkan", status:"Menunggu Penempatan"},
+    {name:"Sinta", stage:"Perlu Perbaikan (2)", progress:"Revisi AI dipakai", action:"Lihat", status:"Diproses"},
+    {name:"Dimas", stage:"Interview 24 Sep", progress:"Tes lolos", action:"Kirim", status:"Diproses"},
   ];
   return (
     <div className="admin-page">
-      <div className="page-head">
-        <div>
-          <div className="page-kicker">Admin 09 — Monitoring</div>
-          <div className="page-title">Monitoring Proses PKL</div>
-          <div className="page-sub">Pengajuan → Penempatan → Jurnal → Nilai</div>
-        </div>
-      </div>
       <div className="grid-4" style={{gridTemplateColumns:"repeat(5,1fr)"}}>
-        {stats.map((s,i)=>(<div className="card" key={i}><div className="stat-label">{s.label}</div><div className="stat-value" style={{fontSize:22}}>{s.value}</div><div className="muted">{s.pct}% selesai</div><div className="progress blue" style={{marginTop:6}}><span style={{width:`${s.pct}%`}}/></div></div>))}
+        {stats.map((s)=>(
+          <StatCard key={s.label} label={s.label} value={s.value}>
+            <div className="muted">{s.pct}% selesai</div>
+            <ProgressBar value={s.pct} variant="blue" style={{marginTop:6}} />
+          </StatCard>
+        ))}
       </div>
+
       <div className="grid-2" style={{marginTop:14}}>
-        <div className="card">
-          <div style={{overflowX:"auto"}}>
-            <table className="table">
-              <thead><tr><th>Siswa — Tahap Saat Ini</th><th>Progres</th><th>Aksi</th></tr></thead>
-              <tbody>{rows.map((r,i)=>(<tr key={i}><td><b>{r.name}</b><div className="muted">{r.stage}</div></td><td>{r.progress}</td><td><button className="btn btn-light">{r.action}</button></td></tr>))}</tbody>
-            </table>
-          </div>
-        </div>
-        <div className="card">
-          <div className="section-title">Notifikasi & Peringatan • 3 belum dibaca</div>
+        <SectionCard title="Siswa — Tahap Saat Ini">
+          <DataTable headers={["Siswa — Tahap Saat Ini","Progres","Status","Aksi"]}>
+            {rows.map((r,i)=>(
+              <tr key={i}>
+                <td><b>{r.name}</b><div className="muted">{r.stage}</div></td>
+                <td>{r.progress}</td>
+                <td><StatusBadge status={r.status} /></td>
+                <td><button className="btn btn-light">{r.action}</button></td>
+              </tr>
+            ))}
+          </DataTable>
+        </SectionCard>
+
+        <SectionCard title="Notifikasi & Peringatan • 3 belum dibaca">
           <div style={{display:"grid",gap:10}}>
-            <div className="card" style={{background:"#FEF3C7",borderColor:"#FDE68A",padding:12}}><b>Pengajuan PKL baru • Rina → PT Maju Jaya</b><div className="muted">Perlu disposisi admin • sudah menunggu 3 hari</div></div>
-            <div className="card" style={{background:"#FEE2E2",borderColor:"#FECACA",padding:12}}><b>Status penempatan berubah • Sinta pilih final</b><div className="muted">Menunggu persetujuan • 2 perusahaan diterima</div></div>
-            <div className="card" style={{background:"#DBEAFE",borderColor:"#BFDBFE",padding:12}}><b>2 Jurnal perlu tindakan guru</b><div className="muted">Sinta & Akmal • verifikasi maju • 24 jam</div></div>
+            <div className="card" style={{background:"#FEF3C7",borderColor:"#FDE68A",padding:12}}>
+              <b>Pengajuan PKL baru • Rina → PT Maju Jaya</b>
+              <div className="muted">Perlu disposisi admin • sudah menunggu 3 hari</div>
+              <div style={{marginTop:8}}><StatusBadge status="Menunggu" /></div>
+            </div>
+            <div className="card" style={{background:"#FEE2E2",borderColor:"#FECACA",padding:12}}>
+              <b>Status penempatan berubah • Sinta pilih final</b>
+              <div className="muted">Menunggu persetujuan • 2 perusahaan diterima</div>
+              <div style={{marginTop:8}}><StatusBadge status="Diterima" /></div>
+            </div>
+            <div className="card" style={{background:"#DBEAFE",borderColor:"#BFDBFE",padding:12}}>
+              <b>2 Jurnal perlu tindakan guru</b>
+              <div className="muted">Sinta & Akmal • verifikasi maju • 24 jam</div>
+              <div style={{marginTop:8}}><StatusBadge status="Diproses" /></div>
+            </div>
           </div>
-        </div>
+          <div style={{marginTop:12}}>
+            <div className="muted">Keterbacaan notifikasi</div>
+            <ProgressBar value={40} variant="yellow" style={{marginTop:6}} />
+          </div>
+        </SectionCard>
       </div>
     </div>
   );
