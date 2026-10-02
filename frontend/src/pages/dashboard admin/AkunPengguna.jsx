@@ -13,10 +13,6 @@ function AkunPengguna({ onNavigate }){
   ];
   return (
     <div className="admin-page">
-      <div style={{display:"flex",justifyContent:"flex-end",marginBottom:12}}>
-        <button type="button" className="btn btn-primary" onClick={() => onNavigate?.("tambah-akun")}>+ Tambah Akun</button>
-      </div>
-
       <div className="grid-3" style={{marginBottom:14}}>
         <StatCard label="Total Akun" value="1.400" hint="Semua role" />
         <StatCard label="Aktif" value="1.268" hint="90% aktif" hintClassName="stat-hint" />
@@ -30,7 +26,7 @@ function AkunPengguna({ onNavigate }){
           <input className="input" style={{flex:1,minWidth:220}} placeholder="Cari nama / email / NIS..." />
           <select className="select" style={{maxWidth:160}}><option>Semua Role</option><option>Siswa</option><option>Guru</option><option>Perusahaan</option><option>Admin</option></select>
           <select className="select" style={{maxWidth:140}}><option>Aktif</option><option>Menunggu</option><option>Nonaktif</option></select>
-          <button type="button" className="btn btn-light" onClick={() => onNavigate?.("tambah-akun")}>+ Tambah Pengguna</button>
+          <button type="button" className="btn btn-primary" onClick={() => onNavigate?.("tambah-akun")}>+ Tambah Akun</button>
         </div>
         <DataTable headers={["Nama / Email","Role","Status","Aksi"]}>
           {rows.map((r,i)=>(
