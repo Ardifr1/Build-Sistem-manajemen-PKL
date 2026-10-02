@@ -1,0 +1,12 @@
+.sidebar {
+   background-color:#1E3A8A;
+   width: 250px;
+   height:100vh;
+}
+.logo {
+    margin:0 30px;
+    color:white;
+}
+h3 {
+    margin:0;
+}
