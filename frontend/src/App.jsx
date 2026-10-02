@@ -1,9 +1,7 @@
-import Sidebar from "./components/admin/sidebar";
+import AdminDashboard from "./pages/dashboard admin/dashboard-admin.jsx";
 
 function App() {
-  return (
-    <Sidebar />
-  );
+  return <AdminDashboard />;
 }
 
 export default App;

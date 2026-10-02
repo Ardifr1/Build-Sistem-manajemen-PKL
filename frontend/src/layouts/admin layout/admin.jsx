@@ -1,15 +1,13 @@
 import Sidebar from "../../components/admin/sidebar";
+import "./admin.css";
 
-function AdminLayout({ children }) {
-    return (
-        <div className="admin-layout">
-            <Sidebar />
-            <main>
-               
-                {children}
-            </main>
-        </div>
-    );
+function AdminLayout({ active = "dashboard", onNavigate, children }) {
+  return (
+    <div className="admin-layout">
+      <Sidebar active={active} onNavigate={onNavigate} />
+      <main className="admin-main">{children}</main>
+    </div>
+  );
 }
 
 export default AdminLayout;
