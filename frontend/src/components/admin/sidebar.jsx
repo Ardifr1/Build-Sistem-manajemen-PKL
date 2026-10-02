@@ -13,25 +13,28 @@ const MENU = [
 ];
 
 function Sidebar({ active = "dashboard", onNavigate }) {
+  const activeKey = active === "tambah-akun" ? "akun" : active;
   return (
     <aside className="sidebar">
-      <div className="sidebar-brand">
-        <div className="sidebar-logo">
-          <span className="sidebar-logo-mark">P</span>
-          <span>PKLHub • Admin</span>
-        </div>
-        <div className="sidebar-sub">Admin Sekolah • SMKN 1</div>
-      </div>
+      <div className="sidebar-logo">● PKLHub&nbsp;&nbsp;• Admin</div>
+      <div className="sidebar-sub">Admin Sekolah • SMKN 1</div>
       <nav className="sidebar-menu">
-        {MENU.map((item) => (
-          <button key={item.key} type="button" className={`sidebar-item ${active === item.key ? "active" : ""}`} onClick={() => onNavigate?.(item.key)}>
-            <span className="dot" /> {item.label}
-          </button>
-        ))}
+        {MENU.map((item) => {
+          const isActive = activeKey === item.key;
+          return (
+            <button
+              key={item.key}
+              type="button"
+              className={`sidebar-item ${isActive ? "active" : ""}`}
+              onClick={() => onNavigate?.(item.key)}
+            >
+              {isActive ? "●" : "○"} {item.label}
+            </button>
+          );
+        })}
       </nav>
-      <div className="sidebar-footer">
-        <button type="button" className="sidebar-logout">Keluar</button>
-      </div>
+      <div className="sidebar-spacer" />
+      <button type="button" className="sidebar-logout">Keluar</button>
     </aside>
   );
 }

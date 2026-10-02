@@ -1,27 +1,24 @@
 const STATUS_MAP = {
-  menunggu: "pill-yellow",
-  "menunggu penempatan": "pill-yellow",
-  "menunggu persetujuan": "pill-blue",
-  diproses: "pill-blue",
-  diterima: "pill-green",
-  aktif: "pill-green",
-  "disetujui sekolah": "pill-green",
-  "pembimbing aktif": "pill-green",
-  ditolak: "pill-red",
-  nonaktif: "pill-red",
-  penuh: "pill-red",
-  "belum ditugaskan": "pill-yellow",
+  menunggu: "pill-warning",
+  "menunggu penempatan": "pill-warning",
+  "menunggu persetujuan": "pill-primary",
+  diproses: "pill-primary",
+  diterima: "pill-success",
+  aktif: "pill-success",
+  "disetujui sekolah": "pill-success",
+  "pembimbing aktif": "pill-success",
+  ditolak: "pill-danger",
+  nonaktif: "pill-danger",
+  penuh: "pill-danger",
+  "belum ditugaskan": "pill-warning",
   selesai: "pill-gray",
   arsip: "pill-gray",
 };
 
-function StatusBadge({ status, children, className = "" }) {
+function StatusBadge({ status, variant, small = false, children }) {
   const label = children || status || "";
   const key = String(label).toLowerCase().trim();
-  const mapped = STATUS_MAP[key] || "pill-gray";
-  // if caller passes explicit pill-* in className, respect it
-  const cls = className.includes("pill-") ? className : mapped;
-  return <span className={`pill ${cls}`.trim()}>{label}</span>;
+  const cls = variant ? `pill-${variant}` : STATUS_MAP[key] || "pill-gray";
+  return <span className={`pill ${cls} ${small ? "pill-sm" : ""}`.trim()}>{label}</span>;
 }
-
 export default StatusBadge;

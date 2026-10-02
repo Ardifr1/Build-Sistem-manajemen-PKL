@@ -4,93 +4,75 @@ import "./admin.css";
 
 export const PAGE_META = {
   dashboard: {
-    kicker: "Admin 02 — Dashboard",
-    title: "Dashboard",
+    title: "Admin 02 — Dashboard",
     subtitle: "Ringkasan seluruh proses PKL • Semester Ganjil 2026",
-    badgeText: "3 • Perlu tindakan admin",
+    badgeText: "🔔 3 • Perlu tindakan admin",
+    badgeVariant: "warning",
+    avatarText: "AD",
   },
   akun: {
-    kicker: "Admin 03 — Akun Pengguna",
-    title: "Manajemen Akun Pengguna",
-    subtitle: "1.400 akun • Role otomatis sistem",
-    badgeText: "3 • Perlu tindakan admin",
+    title: "Admin 03 — Akun Pengguna",
+    badgeText: "1.450 akun • Role otomatis sistem",
+    badgeVariant: "primary",
   },
   "tambah-akun": {
-    kicker: "Admin 03b — Tambah Pengguna",
-    title: "Tambah Pengguna Baru",
-    subtitle: "Form akun baru • Undangan email otomatis • Draft • Belum tersimpan",
-    badgeText: "Draft • Belum tersimpan",
+    title: "Admin 03b — Tambah Pengguna",
+    badgeText: "Form akun baru • Undangan email otomatis",
+    badgeVariant: "primary",
   },
   siswa: {
-    kicker: "Admin 04 — Data Siswa",
-    title: "Data Siswa",
-    subtitle: "Kelas XII • 1.240 siswa • 64 guru",
-    badgeText: "3 • Perlu tindakan admin",
+    title: "Admin 04 — Data Siswa",
+    badgeText: "Kelas XII • 1.240 siswa • 84 guru",
+    badgeVariant: "primary",
   },
   guru: {
-    kicker: "Admin 05 — Data Guru",
-    title: "Data Guru & Pembimbing",
-    subtitle: "64 guru • 42 pembimbing sekolah • 38 industri",
-    badgeText: "12 guru belum tugas",
+    title: "Admin 05 — Data Guru",
+    badgeText: "84 guru • 42 pembimbing sekolah • 38 industri",
+    badgeVariant: "primary",
   },
   mitra: {
-    kicker: "Admin 06 — Perusahaan Mitra",
-    title: "Perusahaan Mitra & Kuota",
-    subtitle: "126 mitra • 38 kuota penuh • Bidang & syarat",
-    badgeText: "9 perlu verifikasi",
+    title: "Admin 06 — Perusahaan Mitra",
+    badgeText: "126 mitra • 38 kuota penuh • Bidang & syarat",
+    badgeVariant: "primary",
   },
   periode: {
-    kicker: "Admin 07 — Periode PKL",
-    title: "Periode PKL",
-    subtitle: "Tahun 2026 • Ganjil Aktif",
-    badgeText: "Ganjil 2026 aktif",
+    title: "Admin 07 — Periode PKL",
+    badgeText: "Tahun 2026 • Ganjil Aktif",
+    badgeVariant: "primary",
   },
   pengajuan: {
-    kicker: "Admin 08 — Pengajuan PKL",
-    title: "Seluruh Pengajuan PKL",
-    subtitle: "486 pengajuan • Filter status PRD",
-    badgeText: "68 menunggu",
+    title: "Admin 08 — Pengajuan PKL",
+    badgeText: "486 pengajuan • Filter status PRD",
+    badgeVariant: "primary",
   },
   monitoring: {
-    kicker: "Admin 09 — Monitoring",
-    title: "Monitoring Proses PKL",
-    subtitle: "Pengajuan → Penempatan → Jurnal → Nilai",
-    badgeText: "3 belum dibaca",
+    title: "Admin 09 — Monitoring",
+    badgeText: "Pengajuan → Penempatan → Jurnal → Nilai",
+    badgeVariant: "primary",
   },
   pengaturan: {
-    kicker: "Admin 10 — Pengaturan",
-    title: "Pengaturan Data Sistem",
-    subtitle: "Master data • Teknologi • Notifikasi",
-    badgeText: "3 • Perlu tindakan admin",
+    title: "Admin 10 — Pengaturan",
+    badgeText: "Master data • Teknologi • Notifikasi",
+    badgeVariant: "primary",
   },
 };
 
-function AdminLayout({
-  active = "dashboard",
-  onNavigate,
-  title,
-  subtitle,
-  kicker,
-  badgeText,
-  children,
-}) {
+function AdminLayout({ active = "dashboard", onNavigate, title, subtitle, badgeText, badgeVariant, avatarText, children }) {
   const meta = PAGE_META[active] || PAGE_META.dashboard;
   return (
     <div className="admin-layout">
       <Sidebar active={active} onNavigate={onNavigate} />
       <div className="admin-right">
         <Topbar
-          kicker={kicker || meta.kicker}
           title={title || meta.title}
-          subtitle={subtitle || meta.subtitle}
-          badgeText={badgeText ?? meta.badgeText}
+          subtitle={subtitle !== undefined ? subtitle : meta.subtitle || ""}
+          badgeText={badgeText !== undefined ? badgeText : meta.badgeText || ""}
+          badgeVariant={badgeVariant || meta.badgeVariant || "primary"}
+          avatarText={avatarText !== undefined ? avatarText : meta.avatarText || ""}
         />
-        <main className="admin-content">
-          <div className="admin-main">{children}</div>
-        </main>
+        <main className="admin-content">{children}</main>
       </div>
     </div>
   );
 }
-
 export default AdminLayout;

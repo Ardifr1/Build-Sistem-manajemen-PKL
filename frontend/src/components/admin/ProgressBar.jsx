@@ -1,30 +1,23 @@
-function ProgressBar({ value = 0, variant = "blue", onDark = false, style }) {
-  const pct = Math.max(0, Math.min(100, Number(value) || 0));
-  const variantClass = ["blue", "green", "yellow"].includes(variant) ? variant : "blue";
+const BAR_COLORS = {
+  primary: "#1D4ED8",
+  accent: "#0EA5E9",
+  sky: "#38BDF8",
+  success: "#16A34A",
+  green: "#16A34A",
+  warning: "#D97706",
+  yellow: "#D97706",
+  danger: "#DC2626",
+  white: "#FFFFFF",
+  bright: "#4ADE80",
+};
 
-  if (onDark) {
-    // for dark blue cards: track translucent white, bar white/blue/yellow via inline
-    const barColor =
-      variant === "green"
-        ? "#34D399"
-        : variant === "yellow"
-        ? "#FDE68A"
-        : variant === "white"
-        ? "#fff"
-        : "#93C5FD";
-    return (
-      <div
-        className="progress"
-        style={{ background: "rgba(255,255,255,.25)", ...style }}
-      >
-        <span style={{ width: `${pct}%`, background: barColor }} />
-      </div>
-    );
-  }
-
+function ProgressBar({ value = 0, percent, variant = "primary", barColor, trackColor, height = 8, onDark = false, style }) {
+  const pct = Math.max(0, Math.min(100, Number(percent !== undefined ? percent : value) || 0));
+  const bar = barColor || BAR_COLORS[variant] || "#1D4ED8";
+  const track = trackColor || (onDark ? "#0F2A6B" : "#F1F5F9");
   return (
-    <div className={`progress ${variantClass}`} style={style}>
-      <span style={{ width: `${pct}%` }} />
+    <div className="progress" style={{ background: track, height, ...style }}>
+      <span style={{ width: `${pct}%`, background: bar, height }} />
     </div>
   );
 }

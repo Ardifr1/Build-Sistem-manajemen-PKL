@@ -1,71 +1,64 @@
-import StatCard from "../../components/admin/StatCard.jsx";
-import StatusBadge from "../../components/admin/StatusBadge.jsx";
-import SectionCard from "../../components/admin/SectionCard.jsx";
 import ProgressBar from "../../components/admin/ProgressBar.jsx";
 import DataTable from "../../components/admin/DataTable.jsx";
 
-function Monitoring(){
-  const stats=[
-    {label:"Pengajuan", value:"486", pct:78},
-    {label:"Absensi", value:"312", pct:64},
-    {label:"Penempatan", value:"812", pct:85},
-    {label:"Jurnal Wajib", value:"2.140", pct:52},
-    {label:"Jurnal Harian", value:"640", pct:87},
+function Monitoring() {
+  const stages = [
+    { label: "Pengajuan", value: "486", pct: 78, text: "78% selesai" },
+    { label: "Seleksi", value: "312", pct: 64, text: "64% selesai" },
+    { label: "Penempatan", value: "812", pct: 65, text: "65% selesai" },
+    { label: "Jurnal Aktif", value: "2.140", pct: 52, text: "52% selesai" },
+    { label: "Nilai Akhir", value: "640", pct: 41, text: "41% selesai" },
   ];
-  const rows=[
-    {name:"Rina", stage:"Disetujui Sekolah", progress:"Absen 96% • Jurnal 12/12", action:"Lihat", status:"Disetujui Sekolah"},
-    {name:"Bagas", stage:"Menunggu Penempatan", progress:"Absen 88% • Jurnal 8/12", action:"Ingatkan", status:"Menunggu Penempatan"},
-    {name:"Sinta", stage:"Perlu Perbaikan (2)", progress:"Revisi AI dipakai", action:"Lihat", status:"Diproses"},
-    {name:"Dimas", stage:"Interview 24 Sep", progress:"Tes lolos", action:"Kirim", status:"Diproses"},
+  const rows = [
+    { name: "Rina • Disetujui Sekolah", progres: "Absen 96% • Jurnal 12/12", action: "Lihat" },
+    { name: "Bagas • Menunggu Penempatan", progres: "Absen 88% • Jurnal 8/12", action: "Ingatkan" },
+    { name: "Sinta • Perlu Perbaikan (2)", progres: "Revisi AI dipakai", action: "Lihat" },
+    { name: "Dimas • Interview 24 Sep", progres: "Tes lolos", action: "Kirim" },
+  ];
+  const notifs = [
+    { bg: "#FEF3C7", title: "Pengajuan PKL baru • Rina → PT Maju Jaya", desc: "Perlu disposisi admin • sudah menunggu 3 hari" },
+    { bg: "#FEE2E2", title: "Status penempatan berubah • Sinta pilih final", desc: "Menunggu persetujuan • 2 perusahaan diterima" },
+    { bg: "#DBEAFE", title: "2 jurnal perlu tindakan guru", desc: "Sinta & Ahmad • verifikasi maks 2×24 jam" },
   ];
   return (
     <div className="admin-page">
-      <div className="grid-4" style={{gridTemplateColumns:"repeat(5,1fr)"}}>
-        {stats.map((s)=>(
-          <StatCard key={s.label} label={s.label} value={s.value}>
-            <div className="muted">{s.pct}% selesai</div>
-            <ProgressBar value={s.pct} variant="blue" style={{marginTop:6}} />
-          </StatCard>
+      <div className="grid-5">
+        {stages.map((s) => (
+          <div className="card" key={s.label} style={{ padding: 12, display: "flex", flexDirection: "column", gap: 4 }}>
+            <span style={{ fontSize: 11, color: "#64748B" }}>{s.label}</span>
+            <span style={{ fontSize: 18, fontWeight: 800 }}>{s.value}</span>
+            <ProgressBar percent={s.pct} variant="primary" height={6} />
+            <span style={{ fontSize: 10, fontWeight: 700, color: "#1D4ED8" }}>{s.text}</span>
+          </div>
         ))}
       </div>
 
-      <div className="grid-2" style={{marginTop:14}}>
-        <SectionCard title="Siswa — Tahap Saat Ini">
-          <DataTable headers={["Siswa — Tahap Saat Ini","Progres","Status","Aksi"]}>
-            {rows.map((r,i)=>(
-              <tr key={i}>
-                <td><b>{r.name}</b><div className="muted">{r.stage}</div></td>
-                <td>{r.progress}</td>
-                <td><StatusBadge status={r.status} /></td>
-                <td><button className="btn btn-light">{r.action}</button></td>
+      <div className="grid-2">
+        <div className="card" style={{ padding: 0, overflow: "hidden" }}>
+          <DataTable headers={["Siswa — Tahap Saat Ini", "Progres", "Aksi"]} headVariant="dark">
+            {rows.map((r) => (
+              <tr key={r.name}>
+                <td style={{ fontWeight: 600, color: "#0F172A" }}>{r.name}</td>
+                <td style={{ color: "#64748B" }}>{r.progres}</td>
+                <td>
+                  <span className="tag" style={{ background: "#1D4ED8", color: "#fff", fontSize: 10, borderRadius: 20, padding: "6px 12px" }}>
+                    {r.action}
+                  </span>
+                </td>
               </tr>
             ))}
           </DataTable>
-        </SectionCard>
+        </div>
 
-        <SectionCard title="Notifikasi & Peringatan • 3 belum dibaca">
-          <div style={{display:"grid",gap:10}}>
-            <div className="card" style={{background:"#FEF3C7",borderColor:"#FDE68A",padding:12}}>
-              <b>Pengajuan PKL baru • Rina → PT Maju Jaya</b>
-              <div className="muted">Perlu disposisi admin • sudah menunggu 3 hari</div>
-              <div style={{marginTop:8}}><StatusBadge status="Menunggu" /></div>
+        <div className="card" style={{ padding: 14, display: "flex", flexDirection: "column", gap: 8 }}>
+          <div className="section-title" style={{ marginBottom: 2 }}>Notifikasi &amp; Peringatan • 3 belum dibaca</div>
+          {notifs.map((n) => (
+            <div key={n.title} style={{ background: n.bg, borderRadius: 8, padding: 10, display: "flex", flexDirection: "column", gap: 2 }}>
+              <span style={{ fontSize: 11, fontWeight: 700 }}>{n.title}</span>
+              <span style={{ fontSize: 10, color: "#64748B" }}>{n.desc}</span>
             </div>
-            <div className="card" style={{background:"#FEE2E2",borderColor:"#FECACA",padding:12}}>
-              <b>Status penempatan berubah • Sinta pilih final</b>
-              <div className="muted">Menunggu persetujuan • 2 perusahaan diterima</div>
-              <div style={{marginTop:8}}><StatusBadge status="Diterima" /></div>
-            </div>
-            <div className="card" style={{background:"#DBEAFE",borderColor:"#BFDBFE",padding:12}}>
-              <b>2 Jurnal perlu tindakan guru</b>
-              <div className="muted">Sinta & Akmal • verifikasi maju • 24 jam</div>
-              <div style={{marginTop:8}}><StatusBadge status="Diproses" /></div>
-            </div>
-          </div>
-          <div style={{marginTop:12}}>
-            <div className="muted">Keterbacaan notifikasi</div>
-            <ProgressBar value={40} variant="yellow" style={{marginTop:6}} />
-          </div>
-        </SectionCard>
+          ))}
+        </div>
       </div>
     </div>
   );

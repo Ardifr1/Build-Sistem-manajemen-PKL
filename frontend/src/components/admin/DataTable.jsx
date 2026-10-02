@@ -1,7 +1,7 @@
-function DataTable({ headers = [], children, minWidth }) {
+function DataTable({ headers = [], headVariant = "dark", children }) {
   return (
-    <div style={{ overflowX: "auto" }}>
-      <table className="table" style={minWidth ? { minWidth } : undefined}>
+    <div className="dt-wrap">
+      <table className={`table dt-${headVariant}`}>
         {headers.length > 0 && (
           <thead>
             <tr>

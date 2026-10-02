@@ -1,38 +1,38 @@
-import StatCard from "../../components/admin/StatCard.jsx";
 import StatusBadge from "../../components/admin/StatusBadge.jsx";
-import SectionCard from "../../components/admin/SectionCard.jsx";
 import ProgressBar from "../../components/admin/ProgressBar.jsx";
 
-function PerusahaanMitra(){
-  const cards=[
-    {init:"P", name:"PT Maju Jaya • Manufaktur", kuota:"Kuota 20 • Terisi 18", pct:90, syarat:"Syarat: Min. nilai 80 • CV", status:"Aktif"},
-    {init:"T", name:"Telkom Akses • Telekomunikasi", kuota:"Kuota 30 • Terisi 30", pct:100, syarat:"Syarat: Tes • Interview", status:"Penuh"},
-    {init:"C", name:"CV Kreatif Digital • Desain", kuota:"Kuota 12 • Terisi 5", pct:42, syarat:"Syarat: Portofolio", status:"Aktif"},
+function PerusahaanMitra() {
+  const cards = [
+    { init: "P", name: "PT Maju Jaya • Manufaktur", bidang: "RPL • TKJ", kuota: "Kuota 20 • Terisi 18", pct: 90, syarat: "Syarat: Min. nilai 80 • CV", status: "Aktif", variant: "success" },
+    { init: "T", name: "Telkom Akses • Telekomunikasi", bidang: "TKJ • RPL", kuota: "Kuota 30 • Terisi 30", pct: 100, syarat: "Syarat: Tes + Interview", status: "Penuh", variant: "danger" },
+    { init: "C", name: "CV Kreatif Digital • Desain", bidang: "MM • RPL", kuota: "Kuota 12 • Terisi 5", pct: 42, syarat: "Syarat: Portofolio", status: "Aktif", variant: "success" },
   ];
   return (
     <div className="admin-page">
-      <div className="grid-3">
-        <StatCard label="Total Kuota 1.480" value="74%">
-          <div className="muted">Terisi 1.102 (74%)</div>
-          <ProgressBar value={74} variant="blue" style={{marginTop:8}} />
-        </StatCard>
-        <StatCard label="Perlu Verifikasi 9" hint="Dokumen MoU" />
-        <StatCard label="Bidang Terbanyak RPL" hint="42 perusahaan" />
+      <div className="grid-3g10">
+        <div className="card mini-kpi"><b>Total Kuota 1.480</b><span>Terisi 1.102 (74%)</span></div>
+        <div className="card mini-kpi"><b>Perlu Verifikasi 9</b><span>Dokumen MoU</span></div>
+        <div className="card mini-kpi"><b>Bidang Terbanyak RPL</b><span>42 perusahaan</span></div>
       </div>
 
-      <div className="grid-3" style={{marginTop:14}}>
-        {cards.map((c,i)=>(
-          <SectionCard key={i}>
-            <div style={{display:"flex",gap:10,alignItems:"center"}}><span className="avatar">{c.init}</span><b>{c.name}</b></div>
-            <div className="muted" style={{marginTop:10}}>{c.kuota}</div>
-            <ProgressBar value={c.pct} variant="blue" style={{marginTop:8}} />
-            <div className="muted" style={{marginTop:8}}>{c.syarat}</div>
-            <div style={{marginTop:10,display:"flex",gap:8,alignItems:"center",flexWrap:"wrap"}}>
-              <StatusBadge status={c.status} />
-              <button className="btn btn-light">Detail</button>
-              <button className="btn btn-ghost">Edit Kuota</button>
+      <div className="grid-3">
+        {cards.map((c) => (
+          <div className="card" key={c.name} style={{ padding: 14, display: "flex", flexDirection: "column", gap: 8 }}>
+            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              <span className="avatar-pen" style={{ background: "#1E3A8A", borderRadius: 8, padding: "10px 12px", fontSize: 14 }}>{c.init}</span>
+              <span style={{ fontSize: 12, fontWeight: 700 }}>{c.name}</span>
             </div>
-          </SectionCard>
+            <div>
+              <span className="pill pill-primary pill-sm">{c.bidang}</span>
+            </div>
+            <div style={{ fontSize: 11, fontWeight: 600 }}>{c.kuota}</div>
+            <ProgressBar percent={c.pct} variant="accent" height={8} />
+            <div style={{ fontSize: 11, color: "#64748B" }}>{c.syarat}</div>
+            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              <StatusBadge status={c.status} variant={c.variant} small />
+              <span className="action-text">Detail&nbsp;&nbsp;•&nbsp;&nbsp;Edit Kuota</span>
+            </div>
+          </div>
         ))}
       </div>
     </div>
