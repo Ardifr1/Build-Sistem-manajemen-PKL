@@ -1,0 +1,45 @@
+/** Gaya khusus halaman industri (di atas gaya zip). */
+.guru-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 24px;
+  margin-bottom: 16px;
+}
+
+.guru-detail-grid .zip-field span {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.industri-success {
+  margin-top: 16px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: #ecfdf5;
+  border: 1px solid #10b981;
+  color: #065f46;
+  font-size: 14px;
+}
+
+.industri-aspek {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.industri-aspek:last-child {
+  border-bottom: none;
+}
+
+.industri-aspek .zip-field {
+  margin: 0;
+  max-width: 110px;
+}
+
+.industri-aspek-label {
+  font-size: 14px;
+  color: #334155;
+}

@@ -1,0 +1,36 @@
+/** Banner + gaya khusus halaman guru (di atas gaya zip). */
+.guru-banner {
+  margin-top: 16px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: #fef3c7;
+  border: 1px solid #f59e0b;
+  color: #92400e;
+  font-size: 14px;
+}
+
+.guru-banner strong {
+  font-weight: 700;
+}
+
+.guru-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 24px;
+  margin-bottom: 16px;
+}
+
+.guru-detail-grid .zip-field span {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.guru-score-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.guru-score-input input {
+  width: 90px;
+}
