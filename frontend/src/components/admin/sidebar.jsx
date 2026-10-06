@@ -12,7 +12,7 @@ function Sidebar({ active = "dashboard", onNavigate }) {
   return (
     <aside className="sidebar">
       <div className="sidebar-brand">
-        <span className="sidebar-logo-mark" aria-hidden="true" />
+        <img className="sidebar-logo-mark" src="/logo-simagang.png" alt="Logo SiMagang" />
         <span className="sidebar-brand-text">
           <strong>SiMagang</strong>
           <small>ADMIN</small>

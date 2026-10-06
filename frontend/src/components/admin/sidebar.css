@@ -23,8 +23,8 @@
   width: 34px;
   height: 34px;
   border-radius: 8px;
-  background: #2563eb;
   flex-shrink: 0;
+  object-fit: cover;
 }
 
 .sidebar-brand-text {

@@ -41,7 +41,7 @@ function Login() {
       {/* ============ LEFT PANEL ============ */}
       <aside className="login-left">
         <div className="login-brand">
-          <span className="login-logo" aria-hidden="true" />
+          <img className="login-logo" src="/logo-simagang.png" alt="Logo SiMagang" />
           <span className="login-brand-text">
             <strong>SiMagang</strong>
             <small>Sistem Informasi Magang</small>
@@ -61,7 +61,17 @@ function Login() {
         <ul className="login-bullets">
           {BULLETS.map((b) => (
             <li key={b}>
-              <span className="login-bullet-dot" aria-hidden="true" />
+              <span className="login-bullet-dot" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none">
+                  <path
+                    d="m5 12.5 4.5 4.5L19 7.5"
+                    stroke="#fff"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </span>
               {b}
             </li>
           ))}
