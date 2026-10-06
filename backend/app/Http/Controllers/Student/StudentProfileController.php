@@ -104,7 +104,40 @@ class StudentProfileController extends Controller
                 'nullable',
                 'string',
             ],
+            'pengalaman' => [
+                'nullable',
+                'string',
+            ],
+            'keahlian' => [
+                'nullable',
+                'string',
+            ],
+            'cv' => [
+                'nullable',
+                'file',
+                'mimes:pdf,doc,docx',
+                'max:5120',
+            ],
+            'portfolio' => [
+                'nullable',
+                'file',
+                'mimes:pdf,doc,docx,zip',
+                'max:10240',
+            ],
+            'certificate' => [
+                'nullable',
+                'file',
+                'mimes:pdf,jpg,jpeg,png',
+                'max:5120',
+            ],
         ]);
+
+        foreach (['cv' => 'cv_path', 'portfolio' => 'portfolio_path', 'certificate' => 'certificate_path'] as $input => $column) {
+            if ($request->hasFile($input)) {
+                $validated[$column] = $request->file($input)->store('student-documents', 'public');
+            }
+            unset($validated[$input]);
+        }
 
         $existingProfile = StudentProfile::query()
             ->where('user_id', $validated['user_id'])
@@ -170,7 +203,45 @@ class StudentProfileController extends Controller
                 'nullable',
                 'string',
             ],
+            'pengalaman' => [
+                'sometimes',
+                'nullable',
+                'string',
+            ],
+            'keahlian' => [
+                'sometimes',
+                'nullable',
+                'string',
+            ],
+            'cv' => [
+                'sometimes',
+                'nullable',
+                'file',
+                'mimes:pdf,doc,docx',
+                'max:5120',
+            ],
+            'portfolio' => [
+                'sometimes',
+                'nullable',
+                'file',
+                'mimes:pdf,doc,docx,zip',
+                'max:10240',
+            ],
+            'certificate' => [
+                'sometimes',
+                'nullable',
+                'file',
+                'mimes:pdf,jpg,jpeg,png',
+                'max:5120',
+            ],
         ]);
+
+        foreach (['cv' => 'cv_path', 'portfolio' => 'portfolio_path', 'certificate' => 'certificate_path'] as $input => $column) {
+            if ($request->hasFile($input)) {
+                $validated[$column] = $request->file($input)->store('student-documents', 'public');
+            }
+            unset($validated[$input]);
+        }
 
         $studentProfile->update($validated);
 

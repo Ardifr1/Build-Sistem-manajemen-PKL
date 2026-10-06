@@ -13,6 +13,10 @@ class Attendance extends Model
         'check_in',
         'check_out',
         'status',
+        'photo_path',
+        'latitude',
+        'longitude',
+        'location_accuracy',
         'note',
     ];
 

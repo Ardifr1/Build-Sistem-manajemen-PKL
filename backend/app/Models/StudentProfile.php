@@ -14,6 +14,11 @@ class StudentProfile extends Model
         'major',
         'phone',
         'address',
+        'pengalaman',
+        'keahlian',
+        'cv_path',
+        'portfolio_path',
+        'certificate_path',
     ];
 
     public function user(): BelongsTo

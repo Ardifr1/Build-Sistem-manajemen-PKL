@@ -81,11 +81,36 @@ class AttendanceController extends Controller
                 'max:50',
                 'in:present,absent,sick,permission',
             ],
+            'photo' => [
+                'nullable',
+                'image',
+                'max:5120',
+            ],
+            'latitude' => [
+                'nullable',
+                'numeric',
+                'between:-90,90',
+            ],
+            'longitude' => [
+                'nullable',
+                'numeric',
+                'between:-180,180',
+            ],
+            'location_accuracy' => [
+                'nullable',
+                'numeric',
+                'min:0',
+            ],
             'note' => [
                 'nullable',
                 'string',
             ],
         ]);
+
+        if ($request->hasFile('photo')) {
+            $validated['photo_path'] = $request->file('photo')->store('attendances', 'public');
+        }
+        unset($validated['photo']);
 
         $placement = PklPlacement::findOrFail($validated['placement_id']);
 
@@ -153,6 +178,24 @@ class AttendanceController extends Controller
                 'string',
                 'max:50',
                 'in:present,absent,sick,permission',
+            ],
+            'latitude' => [
+                'sometimes',
+                'nullable',
+                'numeric',
+                'between:-90,90',
+            ],
+            'longitude' => [
+                'sometimes',
+                'nullable',
+                'numeric',
+                'between:-180,180',
+            ],
+            'location_accuracy' => [
+                'sometimes',
+                'nullable',
+                'numeric',
+                'min:0',
             ],
             'note' => [
                 'sometimes',
