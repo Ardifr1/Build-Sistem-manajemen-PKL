@@ -97,7 +97,6 @@ function Penilaian({ onMeta }) {
     <div className="zip-page">
       {loading && <div className="zip-muted">Memuat…</div>}
 
-      <h4>Rekap — Siswa • Jurnal • Evaluasi • Nilai</h4>
       <div className="zip-card" style={{ marginBottom: 16 }}>
         <h4 style={{ margin: "0 0 10px" }}>Rekap — Siswa • Jurnal • Evaluasi • Nilai</h4>
         <div className="ds-rows">
