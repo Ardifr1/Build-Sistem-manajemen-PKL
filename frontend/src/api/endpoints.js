@@ -71,6 +71,7 @@ export const ep = {
     update: id("/journals"),
     destroy: id("/journals"),
     submit: (journalId) => `/journals/${journalId}/submit`,
+    verify: (journalId) => `/journals/${journalId}/verify`,
   },
   journalRecommendations: {
     index: "/journal-recommendations",
