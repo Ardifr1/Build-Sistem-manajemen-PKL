@@ -17,11 +17,13 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
-        $user = User::where('username', $request->username)->first();
+        $user = User::where('username', $request->username)
+            ->orWhere('email', $request->username)
+            ->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
-                'message' => 'Username atau password salah.'
+                'message' => 'Email/username atau password salah.'
             ], 401);
         }
 

@@ -1,14 +1,36 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./login.css";
+import { authApi } from "../../api/index.js";
 
 function Login() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(true);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+    if (!email || !password) {
+      setError("Email dan kata sandi wajib diisi.");
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await authApi.login({ email, password });
+      const role = res?.data?.user?.role;
+      // TODO: arahkan ke dashboard per peran setelah halamannya ada.
+      // Saat ini baru dashboard admin yang tersedia.
+      navigate(role === "admin" ? "/" : "/", { replace: true });
+    } catch (err) {
+      setError(err?.message || "Login gagal. Periksa kembali email dan kata sandi.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -192,6 +214,11 @@ function Login() {
           </div>
 
           <form className="login-form" onSubmit={handleSubmit} noValidate>
+            {error && (
+              <div className="login-error" role="alert">
+                {error}
+              </div>
+            )}
             <div className="field">
               <label htmlFor="login-email">Email Sekolah / Resmi</label>
               <div className="input-wrap">
@@ -276,8 +303,8 @@ function Login() {
               </a>
             </div>
 
-            <button type="submit" className="btn-primary">
-              Masuk ke Dashboard
+            <button type="submit" className="btn-primary" disabled={loading}>
+              {loading ? "Memeriksa..." : "Masuk ke Dashboard"}
               <span aria-hidden="true">→</span>
             </button>
 

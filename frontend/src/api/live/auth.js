@@ -8,7 +8,9 @@ import { ep } from "../endpoints.js";
 const USER_KEY = "simagang_user";
 
 export async function login({ email, password } = {}) {
-  const res = await client.post(ep.auth.login, { email, password });
+  // Form login menerima email ATAU username; backend mencocokkan keduanya
+  // lewat kolom `username`, jadi nilai form dipetakan ke sana.
+  const res = await client.post(ep.auth.login, { username: email, password });
   // Backend: { message, data: { token, token_type, user } }
   if (res?.data?.token) {
     setToken(res.data.token);
