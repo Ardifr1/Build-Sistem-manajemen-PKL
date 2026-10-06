@@ -9,9 +9,13 @@ function roleLabel(role) {
 }
 
 function UserForm({ initial, onCancel, onSaved }) {
+  const isEdit = !!initial?.id;
   const [form, setForm] = useState({
     name: initial?.name || "",
     username: initial?.username || "",
+    email: initial?.email || "",
+    password: "",
+    password_confirmation: "",
     role: initial?.role || "student",
     is_active: initial ? !!initial.is_active : true,
   });
@@ -23,20 +27,35 @@ function UserForm({ initial, onCancel, onSaved }) {
   const submit = async (e) => {
     e.preventDefault();
     setError("");
-    if (!form.name.trim() || !form.username.trim()) {
-      setError("Nama dan username wajib diisi.");
+    if (!form.name.trim() || !form.username.trim() || !form.email.trim()) {
+      setError("Nama, username, dan email wajib diisi.");
       return;
+    }
+    if (!isEdit || form.password) {
+      if (form.password.length < 8) {
+        setError("Password minimal 8 karakter.");
+        return;
+      }
+      if (form.password !== form.password_confirmation) {
+        setError("Konfirmasi password tidak cocok.");
+        return;
+      }
     }
     setSaving(true);
     try {
       const payload = {
         name: form.name.trim(),
         username: form.username.trim(),
+        email: form.email.trim(),
         role: form.role,
         is_active: form.is_active,
       };
-      if (initial?.id) await usersApi.update(initial.id, payload);
-      else await usersApi.store({ ...payload, email: `${payload.username}@smk.sch.id`, password: "password123" });
+      if (form.password) {
+        payload.password = form.password;
+        payload.password_confirmation = form.password_confirmation;
+      }
+      if (isEdit) await usersApi.update(initial.id, payload);
+      else await usersApi.store(payload);
       onSaved?.();
     } catch (err) {
       setError(err?.message || "Gagal menyimpan pengguna.");
@@ -55,6 +74,35 @@ function UserForm({ initial, onCancel, onSaved }) {
       <label className="zip-field">
         <span>Username</span>
         <input value={form.username} onChange={set("username")} placeholder="dewi.xiirpl3" />
+      </label>
+      <label className="zip-field">
+        <span>Email</span>
+        <input
+          type="email"
+          value={form.email}
+          onChange={set("email")}
+          placeholder="cth dewi@smk.sch.id"
+        />
+      </label>
+      <label className="zip-field">
+        <span>Password{isEdit ? " (kosongkan jika tidak diubah)" : ""}</span>
+        <input
+          type="password"
+          value={form.password}
+          onChange={set("password")}
+          placeholder="Minimal 8 karakter"
+          autoComplete="new-password"
+        />
+      </label>
+      <label className="zip-field">
+        <span>Konfirmasi Password</span>
+        <input
+          type="password"
+          value={form.password_confirmation}
+          onChange={set("password_confirmation")}
+          placeholder="Ulangi password"
+          autoComplete="new-password"
+        />
       </label>
       <label className="zip-field">
         <span>Role</span>
@@ -160,7 +208,7 @@ function Pengguna({ onMeta }) {
           className="zip-btn zip-btn-primary"
           onClick={() => {
             setView({ name: "tambah" });
-            onMeta?.({ title: "Tambah Pengguna", subtitle: "Nama • username • role • status" });
+            onMeta?.({ title: "Tambah Pengguna", subtitle: "Nama • username • email • password • role • status" });
           }}
         >
           + Tambah Pengguna
@@ -177,9 +225,9 @@ function Pengguna({ onMeta }) {
                 {u.name} • {roleLabel(u.role)} • {u.is_active ? "Aktif" : "Nonaktif"}
               </span>
               <span className="zip-row-actions">
-                <button type="button" onClick={() => { setView({ name: "edit", row: u }); onMeta?.({ title: "Detail / Edit Pengguna", subtitle: "Nama • username • role • status" }); }}>Detail</button>
+                <button type="button" onClick={() => { setView({ name: "edit", row: u }); onMeta?.({ title: "Detail / Edit Pengguna", subtitle: "Nama • username • email • password • role • status" }); }}>Detail</button>
                 <i>•</i>
-                <button type="button" onClick={() => { setView({ name: "edit", row: u }); onMeta?.({ title: "Detail / Edit Pengguna", subtitle: "Nama • username • role • status" }); }}>Edit</button>
+                <button type="button" onClick={() => { setView({ name: "edit", row: u }); onMeta?.({ title: "Detail / Edit Pengguna", subtitle: "Nama • username • email • password • role • status" }); }}>Edit</button>
                 <i>•</i>
                 <button type="button" onClick={() => { setView({ name: "hapus", row: u }); onMeta?.({ title: "Konfirmasi Hapus", subtitle: "Aksi berisiko • butuh konfirmasi" }); }}>Hapus</button>
               </span>
