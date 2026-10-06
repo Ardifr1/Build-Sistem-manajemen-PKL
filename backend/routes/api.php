@@ -12,6 +12,7 @@ use App\Http\Controllers\Student\ApplicationDocumentController;
 use App\Http\Controllers\Student\AttendanceController;
 use App\Http\Controllers\Student\JournalController;
 use App\Http\Controllers\Student\JournalRecommendationController;
+use App\Http\Controllers\Student\FeedbackController;
 use App\Http\Controllers\Student\PklApplicationController;
 use App\Http\Controllers\Student\ProgressRecordController;
 use App\Http\Controllers\Student\StudentProfileController;
@@ -55,6 +56,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Progress
     Route::apiResource('progress-records', ProgressRecordController::class);
+
+    // Feedback (PRD seksi 27, BR-19)
+    Route::apiResource('feedbacks', FeedbackController::class);
+    Route::post('/feedbacks/{feedback}/review', [FeedbackController::class, 'review']);
 
     // Assessment
     Route::apiResource(
