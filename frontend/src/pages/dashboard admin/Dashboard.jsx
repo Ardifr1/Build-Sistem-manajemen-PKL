@@ -1,55 +1,67 @@
-import StatCard from "../../components/admin/StatCard.jsx";
-import StatusBadge from "../../components/admin/StatusBadge.jsx";
-import SectionCard from "../../components/admin/SectionCard.jsx";
-import ProgressBar from "../../components/admin/ProgressBar.jsx";
+import { useEffect, useState } from "react";
+import { dashboardApi, journalsApi } from "../../api/index.js";
+import "./admin-pages.css";
 
-function Dashboard() {
-  const recent = [
-    { name: "Rina • PT Maju Jaya", status: "Menunggu" },
-    { name: "Bagas • Telkom Akses", status: "Diproses" },
-    { name: "Sinta • Diterima 2 perusahaan", status: "Diterima" },
-    { name: "Dimas • Ditolak industri", status: "Ditolak" },
-  ];
-  const alur = [
-    { label: "Pengajuan → Seleksi", pct: 67 },
-    { label: "Penempatan disetujui", pct: 55 },
-    { label: "Jurnal terverifikasi", pct: 43 },
-  ];
+function StatBox({ label, value, hint }) {
   return (
-    <div className="admin-page gap-14">
-      <div className="grid-4">
-        <StatCard label="Total Siswa" value="1.240" hint="+32 semester ini" hintColor="#1D4ED8" />
-        <StatCard label="Guru Pembimbing" value="84" hint="Rasio 1:15" hintColor="#0EA5E9" />
-        <StatCard label="Perusahaan Mitra" value="126" hint="12 kuota penuh" hintColor="#16A34A" />
-        <StatCard label="Pengajuan Aktif" value="486" hint="68 menunggu" hintColor="#D97706" />
+    <div className="zip-stat">
+      <div className="zip-stat-label">{label}</div>
+      <div className="zip-stat-value">{value}</div>
+      <div className="zip-stat-hint">{hint}</div>
+    </div>
+  );
+}
+
+function Dashboard({ onMeta }) {
+  const [summary, setSummary] = useState(null);
+  const [jurnalMenunggu, setJurnalMenunggu] = useState(0);
+
+  useEffect(() => {
+    let alive = true;
+    dashboardApi
+      .adminSummary()
+      .then((s) => {
+        if (!alive) return;
+        const d = s.data || {};
+        setSummary(d);
+        onMeta?.({
+          subtitle: `Siswa ${d.total_siswa ?? "–"} • mitra ${d.total_perusahaan ?? "–"} • pengajuan ${d.pengajuan_aktif ?? "–"} • periode AKTIF`,
+        });
+      })
+      .catch(() => alive && onMeta?.({ subtitle: "" }));
+    journalsApi
+      .index()
+      .then((r) => {
+        if (!alive) return;
+        const list = Array.isArray(r.data) ? r.data : r.data?.data || [];
+        setJurnalMenunggu(list.filter((j) => ["submitted", "pending", "menunggu"].includes(j.status)).length);
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, [onMeta]);
+
+  if (!summary) {
+    return (
+      <div className="zip-page">
+        <p className="zip-muted">Memuat dashboard…</p>
       </div>
+    );
+  }
 
-      <div className="grid-2">
-        <SectionCard title="Pengajuan Terbaru — Perlu Tindakan" padding={16} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          {recent.map((r) => (
-            <div className="row-box" key={r.name}>
-              <span style={{ fontSize: 12, color: "#0F172A", flex: 1 }}>{r.name}</span>
-              <StatusBadge status={r.status} />
-            </div>
-          ))}
-        </SectionCard>
-
-        <div className="dark-card" style={{ padding: 16 }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: "#fff" }}>Alur PKL — Progress Sekolah</div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 10 }}>
-            {alur.map((a) => (
-              <div key={a.label}>
-                <div style={{ fontSize: 11, color: "#BFDBFE", marginBottom: 6 }}>{a.label}</div>
-                <ProgressBar percent={a.pct} barColor="#38BDF8" trackColor="#0F2A6B" height={8} />
-              </div>
-            ))}
-          </div>
-          <p style={{ fontSize: 11, color: "#93C5FD", marginTop: 12, marginBottom: 0 }}>
-            Batas maks 3 perusahaan / siswa. Role otomatis sistem.
-          </p>
-        </div>
+  return (
+    <div className="zip-page">
+      <div className="zip-stats">
+        <StatBox label="Siswa" value={Number(summary.total_siswa || 0).toLocaleString("id-ID")} hint="terdaftar" />
+        <StatBox label="Guru" value={Number(summary.total_guru || 0).toLocaleString("id-ID")} hint="pembimbing" />
+        <StatBox label="Perusahaan" value={Number(summary.total_perusahaan || 0).toLocaleString("id-ID")} hint="mitra aktif" />
+        <StatBox label="Pengajuan" value={Number(summary.pengajuan_aktif || 0).toLocaleString("id-ID")} hint="periode ini" />
+        <StatBox label="Penempatan" value={Number(summary.siswa_ditempatkan || 0).toLocaleString("id-ID")} hint="resmi" />
+        <StatBox label="Jurnal menunggu" value={Number(jurnalMenunggu).toLocaleString("id-ID")} hint="industri" />
       </div>
     </div>
   );
 }
+
 export default Dashboard;

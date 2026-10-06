@@ -2,40 +2,44 @@ import "./sidebar.css";
 
 const MENU = [
   { key: "dashboard", label: "Dashboard" },
-  { key: "akun", label: "Akun Pengguna" },
-  { key: "siswa", label: "Data Siswa" },
-  { key: "guru", label: "Data Guru" },
-  { key: "mitra", label: "Perusahaan Mitra" },
+  { key: "pengguna", label: "Pengguna" },
+  { key: "perusahaan", label: "Perusahaan Partner" },
   { key: "periode", label: "Periode PKL" },
-  { key: "pengajuan", label: "Pengajuan PKL" },
-  { key: "monitoring", label: "Monitoring" },
-  { key: "pengaturan", label: "Pengaturan" },
+  { key: "persetujuan", label: "Persetujuan" },
 ];
 
 function Sidebar({ active = "dashboard", onNavigate }) {
-  const activeKey = active === "tambah-akun" ? "akun" : active;
   return (
     <aside className="sidebar">
-      <div className="sidebar-logo">● PKLHub&nbsp;&nbsp;• Admin</div>
-      <div className="sidebar-sub">Admin Sekolah • SMKN 1</div>
+      <div className="sidebar-brand">
+        <span className="sidebar-logo-mark" aria-hidden="true" />
+        <span className="sidebar-brand-text">
+          <strong>SiMagang</strong>
+          <small>ADMIN</small>
+        </span>
+      </div>
       <nav className="sidebar-menu">
-        {MENU.map((item) => {
-          const isActive = activeKey === item.key;
-          return (
-            <button
-              key={item.key}
-              type="button"
-              className={`sidebar-item ${isActive ? "active" : ""}`}
-              onClick={() => onNavigate?.(item.key)}
-            >
-              {isActive ? "●" : "○"} {item.label}
-            </button>
-          );
-        })}
+        {MENU.map((item) => (
+          <button
+            key={item.key}
+            type="button"
+            className={`sidebar-item ${active === item.key ? "active" : ""}`}
+            onClick={() => onNavigate?.(item.key)}
+          >
+            {item.label}
+          </button>
+        ))}
       </nav>
       <div className="sidebar-spacer" />
-      <button type="button" className="sidebar-logout">Keluar</button>
+      <div className="sidebar-user">
+        <span className="sidebar-avatar" aria-hidden="true" />
+        <span className="sidebar-user-text">
+          <strong>ADMIN</strong>
+          <small>SMKN 1</small>
+        </span>
+      </div>
     </aside>
   );
 }
+
 export default Sidebar;

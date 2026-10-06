@@ -170,6 +170,33 @@ class PklApplicationController extends Controller
     ): JsonResponse {
         Gate::authorize('update', $pklApplication);
 
+        // Persetujuan sekolah: admin dapat mengubah status lamaran yang sudah
+        // diterima perusahaan (accepted) menjadi approved (resmi) / rejected.
+        if ($request->has('status')) {
+            if ($request->user()->role !== 'admin') {
+                return response()->json([
+                    'message' => 'Hanya admin yang dapat mengubah status persetujuan.',
+                ], 403);
+            }
+            if ($pklApplication->status !== 'accepted') {
+                return response()->json([
+                    'message' => 'Hanya lamaran berstatus diterima perusahaan yang dapat disetujui/ditolak sekolah.',
+                ], 422);
+            }
+            $validated = $request->validate([
+                'status' => ['required', 'string', 'in:approved,rejected'],
+            ]);
+            $pklApplication->update($validated);
+            $pklApplication->load(['company', 'pklPeriod']);
+
+            return response()->json([
+                'message' => $validated['status'] === 'approved'
+                    ? 'Lamaran disetujui sekolah dan resmi.'
+                    : 'Lamaran ditolak sekolah.',
+                'data' => $pklApplication,
+            ]);
+        }
+
         if (! in_array($pklApplication->status, ['pending', 'rejected'], true)) {
             return response()->json([
                 'message' => 'Pendaftaran yang sudah diterima/diproses tidak dapat diubah.',

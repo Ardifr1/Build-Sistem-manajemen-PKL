@@ -2,35 +2,37 @@ import { useState } from "react";
 import AdminLayout from "../../layouts/admin layout/admin";
 import "./admin-pages.css";
 import Dashboard from "./Dashboard.jsx";
-import AkunPengguna from "./AkunPengguna.jsx";
-import TambahPengguna from "./TambahPengguna.jsx";
-import DataSiswa from "./DataSiswa.jsx";
-import DataGuru from "./DataGuru.jsx";
-import PerusahaanMitra from "./PerusahaanMitra.jsx";
+import Pengguna from "./AkunPengguna.jsx";
+import PerusahaanPartner from "./PerusahaanMitra.jsx";
 import PeriodePKL from "./PeriodePKL.jsx";
-import PengajuanPKL from "./PengajuanPKL.jsx";
-import Monitoring from "./Monitoring.jsx";
-import Pengaturan from "./Pengaturan.jsx";
+import Persetujuan from "./PengajuanPKL.jsx";
 
 const PAGES = {
   dashboard: Dashboard,
-  akun: AkunPengguna,
-  "tambah-akun": TambahPengguna,
-  siswa: DataSiswa,
-  guru: DataGuru,
-  mitra: PerusahaanMitra,
+  pengguna: Pengguna,
+  perusahaan: PerusahaanPartner,
   periode: PeriodePKL,
-  pengajuan: PengajuanPKL,
-  monitoring: Monitoring,
-  pengaturan: Pengaturan,
+  persetujuan: Persetujuan,
 };
 
 function DashboardAdmin() {
   const [active, setActive] = useState("dashboard");
+  const [meta, setMeta] = useState({});
   const Page = PAGES[active] || Dashboard;
+
+  const navigate = (key) => {
+    setMeta({});
+    setActive(key);
+  };
+
   return (
-    <AdminLayout active={active} onNavigate={setActive}>
-      <Page onNavigate={setActive} />
+    <AdminLayout
+      active={active}
+      onNavigate={navigate}
+      title={meta.title}
+      subtitle={meta.subtitle !== undefined ? meta.subtitle : undefined}
+    >
+      <Page onNavigate={navigate} onMeta={setMeta} />
     </AdminLayout>
   );
 }

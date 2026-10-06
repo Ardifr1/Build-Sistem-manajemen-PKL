@@ -1,41 +1,183 @@
-import StatusBadge from "../../components/admin/StatusBadge.jsx";
-import ProgressBar from "../../components/admin/ProgressBar.jsx";
+import { useEffect, useState } from "react";
+import { companiesApi } from "../../api/index.js";
+import "./admin-pages.css";
 
-function PerusahaanMitra() {
-  const cards = [
-    { init: "P", name: "PT Maju Jaya • Manufaktur", bidang: "RPL • TKJ", kuota: "Kuota 20 • Terisi 18", pct: 90, syarat: "Syarat: Min. nilai 80 • CV", status: "Aktif", variant: "success" },
-    { init: "T", name: "Telkom Akses • Telekomunikasi", bidang: "TKJ • RPL", kuota: "Kuota 30 • Terisi 30", pct: 100, syarat: "Syarat: Tes + Interview", status: "Penuh", variant: "danger" },
-    { init: "C", name: "CV Kreatif Digital • Desain", bidang: "MM • RPL", kuota: "Kuota 12 • Terisi 5", pct: 42, syarat: "Syarat: Portofolio", status: "Aktif", variant: "success" },
-  ];
+function CompanyForm({ initial, onCancel, onSaved }) {
+  const [form, setForm] = useState({
+    name: initial?.name || "",
+    industry: initial?.industry || "",
+    student_quota: initial?.student_quota ?? "",
+    is_active: initial ? !!initial.is_active : true,
+  });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+
+  const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
+
+  const submit = async (e) => {
+    e.preventDefault();
+    setError("");
+    if (!form.name.trim()) {
+      setError("Nama perusahaan wajib diisi.");
+      return;
+    }
+    setSaving(true);
+    try {
+      const payload = {
+        name: form.name.trim(),
+        industry: form.industry.trim(),
+        student_quota: Number(form.student_quota) || 0,
+        is_active: form.is_active,
+      };
+      if (initial?.id) await companiesApi.update(initial.id, payload);
+      else await companiesApi.store(payload);
+      onSaved?.();
+    } catch (err) {
+      setError(err?.message || "Gagal menyimpan perusahaan.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
-    <div className="admin-page">
-      <div className="grid-3g10">
-        <div className="card mini-kpi"><b>Total Kuota 1.480</b><span>Terisi 1.102 (74%)</span></div>
-        <div className="card mini-kpi"><b>Perlu Verifikasi 9</b><span>Dokumen MoU</span></div>
-        <div className="card mini-kpi"><b>Bidang Terbanyak RPL</b><span>42 perusahaan</span></div>
+    <form className="zip-card zip-form" onSubmit={submit}>
+      {error && <div className="zip-error">{error}</div>}
+      <label className="zip-field">
+        <span>Nama Perusahaan</span>
+        <input value={form.name} onChange={set("name")} placeholder="cth PT Solusi Digital" />
+      </label>
+      <label className="zip-field">
+        <span>Bidang</span>
+        <input value={form.industry} onChange={set("industry")} placeholder="cth Backend" />
+      </label>
+      <label className="zip-field">
+        <span>Kuota Siswa</span>
+        <input type="number" min="0" value={form.student_quota} onChange={set("student_quota")} placeholder="cth 6" />
+      </label>
+      <label className="zip-field">
+        <span>Status</span>
+        <select
+          value={form.is_active ? "1" : "0"}
+          onChange={(e) => setForm((f) => ({ ...f, is_active: e.target.value === "1" }))}
+        >
+          <option value="1">Aktif</option>
+          <option value="0">Nonaktif</option>
+        </select>
+      </label>
+      <div className="zip-form-actions">
+        <button type="button" className="zip-btn zip-btn-outline" onClick={onCancel}>Batal</button>
+        <button type="submit" className="zip-btn zip-btn-primary" disabled={saving}>
+          {saving ? "Menyimpan…" : "Simpan"}
+        </button>
       </div>
+    </form>
+  );
+}
 
-      <div className="grid-3">
-        {cards.map((c) => (
-          <div className="card" key={c.name} style={{ padding: 14, display: "flex", flexDirection: "column", gap: 8 }}>
-            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-              <span className="avatar-pen" style={{ background: "#1E3A8A", borderRadius: 8, padding: "10px 12px", fontSize: 14 }}>{c.init}</span>
-              <span style={{ fontSize: 12, fontWeight: 700 }}>{c.name}</span>
-            </div>
-            <div>
-              <span className="pill pill-primary pill-sm">{c.bidang}</span>
-            </div>
-            <div style={{ fontSize: 11, fontWeight: 600 }}>{c.kuota}</div>
-            <ProgressBar percent={c.pct} variant="accent" height={8} />
-            <div style={{ fontSize: 11, color: "#64748B" }}>{c.syarat}</div>
-            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-              <StatusBadge status={c.status} variant={c.variant} small />
-              <span className="action-text">Detail&nbsp;&nbsp;•&nbsp;&nbsp;Edit Kuota</span>
-            </div>
-          </div>
-        ))}
+function PerusahaanPartner({ onMeta }) {
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [view, setView] = useState({ name: "list" });
+  const [error, setError] = useState("");
+
+  const load = () => {
+    setLoading(true);
+    companiesApi
+      .index()
+      .then((res) => setRows(Array.isArray(res.data) ? res.data : []))
+      .catch((err) => setError(err?.message || "Gagal memuat perusahaan."))
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    onMeta?.({ title: "Perusahaan Partner", subtitle: `${rows.length} mitra • kuota • pembimbing` });
+  }, [rows.length, onMeta]);
+
+  const backToList = () => {
+    setView({ name: "list" });
+    load();
+  };
+
+  const doDelete = async () => {
+    try {
+      await companiesApi.destroy(view.row.id);
+      backToList();
+    } catch (err) {
+      setError(err?.message || "Gagal menghapus perusahaan.");
+    }
+  };
+
+  if (view.name === "tambah" || view.name === "edit") {
+    return (
+      <div className="zip-page">
+        <CompanyForm
+          initial={view.name === "edit" ? view.row : null}
+          onCancel={backToList}
+          onSaved={backToList}
+        />
       </div>
+    );
+  }
+
+  if (view.name === "hapus") {
+    return (
+      <div className="zip-page">
+        <div className="zip-card zip-confirm">
+          <h3>Hapus perusahaan {view.row.name}?</h3>
+          <p>Data perusahaan dihapus dan tidak bisa dikembalikan. Lanjutkan?</p>
+          <div className="zip-confirm-actions">
+            <button type="button" className="zip-btn zip-btn-outline" onClick={backToList}>Batal</button>
+            <button type="button" className="zip-btn zip-btn-danger" onClick={doDelete}>Ya, Hapus</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="zip-page">
+      <div className="zip-toolbar">
+        <span className="zip-muted">{rows.length} mitra • kuota • pembimbing</span>
+        <button
+          type="button"
+          className="zip-btn zip-btn-primary"
+          onClick={() => {
+            setView({ name: "tambah" });
+            onMeta?.({ title: "Tambah Perusahaan", subtitle: "Nama • bidang • kuota • status" });
+          }}
+        >
+          + Tambah Perusahaan
+        </button>
+      </div>
+      {error && <div className="zip-error">{error}</div>}
+      {loading ? (
+        <p className="zip-muted">Memuat perusahaan…</p>
+      ) : (
+        <div className="zip-list">
+          {rows.map((c) => (
+            <div className="zip-row" key={c.id}>
+              <span className="zip-row-text">
+                {c.name} • {c.industry || "-"} • {c._terisi ?? 0}/{c.student_quota ?? 0} • {c.is_active ? "Aktif" : "Nonaktif"}
+              </span>
+              <span className="zip-row-actions">
+                <button type="button" onClick={() => { setView({ name: "edit", row: c }); onMeta?.({ title: "Detail / Edit Perusahaan", subtitle: "Nama • bidang • kuota • status" }); }}>Detail</button>
+                <i>•</i>
+                <button type="button" onClick={() => { setView({ name: "edit", row: c }); onMeta?.({ title: "Detail / Edit Perusahaan", subtitle: "Nama • bidang • kuota • status" }); }}>Edit</button>
+                <i>•</i>
+                <button type="button" onClick={() => { setView({ name: "hapus", row: c }); onMeta?.({ title: "Konfirmasi Hapus", subtitle: "Aksi berisiko • butuh konfirmasi" }); }}>Hapus</button>
+              </span>
+            </div>
+          ))}
+          {rows.length === 0 && <p className="zip-muted">Belum ada perusahaan mitra.</p>}
+        </div>
+      )}
     </div>
   );
 }
-export default PerusahaanMitra;
+
+export default PerusahaanPartner;

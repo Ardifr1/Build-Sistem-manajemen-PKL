@@ -80,3 +80,49 @@ label.f-label{font-size:11px;font-weight:700;color:var(--text);display:block;mar
 .white-box{background:#fff;border-radius:8px;padding:10px 12px}
 .action-text{font-size:11px;font-weight:600;color:#1D4ED8;white-space:nowrap}
 .badge-top{display:inline-flex;padding:6px 10px;border-radius:20px;background:#FEF3C7;color:#D97706;font-size:11px;font-weight:700}
+
+/* ===== Gaya versi zip (revisi_mockup) ===== */
+.zip-page{display:flex;flex-direction:column;gap:14px;color:#0f172a;font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif}
+.zip-muted{font-size:13px;color:#64748b}
+.zip-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.zip-list{display:flex;flex-direction:column;gap:10px}
+.zip-row{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#fff;border:1px solid #eef2f7;border-radius:12px;padding:14px 18px;flex-wrap:wrap}
+.zip-row-text{font-size:14px;color:#0f172a}
+.zip-row-actions{display:flex;align-items:center;gap:8px;font-size:13px}
+.zip-row-actions button{border:0;background:none;color:#2563eb;font-size:13px;cursor:pointer;padding:0}
+.zip-row-actions button:hover{text-decoration:underline}
+.zip-row-actions i{font-style:normal;color:#2563eb}
+.zip-row.highlight{border:1.5px solid #2563eb}
+.zip-stats{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+@media(max-width:1100px){.zip-stats{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:640px){.zip-stats{grid-template-columns:repeat(2,1fr)}}
+.zip-stat{background:#fff;border:1px solid #eef2f7;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:4px}
+.zip-stat-label{font-size:12px;color:#94a3b8}
+.zip-stat-value{font-size:24px;font-weight:700;color:#0f172a;line-height:1.1}
+.zip-stat-hint{font-size:12px;color:#64748b}
+.zip-card{background:#fff;border:1px solid #eef2f7;border-radius:12px;padding:20px;max-width:720px}
+.zip-error{background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;font-size:13px;border-radius:10px;padding:10px 12px;margin-bottom:4px}
+.zip-field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.zip-field>span{font-size:13px;font-weight:700;color:#0f172a}
+.zip-field input,.zip-field select{border:1px solid #e2e8f0;border-radius:8px;padding:10px 12px;font-size:13px;color:#0f172a;background:#fff;width:100%}
+.zip-field input::placeholder{color:#94a3b8}
+.zip-form-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:6px}
+.zip-btn{border-radius:8px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid transparent}
+.zip-btn-primary{background:#2563eb;color:#fff}
+.zip-btn-primary:hover{background:#1d4ed8}
+.zip-btn-primary:disabled{opacity:.65;cursor:not-allowed}
+.zip-btn-outline{background:#fff;color:#0f172a;border-color:#e2e8f0}
+.zip-btn-outline:hover{background:#f8fafc}
+.zip-btn-danger{background:#dc2626;color:#fff}
+.zip-btn-danger:hover{background:#b91c1c}
+.zip-btn-success{background:#16a34a;color:#fff}
+.zip-btn-success:hover{background:#15803d}
+.zip-confirm{border:1.5px solid #dc2626;text-align:center;max-width:560px}
+.zip-confirm h3{font-size:16px;font-weight:700;margin:0 0 8px}
+.zip-confirm p{font-size:13px;color:#64748b;margin:0 0 16px}
+.zip-confirm-actions{display:flex;justify-content:center;gap:10px}
+@media(max-width:640px){
+  .zip-row{flex-direction:column;align-items:flex-start}
+  .zip-form-actions{justify-content:stretch}
+  .zip-form-actions .zip-btn{flex:1}
+}

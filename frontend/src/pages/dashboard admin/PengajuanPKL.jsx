@@ -1,58 +1,126 @@
-import { useState } from "react";
-import StatusBadge from "../../components/admin/StatusBadge.jsx";
-import DataTable from "../../components/admin/DataTable.jsx";
+import { useEffect, useState } from "react";
+import { applicationsApi, placementsApi, usersApi, companiesApi, periodsApi } from "../../api/index.js";
+import "./admin-pages.css";
 
-const TABS = [
-  { key: "semua", label: "Semua (486)" },
-  { key: "menunggu", label: "Menunggu (68)" },
-  { key: "diproses", label: "Diproses (142)" },
-  { key: "diterima", label: "Diterima (210)" },
-  { key: "ditolak", label: "Ditolak (66)" },
-];
+function Persetujuan({ onMeta }) {
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [acting, setActing] = useState(null);
 
-function PengajuanPKL() {
-  const [tab, setTab] = useState("semua");
-  const rows = [
-    { name: "Rina • XII RPL1 → PT Maju Jaya", pilihan: "1 dari 3", status: "Menunggu", variant: "warning" },
-    { name: "Bagas • XII TKJ2 → Telkom Akses", pilihan: "2 dari 3", status: "Diproses", variant: "primary" },
-    { name: "Sinta • XII RPL2 → 2 Diterima", pilihan: "Final: CV Kreatif", status: "Diterima", variant: "success" },
-    { name: "Dimas • XII MM1 → CV Kreatif", pilihan: "1 dari 2", status: "Ditolak", variant: "danger" },
-    { name: "Putri • XII AKL → Bank Daerah", pilihan: "Menunggu Persetujuan", status: "Disetujui Sekolah", variant: "success" },
-  ];
-  const filtered =
-    tab === "semua"
-      ? rows
-      : rows.filter((r) => r.status.toLowerCase() === tab || (tab === "diterima" && r.status === "Disetujui Sekolah"));
+  const load = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const [appsRes, usersRes, companiesRes] = await Promise.all([
+        applicationsApi.index({ status: "accepted" }),
+        usersApi.index(),
+        companiesApi.index(),
+      ]);
+      const apps = Array.isArray(appsRes.data) ? appsRes.data : [];
+      const users = Array.isArray(usersRes.data) ? usersRes.data : [];
+      const companies = Array.isArray(companiesRes.data) ? companiesRes.data : [];
+      const userMap = Object.fromEntries(users.map((u) => [u.id, u.name]));
+      const companyMap = Object.fromEntries(companies.map((c) => [c.id, c.name]));
+      setRows(
+        apps.map((a) => ({
+          ...a,
+          siswa: userMap[a.student_id] || `Siswa #${a.student_id}`,
+          perusahaan: companyMap[a.company_id] || `Perusahaan #${a.company_id}`,
+        }))
+      );
+    } catch (err) {
+      setError(err?.message || "Gagal memuat persetujuan.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    load();
+    onMeta?.({ title: "Persetujuan Sekolah", subtitle: "Diterima perusahaan → resmi • butuh ACC" });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const setujui = async (row) => {
+    setActing(row.id);
+    setError("");
+    try {
+      await applicationsApi.update(row.id, { status: "approved" });
+      try {
+        const periodRes = await periodsApi.show(row.pkl_period_id);
+        const p = periodRes.data || {};
+        await placementsApi.store({
+          student_id: row.student_id,
+          company_id: row.company_id,
+          pkl_period_id: row.pkl_period_id,
+          application_id: row.id,
+          start_date: p.start_date,
+          end_date: p.end_date,
+          status: "active",
+        });
+      } catch (e) {
+        setError(e?.message || "Lamaran disetujui, tetapi penempatan resmi gagal dibuat.");
+      }
+      load();
+    } catch (err) {
+      setError(err?.message || "Gagal menyetujui lamaran.");
+    } finally {
+      setActing(null);
+    }
+  };
+
+  const tolak = async (row) => {
+    setActing(row.id);
+    setError("");
+    try {
+      await applicationsApi.update(row.id, { status: "rejected" });
+      load();
+    } catch (err) {
+      setError(err?.message || "Gagal menolak lamaran.");
+    } finally {
+      setActing(null);
+    }
+  };
 
   return (
-    <div className="admin-page">
-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-        {TABS.map((t) => (
-          <button
-            key={t.key}
-            type="button"
-            className={`chip ${tab === t.key ? "active" : ""}`}
-            onClick={() => setTab(t.key)}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
-
-      <div className="card" style={{ padding: 0, overflow: "hidden" }}>
-        <DataTable headers={["Siswa → Perusahaan", "Pilihan", "Status"]} headVariant="dark">
-          {filtered.map((r) => (
-            <tr key={r.name}>
-              <td style={{ fontWeight: 600, color: "#0F172A" }}>{r.name}</td>
-              <td style={{ color: "#64748B" }}>{r.pilihan}</td>
-              <td>
-                <StatusBadge status={r.status} variant={r.variant} small />
-              </td>
-            </tr>
+    <div className="zip-page">
+      {error && <div className="zip-error">{error}</div>}
+      {loading ? (
+        <p className="zip-muted">Memuat persetujuan…</p>
+      ) : rows.length === 0 ? (
+        <p className="zip-muted">Tidak ada lamaran yang menunggu persetujuan sekolah.</p>
+      ) : (
+        <div className="zip-list">
+          {rows.map((r) => (
+            <div className="zip-row" key={r.id}>
+              <span className="zip-row-text">
+                {r.siswa} → {r.perusahaan} — menunggu persetujuan
+              </span>
+              <span className="zip-row-actions">
+                <button
+                  type="button"
+                  className="zip-btn zip-btn-outline"
+                  disabled={acting === r.id}
+                  onClick={() => tolak(r)}
+                >
+                  Tolak
+                </button>
+                <button
+                  type="button"
+                  className="zip-btn zip-btn-success"
+                  disabled={acting === r.id}
+                  onClick={() => setujui(r)}
+                >
+                  {acting === r.id ? "Memproses…" : "Setujui → Resmi"}
+                </button>
+              </span>
+            </div>
           ))}
-        </DataTable>
-      </div>
+        </div>
+      )}
     </div>
   );
 }
-export default PengajuanPKL;
+
+export default Persetujuan;
