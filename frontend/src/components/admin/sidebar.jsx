@@ -8,18 +8,24 @@ const MENU = [
   { key: "persetujuan", label: "Persetujuan" },
 ];
 
-function Sidebar({ active = "dashboard", onNavigate }) {
+function Sidebar({
+  active = "dashboard",
+  onNavigate,
+  menus = MENU,
+  roleLabel = "ADMIN",
+  orgLabel = "SMKN 1",
+}) {
   return (
     <aside className="sidebar">
       <div className="sidebar-brand">
         <img className="sidebar-logo-mark" src="/logo-simagang.png" alt="Logo SiMagang" />
         <span className="sidebar-brand-text">
           <strong>SiMagang</strong>
-          <small>ADMIN</small>
+          <small>{roleLabel}</small>
         </span>
       </div>
       <nav className="sidebar-menu">
-        {MENU.map((item) => (
+        {menus.map((item) => (
           <button
             key={item.key}
             type="button"
@@ -34,8 +40,8 @@ function Sidebar({ active = "dashboard", onNavigate }) {
       <div className="sidebar-user">
         <span className="sidebar-avatar" aria-hidden="true" />
         <span className="sidebar-user-text">
-          <strong>ADMIN</strong>
-          <small>SMKN 1</small>
+          <strong>{roleLabel}</strong>
+          <small>{orgLabel}</small>
         </span>
       </div>
     </aside>
