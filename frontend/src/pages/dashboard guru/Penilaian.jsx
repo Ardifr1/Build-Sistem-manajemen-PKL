@@ -4,6 +4,7 @@ import {
   componentsApi,
   finalsApi,
 } from "../../api/index.js";
+import "../../components/role/detail-siswa.css";
 import { getEnrichedPlacements, statusLabel } from "../../lib/role-data.js";
 
 function avg(nums) {
@@ -97,27 +98,35 @@ function Penilaian({ onMeta }) {
       {loading && <div className="zip-muted">Memuat…</div>}
 
       <h4>Rekap — Siswa • Jurnal • Evaluasi • Nilai</h4>
-      <div className="zip-list">
-        {placements.map((p) => {
-          const t = teacherAvg(p.id);
-          const c = companyAvg(p.id);
-          const f = finalOf(p.id);
-          return (
-            <div className="zip-row" key={p.id}>
-              <span className="zip-row-text">
-                {p.student?.name} — {t ?? "-"} — {c ?? "-"} —{" "}
-                {f ? `${f.final_score} (${statusLabel(f.status)})` : statusLabel(p.status)}
-              </span>
-            </div>
-          );
-        })}
+      <div className="zip-card" style={{ marginBottom: 16 }}>
+        <h4 style={{ margin: "0 0 10px" }}>Rekap — Siswa • Jurnal • Evaluasi • Nilai</h4>
+        <div className="ds-rows">
+          {placements.map((p) => {
+            const t = teacherAvg(p.id);
+            const c = companyAvg(p.id);
+            const f = finalOf(p.id);
+            return (
+              <div className="ds-row" key={p.id}>
+                <strong>{p.student?.name}</strong> — {t ?? "-"} — {c ?? "-"} —{" "}
+                {f ? (
+                  <>
+                    {f.final_score} ({statusLabel(f.status)})
+                  </>
+                ) : (
+                  statusLabel(p.status)
+                )}
+              </div>
+            );
+          })}
+          {placements.length === 0 && !loading && (
+            <div className="zip-muted">Belum ada siswa untuk dinilai.</div>
+          )}
+        </div>
       </div>
-      {!loading && placements.length === 0 && (
-        <div className="zip-muted">Belum ada siswa untuk dinilai.</div>
-      )}
 
-      <h4 style={{ marginTop: 24 }}>Input Nilai Guru</h4>
-      <form className="zip-card zip-form" onSubmit={submit}>
+      <div className="zip-card">
+        <h4 style={{ margin: "0 0 10px" }}>Input Nilai Guru</h4>
+        <form className="zip-form" onSubmit={submit}>
         {error && <div className="zip-error">{error}</div>}
         {success && <div className="zip-muted">{success}</div>}
         <label className="zip-field">
@@ -155,7 +164,8 @@ function Penilaian({ onMeta }) {
             {saving ? "Menyimpan…" : "Simpan Penilaian"}
           </button>
         </div>
-      </form>
+        </form>
+      </div>
     </div>
   );
 }

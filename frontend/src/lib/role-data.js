@@ -90,3 +90,21 @@ export const STATUS_LABEL = {
 export function statusLabel(s) {
   return STATUS_LABEL[s] || s || "-";
 }
+
+const BULAN = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+
+/** "2026-08-01T00:00:00.000000Z" -> "1 Agu 2026" */
+export function formatDate(iso) {
+  if (!iso) return "-";
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return String(iso);
+  return `${d.getDate()} ${BULAN[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+/** "2026-08-01" -> "1 Agu" (ala mockup: "18 Jun") */
+export function formatDateShort(iso) {
+  if (!iso) return "-";
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return String(iso);
+  return `${d.getDate()} ${BULAN[d.getMonth()]}`;
+}

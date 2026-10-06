@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { journalsApi } from "../../api/index.js";
+import DetailSiswa from "../../components/role/detail-siswa.jsx";
 import {
   getEnrichedPlacements,
   getMyCompanyId,
@@ -34,6 +35,10 @@ function SiswaIndustri({ onMeta }) {
   const openDetail = async (p) => {
     setDetail(p);
     setDetailJournals([]);
+    onMeta?.({
+      title: `Detail Siswa — ${p.student?.name || ""}`,
+      subtitle: "Profil • status • jurnal • perkembangan",
+    });
     try {
       const res = await journalsApi.index({ placement_id: p.id });
       setDetailJournals(res?.data ?? []);
@@ -42,52 +47,22 @@ function SiswaIndustri({ onMeta }) {
     }
   };
 
+  const closeDetail = () => {
+    setDetail(null);
+    onMeta?.({
+      title: "Siswa Bimbingan",
+      subtitle: `${placements.length} siswa • klik detail`,
+    });
+  };
+
   if (detail) {
     return (
-      <div className="zip-page">
-        <div className="zip-toolbar">
-          <button type="button" className="zip-btn-outline" onClick={() => setDetail(null)}>
-            ← Kembali
-          </button>
-        </div>
-        <div className="zip-card">
-          <h3>{detail.student?.name}</h3>
-          <div className="guru-detail-grid">
-            <label className="zip-field">
-              <span>Perusahaan</span>
-              <div>{detail.company?.name || "-"}</div>
-            </label>
-            <label className="zip-field">
-              <span>Status</span>
-              <div>{statusLabel(detail.status)}</div>
-            </label>
-            <label className="zip-field">
-              <span>Periode</span>
-              <div>
-                {detail.start_date || "-"} s/d {detail.end_date || "-"}
-              </div>
-            </label>
-            <label className="zip-field">
-              <span>Jumlah Jurnal</span>
-              <div>{detailJournals.length} jurnal</div>
-            </label>
-          </div>
-          <h4>Jurnal Terbaru</h4>
-          <div className="zip-list">
-            {detailJournals.slice(0, 5).map((j) => (
-              <div className="zip-row" key={j.id}>
-                <span className="zip-row-text">
-                  {j.journal_date} • {(j.revised_activity || j.activity || "").slice(0, 60)} —{" "}
-                  {statusLabel(j.status)}
-                </span>
-              </div>
-            ))}
-            {detailJournals.length === 0 && (
-              <div className="zip-muted">Belum ada jurnal.</div>
-            )}
-          </div>
-        </div>
-      </div>
+      <DetailSiswa
+        placement={detail}
+        journals={detailJournals}
+        variant="industri"
+        onBack={closeDetail}
+      />
     );
   }
 
