@@ -10,14 +10,20 @@ class JournalPolicy
     /**
      * Admin dan Guru dapat melihat daftar jurnal.
      * Siswa hanya dapat melihat jurnal miliknya.
+     * Industri dapat melihat jurnal penempatan di perusahaannya.
      */
     public function viewAny(User $user): bool
     {
-        return in_array($user->role, [
+        if (in_array($user->role, [
             'admin',
             'teacher',
             'student',
-        ], true);
+        ], true)) {
+            return true;
+        }
+
+        return $user->role === 'company'
+            && $user->companySupervisor !== null;
     }
 
     /**
@@ -27,6 +33,12 @@ class JournalPolicy
     {
         if ($user->role === 'admin' || $user->role === 'teacher') {
             return true;
+        }
+
+        if ($user->role === 'company') {
+            return $journal->placement
+                && $user->companySupervisor
+                && $journal->placement->company_id === $user->companySupervisor->company_id;
         }
 
         return $user->role === 'student'

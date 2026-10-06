@@ -45,6 +45,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Journal
     Route::apiResource('journals', JournalController::class);
     Route::post('/journals/{journal}/submit', [JournalController::class, 'submit']);
+    Route::post('/journals/{journal}/verify', [JournalController::class, 'verify']);
 
     Route::apiResource(
         'journal-recommendations',

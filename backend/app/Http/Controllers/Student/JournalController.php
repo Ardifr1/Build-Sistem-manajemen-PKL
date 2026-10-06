@@ -8,6 +8,7 @@ use App\Models\PklPlacement;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rule;
 
 class JournalController extends Controller
 {
@@ -25,11 +26,21 @@ class JournalController extends Controller
 
         $placement = PklPlacement::findOrFail($validated['placement_id']);
 
+        $user = $request->user();
+
         if (
-            $request->user()->role === 'student'
-            && $placement->student_id !== $request->user()->id
+            $user->role === 'student'
+            && $placement->student_id !== $user->id
         ) {
             abort(403);
+        }
+
+        if ($user->role === 'company') {
+            $companyId = $user->companySupervisor?->company_id;
+
+            if (!$companyId || $placement->company_id !== $companyId) {
+                abort(403);
+            }
         }
 
         $journals = Journal::query()
@@ -205,6 +216,52 @@ class JournalController extends Controller
 
         return response()->json([
             'message' => 'Jurnal berhasil dikirim untuk diverifikasi.',
+            'data' => $journal->fresh(),
+        ]);
+    }
+
+    /**
+     * Verifikasi jurnal oleh pembimbing industri:
+     * setujui (verified) atau minta revisi (needs_revision) + catatan.
+     */
+    public function verify(Request $request, Journal $journal): JsonResponse
+    {
+        $user = $request->user();
+
+        if ($user->role !== 'company') {
+            abort(403, 'Hanya pembimbing industri yang dapat memverifikasi jurnal.');
+        }
+
+        Gate::authorize('view', $journal);
+
+        if ($journal->status !== 'submitted') {
+            return response()->json([
+                'message' => 'Hanya jurnal berstatus menunggu verifikasi yang dapat diproses.',
+            ], 422);
+        }
+
+        $validated = $request->validate([
+            'action' => [
+                'required',
+                'string',
+                Rule::in(['verified', 'needs_revision']),
+            ],
+            'company_note' => [
+                'nullable',
+                'string',
+            ],
+        ]);
+
+        $journal->update([
+            'status' => $validated['action'],
+            'company_note' => $validated['company_note'] ?? null,
+            'verified_at' => $validated['action'] === 'verified' ? now() : null,
+        ]);
+
+        return response()->json([
+            'message' => $validated['action'] === 'verified'
+                ? 'Jurnal disetujui.'
+                : 'Jurnal dikembalikan untuk direvisi.',
             'data' => $journal->fresh(),
         ]);
     }
