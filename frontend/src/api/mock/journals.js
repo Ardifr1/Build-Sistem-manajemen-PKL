@@ -134,3 +134,18 @@ export const recommendationsApi = {
     return ok("Rekomendasi AI berhasil dihapus.", null);
   },
 };
+
+/** Verifikasi jurnal oleh industri: setujui / minta revisi + catatan. */
+export async function verify(id, payload = {}) {
+  await delay();
+  const row = db.find((r) => r.id === Number(id));
+  if (!row) throw Object.assign(new Error("Jurnal tidak ditemukan."), { status: 404 });
+  const action = payload.action === "verified" ? "verified" : "needs_revision";
+  row.status = action;
+  row.company_note = payload.company_note || "";
+  row.verified_at = action === "verified" ? new Date().toISOString().slice(0, 19).replace("T", " ") : null;
+  return ok(
+    action === "verified" ? "Jurnal disetujui." : "Jurnal dikembalikan untuk direvisi.",
+    row
+  );
+}
