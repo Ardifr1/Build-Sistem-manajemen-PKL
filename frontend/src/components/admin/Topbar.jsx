@@ -1,6 +1,22 @@
 import "./Topbar.css";
+import { authApi } from "../../api/index.js";
 
 function Topbar({ title = "", subtitle = "" }) {
+  const handleLogout = async () => {
+    try {
+      await authApi.logout();
+    } catch {
+      /* abaikan — token lokal tetap dibersihkan */
+    }
+    try {
+      localStorage.removeItem("simagang_token");
+      localStorage.removeItem("simagang_user");
+    } catch {
+      /* abaikan */
+    }
+    window.location.href = "/login";
+  };
+
   return (
     <header className="topbar">
       <div className="topbar-text">
@@ -25,6 +41,25 @@ function Topbar({ title = "", subtitle = "" }) {
         </svg>
       </button>
       <span className="topbar-avatar" aria-hidden="true" />
+      <button type="button" className="topbar-logout" onClick={handleLogout}>
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
+          <path
+            d="M14 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-2"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M10 12h11M18 8l3 4-3 4"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+        Keluar
+      </button>
     </header>
   );
 }
