@@ -97,19 +97,31 @@ function DataGuru({ onMeta }) {
         </span>
       </div>
       {loading && <div className="zip-muted">Memuat…</div>}
-      <div className="zip-list">
-        {rows.map((r) => (
-          <div className="zip-row" key={r.id}>
-            <span className="zip-row-text">
-              <strong>{r.name}</strong> • {r.bimbingan.length} siswa bimbingan
-            </span>
-            <span className="zip-row-actions">
-              <button type="button" className="zip-btn-outline" onClick={() => setDetail(r)}>
-                Detail
-              </button>
-            </span>
-          </div>
-        ))}
+      <div className="zip-table-wrap">
+        <table className="zip-table">
+          <thead>
+            <tr>
+              <th>Nama</th>
+              <th>Email</th>
+              <th>Siswa Bimbingan</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r) => (
+              <tr key={r.id}>
+                <td><strong>{r.name}</strong></td>
+                <td><span className="zip-sub">{r.email}</span></td>
+                <td><span className="zip-count">{r.bimbingan.length} siswa</span></td>
+                <td style={{ textAlign: "right" }}>
+                  <button type="button" className="zip-btn-outline" onClick={() => setDetail(r)}>
+                    Detail
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
       {!loading && rows.length === 0 && (
         <div className="zip-muted">Tidak ada data guru.</div>
