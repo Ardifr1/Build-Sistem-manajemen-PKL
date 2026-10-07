@@ -63,14 +63,14 @@ function GuruDashboard({ onMeta }) {
           <div className="zip-stat" key={c.label} style={{ background: c.bg }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
               <div>
-                <div className="zip-stat-label" style={{ color }}>{c.label}</div>
+                <div className="zip-stat-label" style={{ color: c.color }}>{c.label}</div>
                 <div className="zip-stat-value" style={{ color: "#0f172a", fontSize: 28 }}>{loading ? "…" : c.value}</div>
-                <div className="zip-stat-hint" style={{ color }}>{c.hint}</div>
+                <div className="zip-stat-hint" style={{ color: c.color }}>{c.hint}</div>
               </div>
               <span style={{
                 width: 44, height: 44, borderRadius: 12, background: "#fff",
                 display: "flex", alignItems: "center", justifyContent: "center",
-                color, fontSize: 18, boxShadow: "0 1px 3px rgba(0,0,0,.08)", flexShrink: 0,
+                color: c.color, fontSize: 18, boxShadow: "0 1px 3px rgba(0,0,0,.08)", flexShrink: 0,
               }}>
                 <i className={`fa-solid ${c.icon}`}></i>
               </span>
