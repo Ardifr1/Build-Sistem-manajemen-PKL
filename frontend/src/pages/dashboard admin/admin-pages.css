@@ -223,3 +223,21 @@ label.f-label{font-size:11px;font-weight:700;color:var(--text);display:block;mar
 .zip-tl-item{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px dashed #f1f5f9;position:relative}
 .zip-tl-item:last-child{border-bottom:0}
 .zip-tl-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+
+/* --- form pengguna: password eye, toggle, panduan --- */
+.zip-pw-wrap{position:relative;display:block}
+.zip-pw-wrap input{width:100%;padding-right:40px}
+.zip-pw-eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:0;color:#94a3b8;cursor:pointer;font-size:14px;padding:4px}
+.zip-pw-eye:hover{color:#475569}
+.zip-toggle{display:flex;align-items:center;gap:10px;cursor:pointer}
+.zip-toggle input{display:none}
+.zip-toggle-track{width:44px;height:24px;border-radius:999px;background:#e2e8f0;position:relative;transition:.2s;flex-shrink:0}
+.zip-toggle-thumb{position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:.2s}
+.zip-toggle input:checked + .zip-toggle-track{background:#2563eb}
+.zip-toggle input:checked + .zip-toggle-track .zip-toggle-thumb{left:23px}
+.zip-info-box{display:flex;gap:10px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:12px 14px;font-size:12.5px;color:#1e40af;line-height:1.5;margin-bottom:14px}
+.zip-info-box i{font-size:15px;margin-top:2px;flex-shrink:0}
+.zip-guide-list{display:flex;flex-direction:column;gap:12px}
+.zip-guide-list div{display:flex;flex-direction:column;gap:2px}
+.zip-guide-list strong{font-size:13.5px;color:#0f172a}
+.zip-guide-list span{font-size:12.5px;color:#64748b;line-height:1.5}

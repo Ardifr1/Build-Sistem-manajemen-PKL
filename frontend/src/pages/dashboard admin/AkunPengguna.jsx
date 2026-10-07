@@ -253,7 +253,7 @@ function roleLabel(role) {
   return ROLE_LABEL?.[role] || role;
 }
 
-function UserForm({ initial, onCancel, onSaved }) {
+function UserForm({ initial, onCancel, onSaved, onMeta }) {
   const isEdit = !!initial?.id;
   const [form, setForm] = useState({
     name: initial?.name || "",
@@ -266,6 +266,15 @@ function UserForm({ initial, onCancel, onSaved }) {
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [showPw, setShowPw] = useState(false);
+  const [showPw2, setShowPw2] = useState(false);
+
+  useEffect(() => {
+    onMeta?.({
+      title: isEdit ? "Edit Pengguna" : "Tambah Pengguna Baru",
+      subtitle: isEdit ? `Ubah data ${initial.name}` : "Daftarkan akun baru ke dalam sistem",
+    });
+  }, [isEdit, onMeta]);
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
@@ -310,70 +319,98 @@ function UserForm({ initial, onCancel, onSaved }) {
   };
 
   return (
-    <form className="zip-card zip-form" onSubmit={submit}>
-      {error && <div className="zip-error">{error}</div>}
-      <label className="zip-field">
-        <span>Nama</span>
-        <input value={form.name} onChange={set("name")} placeholder="cth Dewi Lestari" />
-      </label>
-      <label className="zip-field">
-        <span>Username</span>
-        <input value={form.username} onChange={set("username")} placeholder="dewi.xiirpl3" />
-      </label>
-      <label className="zip-field">
-        <span>Email</span>
-        <input
-          type="email"
-          value={form.email}
-          onChange={set("email")}
-          placeholder="cth dewi@smk.sch.id"
-        />
-      </label>
-      <label className="zip-field">
-        <span>Password{isEdit ? " (kosongkan jika tidak diubah)" : ""}</span>
-        <input
-          type="password"
-          value={form.password}
-          onChange={set("password")}
-          placeholder="Minimal 8 karakter"
-          autoComplete="new-password"
-        />
-      </label>
-      <label className="zip-field">
-        <span>Konfirmasi Password</span>
-        <input
-          type="password"
-          value={form.password_confirmation}
-          onChange={set("password_confirmation")}
-          placeholder="Ulangi password"
-          autoComplete="new-password"
-        />
-      </label>
-      <label className="zip-field">
-        <span>Role</span>
-        <select value={form.role} onChange={set("role")}>
-          {ROLE_OPTIONS.map((r) => (
-            <option key={r} value={r}>{roleLabel(r)}</option>
-          ))}
-        </select>
-      </label>
-      <label className="zip-field">
-        <span>Status</span>
-        <select
-          value={form.is_active ? "1" : "0"}
-          onChange={(e) => setForm((f) => ({ ...f, is_active: e.target.value === "1" }))}
-        >
-          <option value="1">Aktif</option>
-          <option value="0">Nonaktif</option>
-        </select>
-      </label>
-      <div className="zip-form-actions">
-        <button type="button" className="zip-btn zip-btn-outline" onClick={onCancel}>Batal</button>
-        <button type="submit" className="zip-btn zip-btn-primary" disabled={saving}>
-          {saving ? "Menyimpan…" : "Simpan"}
-        </button>
+    <div>
+      <button type="button" className="zip-back" onClick={onCancel}>‹ Kembali ke daftar pengguna</button>
+      <div className="zip-cols2" style={{ gridTemplateColumns: "1.4fr 1fr", alignItems: "start" }}>
+        <form className="zip-card" onSubmit={submit} style={{ maxWidth: "none" }}>
+          <h3 className="zip-card-title" style={{ marginTop: 0 }}>Informasi Akun</h3>
+          {error && <div className="zip-error">{error}</div>}
+          <label className="zip-field">
+            <span>Nama Lengkap</span>
+            <input value={form.name} onChange={set("name")} placeholder="cth Dewi Lestari" />
+          </label>
+          <label className="zip-field">
+            <span>Email</span>
+            <input type="email" value={form.email} onChange={set("email")} placeholder="cth dewi@smk.sch.id" />
+          </label>
+          <label className="zip-field">
+            <span>Username</span>
+            <input value={form.username} onChange={set("username")} placeholder="dewi.xiirpl3" />
+          </label>
+          <label className="zip-field">
+            <span>Peran</span>
+            <select value={form.role} onChange={set("role")}>
+              <option value="" disabled>Pilih peran</option>
+              {ROLE_OPTIONS.map((r) => (
+                <option key={r} value={r}>{roleLabel(r)}</option>
+              ))}
+            </select>
+          </label>
+          <label className="zip-field">
+            <span>Password{isEdit ? " (kosongkan jika tidak diubah)" : ""}</span>
+            <span className="zip-pw-wrap">
+              <input
+                type={showPw ? "text" : "password"}
+                value={form.password}
+                onChange={set("password")}
+                placeholder="Minimal 8 karakter"
+                autoComplete="new-password"
+              />
+              <button type="button" className="zip-pw-eye" onClick={() => setShowPw((s) => !s)} tabIndex={-1}>
+                <i className={`fa-solid ${showPw ? "fa-eye-slash" : "fa-eye"}`}></i>
+              </button>
+            </span>
+          </label>
+          <label className="zip-field">
+            <span>Konfirmasi Password</span>
+            <span className="zip-pw-wrap">
+              <input
+                type={showPw2 ? "text" : "password"}
+                value={form.password_confirmation}
+                onChange={set("password_confirmation")}
+                placeholder="Ulangi password"
+                autoComplete="new-password"
+              />
+              <button type="button" className="zip-pw-eye" onClick={() => setShowPw2((s) => !s)} tabIndex={-1}>
+                <i className={`fa-solid ${showPw2 ? "fa-eye-slash" : "fa-eye"}`}></i>
+              </button>
+            </span>
+          </label>
+          <div className="zip-field">
+            <span>Status Akun</span>
+            <label className="zip-toggle">
+              <input
+                type="checkbox"
+                checked={form.is_active}
+                onChange={(e) => setForm((f) => ({ ...f, is_active: e.target.checked }))}
+              />
+              <span className="zip-toggle-track"><span className="zip-toggle-thumb" /></span>
+              <span style={{ fontWeight: 600 }}>{form.is_active ? "Aktif" : "Nonaktif"}</span>
+            </label>
+          </div>
+          <div className="zip-form-actions">
+            <button type="button" className="zip-btn-outline" onClick={onCancel}>Batal</button>
+            <button type="submit" className="zip-btn-primary" disabled={saving}>
+              {saving ? "Menyimpan…" : isEdit ? "Simpan Perubahan" : "Simpan Pengguna"}
+            </button>
+          </div>
+        </form>
+
+        <div className="zip-card">
+          <h3 className="zip-card-title" style={{ marginTop: 0 }}>Panduan</h3>
+          <div className="zip-info-box">
+            <i className="fa-solid fa-circle-info"></i>
+            <span>Peran menentukan hak akses pengguna di dalam sistem SiMagang.</span>
+          </div>
+          <div className="zip-guide-list">
+            <div><strong>Admin</strong><span>Akses penuh ke seluruh modul & pengaturan sistem.</span></div>
+            <div><strong>Guru</strong><span>Memantau siswa bimbingan, jurnal, dan penilaian.</span></div>
+            <div><strong>Siswa</strong><span>Mengisi jurnal, absensi, dan melihat perkembangan PKL.</span></div>
+            <div><strong>Industri</strong><span>Memverifikasi jurnal & memberi evaluasi penempatan.</span></div>
+          </div>
+        </div>
       </div>
-    </form>
+    </div>
   );
 }
 
@@ -420,7 +457,7 @@ function Pengguna({ onMeta }) {
   if (view.name === "tambah") {
     return (
       <div className="zip-page">
-        <UserForm onCancel={backToList} onSaved={backToList} />
+        <UserForm onCancel={backToList} onSaved={backToList} onMeta={onMeta} />
       </div>
     );
   }
@@ -442,7 +479,7 @@ function Pengguna({ onMeta }) {
   if (view.name === "edit") {
     return (
       <div className="zip-page">
-        <UserForm initial={view.row} onCancel={backToList} onSaved={backToList} />
+        <UserForm initial={view.row} onCancel={backToList} onSaved={backToList} onMeta={onMeta} />
       </div>
     );
   }
