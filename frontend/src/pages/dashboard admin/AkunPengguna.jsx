@@ -1,7 +1,109 @@
 import { useEffect, useState } from "react";
-import { usersApi, ROLE_LABEL } from "../../api/index.js";
-import { UserCell, RoleBadge, StatusBadge } from "../../components/admin/user-table.jsx";
+import { usersApi, journalsApi, applicationsApi, placementsApi, profilesApi, ROLE_LABEL } from "../../api/index.js";
+import { UserCell, RoleBadge, StatusBadge, initials, avatarColor } from "../../components/admin/user-table.jsx";
 import "./admin-pages.css";
+
+/**
+ * Konfirmasi hapus pengguna ala referensi: banner permanen + data terkait + checkbox.
+ */
+function HapusPengguna({ row, onCancel, onDeleted, onMeta }) {
+  const [counts, setCounts] = useState({ jurnal: 0, pengajuan: 0, dokumen: 0, penempatan: 0 });
+  const [profil, setProfil] = useState({});
+  const [checked, setChecked] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    onMeta?.({ title: "Hapus Pengguna", subtitle: "Konfirmasi penghapusan akun secara permanen" });
+    (async () => {
+      try {
+        const [jRes, aRes, pRes, profRes] = await Promise.all([
+          journalsApi.index().catch(() => ({ data: [] })),
+          applicationsApi.index().catch(() => ({ data: [] })),
+          placementsApi.index().catch(() => ({ data: [] })),
+          profilesApi.index().catch(() => ({ data: [] })),
+        ]);
+        const journals = Array.isArray(jRes.data) ? jRes.data : [];
+        const apps = Array.isArray(aRes.data) ? aRes.data : [];
+        const placements = Array.isArray(pRes.data) ? pRes.data : [];
+        const profiles = Array.isArray(profRes.data) ? profRes.data : [];
+        const prof = profiles.find((p) => p.user_id === row.id) || {};
+        setProfil(prof);
+        const myPlacements = placements.filter((p) => p.student_id === row.id);
+        const myPlacementIds = new Set(myPlacements.map((p) => p.id));
+        const dokumen = [prof.cv_path, prof.portfolio_path, prof.certificate_path].filter(Boolean).length;
+        setCounts({
+          jurnal: journals.filter((j) => myPlacementIds.has(j.placement_id)).length,
+          pengajuan: apps.filter((a) => a.student_id === row.id).length,
+          dokumen,
+          penempatan: myPlacements.length,
+        });
+      } catch (e) { /* counts tetap 0 */ }
+    })();
+  }, [row.id, onMeta]);
+
+  const doDelete = async () => {
+    if (!checked) return;
+    setDeleting(true);
+    setError("");
+    try {
+      await usersApi.destroy(row.id);
+      onDeleted();
+    } catch (err) {
+      setError(err?.message || "Gagal menghapus pengguna.");
+      setDeleting(false);
+    }
+  };
+
+  const sub = [ROLE_LABEL?.[row.role] || row.role, profil.kelas || profil.class, profil.nis ? `NIS ${profil.nis}` : null]
+    .filter(Boolean).join(" • ");
+
+  return (
+    <div style={{ maxWidth: 560, margin: "0 auto" }}>
+      <div className="zip-card">
+        <div className="zip-danger-banner">
+          <span className="zip-danger-icon"><i className="fa-solid fa-triangle-exclamation"></i></span>
+          <div><strong>Tindakan permanen.</strong> Akun dan seluruh data terkait akan dihapus dan tidak dapat dikembalikan.</div>
+        </div>
+
+        <div className="zip-user-card">
+          <span className="zip-avatar" style={{ background: avatarColor(row.name), width: 44, height: 44 }}>{initials(row.name)}</span>
+          <span>
+            <div className="zip-user-name">{row.name}</div>
+            <div className="zip-user-email">{sub}</div>
+          </span>
+        </div>
+
+        <div style={{ fontWeight: 700, fontSize: 13.5, margin: "14px 0 8px" }}>Data terkait yang ikut terhapus:</div>
+        <div className="zip-kv"><span>Jurnal PKL</span><strong>{counts.jurnal} entri</strong></div>
+        <div className="zip-kv"><span>Pengajuan perusahaan</span><strong>{counts.pengajuan} pengajuan</strong></div>
+        <div className="zip-kv"><span>Dokumen (CV, portofolio, sertifikat)</span><strong>{counts.dokumen} berkas</strong></div>
+        <div className="zip-kv"><span>Penempatan resmi</span><strong>{counts.penempatan} penempatan</strong></div>
+
+        <label className="zip-check" style={{ marginTop: 16 }}>
+          <input type="checkbox" checked={checked} onChange={(e) => setChecked(e.target.checked)} />
+          <span style={{ fontSize: 12.5, color: "#64748b" }}>Saya memahami bahwa penghapusan ini bersifat permanen dan tidak dapat dibatalkan.</span>
+        </label>
+
+        {error && <div className="zip-error">{error}</div>}
+
+        <div className="zip-form-actions" style={{ marginTop: 8 }}>
+          <button type="button" className="zip-btn-outline" onClick={onCancel}>Batal</button>
+          <button
+            type="button"
+            className="zip-btn-danger"
+            disabled={!checked || deleting}
+            onClick={doDelete}
+            style={{ opacity: checked ? 1 : 0.5 }}
+          >
+            <i className="fa-solid fa-trash" style={{ marginRight: 6 }}></i>
+            {deleting ? "Menghapus…" : "Hapus Permanen"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const ROLE_OPTIONS = ["admin", "teacher", "student", "company"];
 
@@ -192,14 +294,7 @@ function Pengguna({ onMeta }) {
   if (view.name === "hapus") {
     return (
       <div className="zip-page">
-        <div className="zip-card zip-confirm">
-          <h3>Hapus pengguna {view.row.name}?</h3>
-          <p>Akun dinonaktifkan dan tidak bisa login. Lanjutkan?</p>
-          <div className="zip-confirm-actions">
-            <button type="button" className="zip-btn zip-btn-outline" onClick={backToList}>Batal</button>
-            <button type="button" className="zip-btn zip-btn-danger" onClick={doDelete}>Ya, Hapus</button>
-          </div>
-        </div>
+        <HapusPengguna row={view.row} onCancel={backToList} onDeleted={backToList} onMeta={onMeta} />
       </div>
     );
   }

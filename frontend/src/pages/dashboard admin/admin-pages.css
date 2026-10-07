@@ -210,3 +210,8 @@ label.f-label{font-size:11px;font-weight:700;color:var(--text);display:block;mar
 .zip-act-hapus:hover{background:#fecaca}
 .zip-act-setujui{background:#dcfce7;color:#15803d;border-color:#bbf7d0}
 .zip-act-setujui:hover{background:#bbf7d0}
+
+/* --- konfirmasi hapus ala referensi --- */
+.zip-danger-banner{display:flex;gap:12px;align-items:flex-start;background:#fef2f2;border:1px solid #fecaca;border-radius:12px;padding:14px 16px;font-size:13px;color:#7f1d1d;margin-bottom:16px;line-height:1.5}
+.zip-danger-icon{width:32px;height:32px;border-radius:8px;background:#dc2626;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px}
+.zip-user-card{display:flex;align-items:center;gap:12px;background:#f8fafc;border:1px solid #f1f5f9;border-radius:12px;padding:14px 16px}
