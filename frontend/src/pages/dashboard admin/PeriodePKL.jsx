@@ -319,7 +319,7 @@ function PeriodePKL({ onMeta }) {
                         <td style={{ textAlign: "right" }}>
                           <button
                             type="button"
-                            className="zip-btn-outline"
+                            className="zip-act zip-act-detail"
                             onClick={() => { setView({ name: "edit", row: p }); onMeta?.({ title: "Detail / Edit Periode", subtitle: "Nama • tanggal • status" }); }}
                           >
                             Detail

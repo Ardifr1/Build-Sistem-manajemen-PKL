@@ -159,7 +159,7 @@ function DataSiswa({ onMeta }) {
                   <td><span className="zip-sub">{r.kelas} • NIS {r.nis}</span><br />{r.companyName}</td>
                   <td>{badge}</td>
                   <td style={{ textAlign: "right" }}>
-                    <button type="button" className="zip-btn-outline" onClick={() => setDetail(r)}>
+                    <button type="button" className="zip-act zip-act-detail" onClick={() => setDetail(r)}>
                       Detail
                     </button>
                   </td>

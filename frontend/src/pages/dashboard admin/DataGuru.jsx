@@ -117,7 +117,7 @@ function DataGuru({ onMeta }) {
                 <td><span className="zip-sub">{r.bimbingan.length} siswa bimbingan</span></td>
                 <td><StatusBadge active={r.is_active} /></td>
                 <td style={{ textAlign: "right" }}>
-                  <button type="button" className="zip-btn-outline" onClick={() => setDetail(r)}>
+                  <button type="button" className="zip-act zip-act-detail" onClick={() => setDetail(r)}>
                     Detail
                   </button>
                 </td>

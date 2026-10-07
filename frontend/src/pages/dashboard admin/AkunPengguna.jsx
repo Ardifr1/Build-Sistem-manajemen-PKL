@@ -241,9 +241,9 @@ function Pengguna({ onMeta }) {
                   <td><RoleBadge role={u.role} /></td>
                   <td><StatusBadge active={u.is_active} /></td>
                   <td style={{ textAlign: "right", whiteSpace: "nowrap" }}>
-                    <button type="button" className="zip-btn-outline" style={{ marginRight: 6 }} onClick={() => { setView({ name: "edit", row: u }); onMeta?.({ title: "Detail / Edit Pengguna", subtitle: "Nama • username • email • password • role • status" }); }}>Detail</button>
-                    <button type="button" className="zip-btn-outline" style={{ marginRight: 6 }} onClick={() => { setView({ name: "edit", row: u }); onMeta?.({ title: "Detail / Edit Pengguna", subtitle: "Nama • username • email • password • role • status" }); }}>Edit</button>
-                    <button type="button" className="zip-btn-danger-outline" onClick={() => { setView({ name: "hapus", row: u }); onMeta?.({ title: "Konfirmasi Hapus", subtitle: "Aksi berisiko • butuh konfirmasi" }); }}>Hapus</button>
+                    <button type="button" className="zip-act zip-act-detail" style={{ marginRight: 6 }} onClick={() => { setView({ name: "edit", row: u }); onMeta?.({ title: "Detail / Edit Pengguna", subtitle: "Nama • username • email • password • role • status" }); }}>Detail</button>
+                    <button type="button" className="zip-act zip-act-edit" style={{ marginRight: 6 }} onClick={() => { setView({ name: "edit", row: u }); onMeta?.({ title: "Detail / Edit Pengguna", subtitle: "Nama • username • email • password • role • status" }); }}>Edit</button>
+                    <button type="button" className="zip-act zip-act-hapus" onClick={() => { setView({ name: "hapus", row: u }); onMeta?.({ title: "Konfirmasi Hapus", subtitle: "Aksi berisiko • butuh konfirmasi" }); }}>Hapus</button>
                   </td>
                 </tr>
               ))}

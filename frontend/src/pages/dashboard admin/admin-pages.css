@@ -208,3 +208,5 @@ label.f-label{font-size:11px;font-weight:700;color:var(--text);display:block;mar
 .zip-act-edit:hover{background:#fde68a}
 .zip-act-hapus{background:#fee2e2;color:#dc2626;border-color:#fecaca}
 .zip-act-hapus:hover{background:#fecaca}
+.zip-act-setujui{background:#dcfce7;color:#15803d;border-color:#bbf7d0}
+.zip-act-setujui:hover{background:#bbf7d0}

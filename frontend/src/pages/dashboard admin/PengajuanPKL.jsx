@@ -168,7 +168,7 @@ function Persetujuan({ onMeta }) {
                     <td style={{ textAlign: "right", whiteSpace: "nowrap" }}>
                       <button
                         type="button"
-                        className="zip-btn-success"
+                        className="zip-act zip-act-setujui"
                         style={{ marginRight: 8 }}
                         disabled={acting === r.id}
                         onClick={() => setujui(r)}
@@ -177,7 +177,7 @@ function Persetujuan({ onMeta }) {
                       </button>
                       <button
                         type="button"
-                        className="zip-btn-outline"
+                        className="zip-act zip-act-hapus"
                         disabled={acting === r.id}
                         onClick={() => tolak(r)}
                       >
