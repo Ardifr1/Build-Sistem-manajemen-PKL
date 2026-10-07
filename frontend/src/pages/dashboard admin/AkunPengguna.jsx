@@ -143,7 +143,11 @@ function Pengguna({ onMeta }) {
     setLoading(true);
     usersApi
       .index()
-      .then((res) => setRows(Array.isArray(res.data) ? res.data : []))
+      .then((res) => {
+        const all = Array.isArray(res.data) ? res.data : [];
+        // akun pembimbing industri dikelola perusahaan, jangan tampil di sini
+        setRows(all.filter((u) => u.role !== "supervisor"));
+      })
       .catch((err) => setError(err?.message || "Gagal memuat pengguna."))
       .finally(() => setLoading(false));
   };
