@@ -100,7 +100,13 @@ function DataSiswa({ onMeta }) {
             <div><span className="zip-label">Perusahaan</span><div>{detail.companyName}</div></div>
             <div>
               <span className="zip-label">Status PKL</span>
-              <div>{pl ? statusLabel(pl.status) : "Belum ada penempatan"}</div>
+              <div style={{ marginTop: 4 }}>
+                {!pl ? <span className="zip-badge b-gray">Belum Ditempatkan</span>
+                  : pl.status === "active" ? <span className="zip-badge b-green">PKL Aktif</span>
+                  : pl.status === "completed" ? <span className="zip-badge b-blue">Selesai</span>
+                  : (pl.status === "pending" || pl.status === "submitted") ? <span className="zip-badge b-amber">Menunggu Persetujuan</span>
+                  : <span className="zip-badge b-gray">{statusLabel(pl.status)}</span>}
+              </div>
             </div>
           </div>
         </div>
@@ -123,19 +129,32 @@ function DataSiswa({ onMeta }) {
       </div>
       {loading && <div className="zip-muted">Memuat…</div>}
       <div className="zip-list">
-        {rows.map((r) => (
-          <div className="zip-row" key={r.id}>
-            <span className="zip-row-text">
-              <strong>{r.name}</strong> • {r.nis} • {r.kelas} • {r.companyName} •{" "}
-              {r.placement ? statusLabel(r.placement.status) : "Belum ditempatkan"}
-            </span>
-            <span className="zip-row-actions">
-              <button type="button" className="zip-btn-outline" onClick={() => setDetail(r)}>
-                Detail
-              </button>
-            </span>
-          </div>
-        ))}
+        {rows.map((r) => {
+          const st = r.placement?.status;
+          const badge = !r.placement
+            ? <span className="zip-badge b-gray">Belum Ditempatkan</span>
+            : st === "active"
+              ? <span className="zip-badge b-green">PKL Aktif</span>
+              : st === "completed"
+                ? <span className="zip-badge b-blue">Selesai</span>
+                : st === "pending" || st === "submitted"
+                  ? <span className="zip-badge b-amber">Menunggu Persetujuan</span>
+                  : <span className="zip-badge b-gray">{statusLabel(st)}</span>;
+          return (
+            <div className="zip-row" key={r.id}>
+              <span className="zip-row-text">
+                <strong>{r.name}</strong> <span className="zip-sub">• {r.nis} • {r.kelas}</span>
+                <br />
+                <span className="zip-sub">{r.companyName}</span> {badge}
+              </span>
+              <span className="zip-row-actions">
+                <button type="button" className="zip-btn-outline" onClick={() => setDetail(r)}>
+                  Detail
+                </button>
+              </span>
+            </div>
+          );
+        })}
       </div>
       {!loading && rows.length === 0 && (
         <div className="zip-muted">Tidak ada data siswa.</div>

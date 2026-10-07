@@ -148,3 +148,12 @@ label.f-label{font-size:11px;font-weight:700;color:var(--text);display:block;mar
 .zip-search{position:relative;display:inline-flex;align-items:center;flex:1;max-width:380px}
 .zip-search i{position:absolute;left:16px;color:#94a3b8;font-size:13px;pointer-events:none}
 .zip-search .zip-input{width:100%;padding-left:38px}
+
+/* --- badge status --- */
+.zip-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600}
+.zip-badge.b-green{background:#dcfce7;color:#15803d}
+.zip-badge.b-amber{background:#fef3c7;color:#b45309}
+.zip-badge.b-blue{background:#dbeafe;color:#1d4ed8}
+.zip-badge.b-red{background:#fee2e2;color:#dc2626}
+.zip-badge.b-gray{background:#f1f5f9;color:#64748b}
+.zip-sub{color:#94a3b8;font-size:12px}
