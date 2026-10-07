@@ -5,7 +5,9 @@ import "./admin-pages.css";
 const BULAN = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
 const fmtDate = (iso) => {
   if (!iso) return "-";
-  const [y, m, d] = String(iso).split("-").map(Number);
+  const s = String(iso).slice(0, 10);
+  const [y, m, d] = s.split("-").map(Number);
+  if (!y || !m || !d || !BULAN[m - 1]) return s;
   return `${d} ${BULAN[m - 1]} ${y}`;
 };
 
@@ -137,12 +139,15 @@ function PeriodePKL({ onMeta }) {
             return (
               <div className={`zip-row${st === "AKTIF" ? " highlight" : ""}`} key={p.id}>
                 <span className="zip-row-text">
-                  {p.name} • {fmtDate(p.start_date)}–{fmtDate(p.end_date)} • {st}
+                  <strong>{p.name}</strong> • {st}
                 </span>
-                <span className="zip-row-actions">
-                  <button type="button" onClick={() => { setView({ name: "edit", row: p }); onMeta?.({ title: "Detail / Edit Periode", subtitle: "Nama • tanggal • status" }); }}>Detail</button>
-                  <i>•</i>
-                  <button type="button" onClick={() => { setView({ name: "edit", row: p }); onMeta?.({ title: "Detail / Edit Periode", subtitle: "Nama • tanggal • status" }); }}>Edit</button>
+                <span className="zip-row-actions" style={{ flexDirection: "column", alignItems: "flex-end", gap: 4 }}>
+                  <span className="zip-sub">{fmtDate(p.start_date)} – {fmtDate(p.end_date)}</span>
+                  <span>
+                    <button type="button" onClick={() => { setView({ name: "edit", row: p }); onMeta?.({ title: "Detail / Edit Periode", subtitle: "Nama • tanggal • status" }); }}>Detail</button>
+                    <i>•</i>
+                    <button type="button" onClick={() => { setView({ name: "edit", row: p }); onMeta?.({ title: "Detail / Edit Periode", subtitle: "Nama • tanggal • status" }); }}>Edit</button>
+                  </span>
                 </span>
               </div>
             );
