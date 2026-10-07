@@ -84,7 +84,10 @@ function Absensi({ onMeta }) {
   return (
     <div className="zip-page">
       <div className="zip-toolbar">
-        <input className="zip-input" style={{ flex: 1, maxWidth: 340 }} placeholder="🔍 Cari nama siswa…" value={q} onChange={(e) => setQ(e.target.value)} />
+        <span className="zip-search" style={{ maxWidth: 340 }}>
+          <i className="fa-solid fa-magnifying-glass"></i>
+          <input className="zip-input" placeholder="Cari nama siswa…" value={q} onChange={(e) => setQ(e.target.value)} />
+        </span>
         <input type="date" className="zip-input" value={date} onChange={(e) => setDate(e.target.value)} />
         <select className="zip-input" value={status} onChange={(e) => setStatus(e.target.value)}>
           <option value="all">Semua Status</option>

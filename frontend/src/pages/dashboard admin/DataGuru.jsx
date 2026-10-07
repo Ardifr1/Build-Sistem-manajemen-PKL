@@ -86,12 +86,15 @@ function DataGuru({ onMeta }) {
   return (
     <div className="zip-page">
       <div className="zip-toolbar">
-        <input
-          className="zip-input"
-          placeholder="Cari nama guru…"
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-        />
+        <span className="zip-search">
+          <i className="fa-solid fa-magnifying-glass"></i>
+          <input
+            className="zip-input"
+            placeholder="Cari nama guru…"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+          />
+        </span>
       </div>
       {loading && <div className="zip-muted">Memuat…</div>}
       <div className="zip-list">
