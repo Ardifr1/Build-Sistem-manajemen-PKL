@@ -42,11 +42,18 @@ class TestAccountsSeeder extends Seeder
                 'role' => 'student',
             ],
             [
-                'name' => 'Pembimbing Industri',
+                'name' => 'Admin Perusahaan',
                 'username' => 'industri',
                 'email' => 'industri@smk.sch.id',
                 'password' => 'industri123',
                 'role' => 'company',
+            ],
+            [
+                'name' => 'Pembimbing Industri',
+                'username' => 'pembimbing',
+                'email' => 'pembimbing@smk.sch.id',
+                'password' => 'pembimbing123',
+                'role' => 'supervisor',
             ],
         ];
 
@@ -57,7 +64,15 @@ class TestAccountsSeeder extends Seeder
             );
         }
 
-        // Perusahaan contoh + tautkan akun industri sebagai pembimbing.
+        // Sekolah contoh (fondasi pengelompokan per sekolah).
+        $school = \App\Models\School::updateOrCreate(
+            ['name' => 'SMKN 1'],
+            ['npsn' => '20100101', 'is_active' => true]
+        );
+        User::whereIn('role', ['student', 'teacher'])->update(['school_id' => $school->id]);
+
+        // Perusahaan contoh + tautkan akun industri sebagai admin perusahaan,
+        // dan akun pembimbing sebagai pembimbing industri.
         $company = Company::updateOrCreate(
             ['email' => 'hrd@sdn.test'],
             [
@@ -77,6 +92,18 @@ class TestAccountsSeeder extends Seeder
         if ($industriUser) {
             CompanySupervisor::updateOrCreate(
                 ['user_id' => $industriUser->id],
+                [
+                    'company_id' => $company->id,
+                    'position' => 'Admin Perusahaan',
+                ]
+            );
+        }
+
+        $pembimbingUser = User::where('email', 'pembimbing@smk.sch.id')->first();
+
+        if ($pembimbingUser) {
+            CompanySupervisor::updateOrCreate(
+                ['user_id' => $pembimbingUser->id],
                 [
                     'company_id' => $company->id,
                     'position' => 'Pembimbing Industri',

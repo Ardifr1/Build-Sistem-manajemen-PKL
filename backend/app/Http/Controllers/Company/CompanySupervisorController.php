@@ -4,48 +4,58 @@ namespace App\Http\Controllers\Company;
 
 use App\Http\Controllers\Controller;
 use App\Models\CompanySupervisor;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class CompanySupervisorController extends Controller
 {
+    /** Ambil company_id milik user company/supervisor yang login. */
+    private function myCompanyId(User $user): ?int
+    {
+        return $user->companySupervisor?->company_id;
+    }
+
+    private function canManage(User $user, CompanySupervisor $supervisor): bool
+    {
+        if ($user->role === 'admin') {
+            return true;
+        }
+        return $user->role === 'company'
+            && $supervisor->company_id === $this->myCompanyId($user);
+    }
+
     public function index(Request $request): JsonResponse
     {
         $user = $request->user();
 
-        // Hanya admin yang dapat melihat seluruh pembimbing industri.
-        if ($user->role !== 'admin') {
+        $query = CompanySupervisor::with(['user', 'company'])
+            ->withCount(['placements as students_count'])
+            ->orderBy('id', 'desc');
+
+        if ($user->role === 'company') {
+            $query->where('company_id', $this->myCompanyId($user));
+        } elseif ($user->role !== 'admin') {
             abort(403);
         }
-
-        $supervisors = CompanySupervisor::with(['user', 'company'])
-            ->orderBy('id', 'desc')
-            ->get();
 
         return response()->json([
             'message' => 'Data pembimbing industri berhasil diambil.',
-            'data' => $supervisors,
+            'data' => $query->get(),
         ]);
     }
 
-    public function show(CompanySupervisor $companySupervisor): JsonResponse
+    public function show(Request $request, CompanySupervisor $companySupervisor): JsonResponse
     {
-        $user = request()->user();
+        $user = $request->user();
 
-        // Company hanya dapat melihat penugasan yang terkait dengannya;
-        // selain itu hanya admin.
-        if (
-            $user->role !== 'admin'
-            && ! ($user->role === 'company'
-                && ($companySupervisor->user_id === $user->id
-                    || $this->isAuthorizedForCompany($user, $companySupervisor->company_id)))
-        ) {
+        if (! $this->canManage($user, $companySupervisor)) {
             abort(403);
         }
 
-        $companySupervisor->load(['user', 'company']);
+        $companySupervisor->load(['user', 'company', 'placements.student']);
 
         return response()->json([
             'message' => 'Data pembimbing industri berhasil diambil.',
@@ -53,46 +63,83 @@ class CompanySupervisorController extends Controller
         ]);
     }
 
+    /**
+     * Perusahaan membuat akun pembimbing industri untuk perusahaannya sendiri.
+     * Admin dapat membuat untuk perusahaan mana pun.
+     */
     public function store(Request $request): JsonResponse
     {
-        // Penugasan pembimbing industri hanya dilakukan admin.
-        if ($request->user()->role !== 'admin') {
+        $user = $request->user();
+
+        $companyId = $request->input('company_id');
+        if ($user->role === 'company') {
+            $companyId = $this->myCompanyId($user);
+            if (! $companyId) {
+                abort(403, 'Akun perusahaan belum terhubung ke data perusahaan.');
+            }
+        } elseif ($user->role !== 'admin') {
             abort(403);
         }
 
         $validated = $request->validate([
-            'user_id' => ['required', 'integer', 'exists:users,id', 'unique:company_supervisors,user_id'],
-            'company_id' => ['required', 'integer', 'exists:companies,id'],
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+            'username' => ['nullable', 'string', 'max:255', 'unique:users,username'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'company_id' => ['nullable', 'integer', 'exists:companies,id'],
             'position' => ['nullable', 'string', 'max:255'],
             'phone' => ['nullable', 'string', 'max:30'],
         ]);
 
-        $supervisor = CompanySupervisor::create($validated);
+        $supervisor = DB::transaction(function () use ($validated, $companyId) {
+            $newUser = User::create([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'username' => $validated['username'] ?? explode('@', $validated['email'])[0],
+                'password' => Hash::make($validated['password']),
+                'role' => 'supervisor',
+                'is_active' => true,
+            ]);
+
+            return CompanySupervisor::create([
+                'user_id' => $newUser->id,
+                'company_id' => $companyId,
+                'position' => $validated['position'] ?? null,
+                'phone' => $validated['phone'] ?? null,
+            ]);
+        });
 
         $supervisor->load(['user', 'company']);
 
         return response()->json([
-            'message' => 'Pembimbing industri berhasil ditambahkan.',
+            'message' => 'Akun pembimbing industri berhasil dibuat.',
             'data' => $supervisor,
         ], 201);
     }
 
-    public function update(
-        Request $request,
-        CompanySupervisor $companySupervisor
-    ): JsonResponse {
-        if ($request->user()->role !== 'admin') {
+    public function update(Request $request, CompanySupervisor $companySupervisor): JsonResponse
+    {
+        $user = $request->user();
+
+        if (! $this->canManage($user, $companySupervisor)) {
             abort(403);
         }
 
         $validated = $request->validate([
-            'user_id' => ['sometimes', 'integer', 'exists:users,id', Rule::unique('company_supervisors', 'user_id')->ignore($companySupervisor->id)],
-            'company_id' => ['sometimes', 'integer', 'exists:companies,id'],
             'position' => ['sometimes', 'nullable', 'string', 'max:255'],
             'phone' => ['sometimes', 'nullable', 'string', 'max:30'],
+            'is_active' => ['sometimes', 'boolean'],
         ]);
 
-        $companySupervisor->update($validated);
+        DB::transaction(function () use ($companySupervisor, $validated) {
+            $companySupervisor->update([
+                'position' => $validated['position'] ?? $companySupervisor->position,
+                'phone' => $validated['phone'] ?? $companySupervisor->phone,
+            ]);
+            if (array_key_exists('is_active', $validated)) {
+                $companySupervisor->user->update(['is_active' => $validated['is_active']]);
+            }
+        });
 
         $companySupervisor->load(['user', 'company']);
 
@@ -102,14 +149,18 @@ class CompanySupervisorController extends Controller
         ]);
     }
 
-    public function destroy(
-        CompanySupervisor $companySupervisor
-    ): JsonResponse {
-        if ($request->user()->role !== 'admin') {
+    public function destroy(Request $request, CompanySupervisor $companySupervisor): JsonResponse
+    {
+        $user = $request->user();
+
+        if (! $this->canManage($user, $companySupervisor)) {
             abort(403);
         }
-        
-        $companySupervisor->delete();
+
+        DB::transaction(function () use ($companySupervisor) {
+            $companySupervisor->user?->delete();
+            $companySupervisor->delete();
+        });
 
         return response()->json([
             'message' => 'Pembimbing industri berhasil dihapus.',

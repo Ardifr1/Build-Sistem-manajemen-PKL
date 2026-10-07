@@ -83,6 +83,16 @@ class PklPlacementController extends Controller
                 'integer',
                 'exists:companies,id',
             ],
+            'teacher_id' => [
+                'nullable',
+                'integer',
+                'exists:users,id',
+            ],
+            'supervisor_id' => [
+                'nullable',
+                'integer',
+                'exists:company_supervisors,id',
+            ],
             'pkl_period_id' => [
                 'required',
                 'integer',
@@ -175,6 +185,18 @@ class PklPlacementController extends Controller
                 'sometimes',
                 'integer',
                 'exists:companies,id',
+            ],
+            'teacher_id' => [
+                'sometimes',
+                'nullable',
+                'integer',
+                'exists:users,id',
+            ],
+            'supervisor_id' => [
+                'sometimes',
+                'nullable',
+                'integer',
+                'exists:company_supervisors,id',
             ],
             'start_date' => [
                 'sometimes',

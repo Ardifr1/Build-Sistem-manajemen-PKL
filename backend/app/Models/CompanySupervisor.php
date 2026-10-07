@@ -23,4 +23,9 @@ class CompanySupervisor extends Model
     {
         return $this->belongsTo(Company::class);
     }
+
+    public function placements(): HasMany
+    {
+        return $this->hasMany(PklPlacement::class, 'supervisor_id');
+    }
 }

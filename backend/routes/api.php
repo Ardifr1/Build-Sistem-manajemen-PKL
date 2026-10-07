@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\AssessmentComponentController;
 use App\Http\Controllers\Admin\PklPeriodController;
 use App\Http\Controllers\Admin\PklPlacementController;
+use App\Http\Controllers\Admin\SchoolController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Company\ApplicationReviewController;
 use App\Http\Controllers\Company\CompanyController;
@@ -41,6 +42,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // PKL Placement
     Route::apiResource('pkl-placements', PklPlacementController::class);
+
+    // Schools (pengelompokan per sekolah, fondasi multi-sekolah)
+    Route::apiResource('schools', SchoolController::class)->only(['index', 'store', 'update', 'destroy']);
 
     // Journal
     Route::apiResource('journals', JournalController::class);

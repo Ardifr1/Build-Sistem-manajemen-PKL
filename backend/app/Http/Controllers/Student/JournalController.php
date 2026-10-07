@@ -228,7 +228,7 @@ class JournalController extends Controller
     {
         $user = $request->user();
 
-        if ($user->role !== 'company') {
+        if ($user->role !== 'supervisor') {
             abort(403, 'Hanya pembimbing industri yang dapat memverifikasi jurnal.');
         }
 
