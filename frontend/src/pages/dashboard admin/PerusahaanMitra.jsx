@@ -228,10 +228,10 @@ function PerusahaanPartner({ onMeta }) {
                 </span>
                 <span className="zip-muted"> {terisiOf(c.id)}/{c.student_quota ?? 0} kuota</span>
               </span>
-              <span className="zip-row-actions">
-                <button type="button" className="zip-btn-outline" onClick={() => { setView({ name: "detail", row: c }); onMeta?.({ title: `Detail — ${c.name}`, subtitle: "Profil • kuota • siswa" }); }}>Detail</button>
-                <button type="button" className="zip-btn-outline" onClick={() => { setView({ name: "edit", row: c }); onMeta?.({ title: "Edit Perusahaan", subtitle: "Nama • bidang • kuota • status" }); }}>Edit</button>
-                <button type="button" className="zip-btn-outline" onClick={() => { setView({ name: "hapus", row: c }); onMeta?.({ title: "Konfirmasi Hapus", subtitle: "Aksi berisiko • butuh konfirmasi" }); }}>Hapus</button>
+              <span className="zip-row-actions" style={{ display: "flex", gap: 8 }}>
+                <button type="button" className="zip-act zip-act-detail" onClick={() => { setView({ name: "detail", row: c }); onMeta?.({ title: `Detail — ${c.name}`, subtitle: "Profil • kuota • siswa" }); }}>Detail</button>
+                <button type="button" className="zip-act zip-act-edit" onClick={() => { setView({ name: "edit", row: c }); onMeta?.({ title: "Edit Perusahaan", subtitle: "Nama • bidang • kuota • status" }); }}>Edit</button>
+                <button type="button" className="zip-act zip-act-hapus" onClick={() => { setView({ name: "hapus", row: c }); onMeta?.({ title: "Konfirmasi Hapus", subtitle: "Aksi berisiko • butuh konfirmasi" }); }}>Hapus</button>
               </span>
             </div>
           ))}
