@@ -1,6 +1,21 @@
 import { useEffect, useState } from "react";
-import { applicationsApi, placementsApi, usersApi, companiesApi, periodsApi } from "../../api/index.js";
+import { applicationsApi, placementsApi, usersApi, companiesApi, periodsApi, profilesApi } from "../../api/index.js";
 import "./admin-pages.css";
+
+const BULAN = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+const fmtDate = (iso) => {
+  if (!iso) return "-";
+  const s = String(iso).slice(0, 10);
+  const [y, m, d] = s.split("-").map(Number);
+  if (!y || !m || !d || !BULAN[m - 1]) return s;
+  return `${d} ${BULAN[m - 1]} ${y}`;
+};
+
+function initials(name) {
+  const parts = String(name || "?").trim().split(/\s+/);
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
 
 function Persetujuan({ onMeta }) {
   const [rows, setRows] = useState([]);
@@ -12,22 +27,33 @@ function Persetujuan({ onMeta }) {
     setLoading(true);
     setError("");
     try {
-      const [appsRes, usersRes, companiesRes] = await Promise.all([
+      const [appsRes, usersRes, companiesRes, profilesRes] = await Promise.all([
         applicationsApi.index({ status: "accepted" }),
         usersApi.index(),
         companiesApi.index(),
+        profilesApi.index().catch(() => ({ data: [] })),
       ]);
       const apps = Array.isArray(appsRes.data) ? appsRes.data : [];
       const users = Array.isArray(usersRes.data) ? usersRes.data : [];
       const companies = Array.isArray(companiesRes.data) ? companiesRes.data : [];
-      const userMap = Object.fromEntries(users.map((u) => [u.id, u.name]));
+      const profiles = Array.isArray(profilesRes.data) ? profilesRes.data : [];
+      const userMap = Object.fromEntries(users.map((u) => [u.id, u]));
       const companyMap = Object.fromEntries(companies.map((c) => [c.id, c.name]));
+      const profileMap = Object.fromEntries(profiles.map((p) => [p.user_id, p]));
+      apps.sort((a, b) => new Date(a.updated_at || a.created_at) - new Date(b.updated_at || b.created_at));
       setRows(
-        apps.map((a) => ({
-          ...a,
-          siswa: userMap[a.student_id] || `Siswa #${a.student_id}`,
-          perusahaan: companyMap[a.company_id] || `Perusahaan #${a.company_id}`,
-        }))
+        apps.map((a) => {
+          const u = userMap[a.student_id] || {};
+          const prof = profileMap[a.student_id] || {};
+          return {
+            ...a,
+            siswa: u.name || `Siswa #${a.student_id}`,
+            kelas: prof.kelas || prof.class || "-",
+            perusahaan: companyMap[a.company_id] || `Perusahaan #${a.company_id}`,
+            tglDiterima: fmtDate(a.updated_at || a.created_at),
+            guru: a.teacher_name || "-",
+          };
+        })
       );
     } catch (err) {
       setError(err?.message || "Gagal memuat persetujuan.");
@@ -38,7 +64,7 @@ function Persetujuan({ onMeta }) {
 
   useEffect(() => {
     load();
-    onMeta?.({ title: "Persetujuan Sekolah", subtitle: "Diterima perusahaan → resmi • butuh ACC" });
+    onMeta?.({ title: "Persetujuan Penempatan", subtitle: "Pengesahan sekolah atas penerimaan perusahaan" });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -86,39 +112,89 @@ function Persetujuan({ onMeta }) {
   return (
     <div className="zip-page">
       {error && <div className="zip-error">{error}</div>}
-      {loading ? (
-        <p className="zip-muted">Memuat persetujuan…</p>
-      ) : rows.length === 0 ? (
-        <p className="zip-muted">Tidak ada lamaran yang menunggu persetujuan sekolah.</p>
-      ) : (
-        <div className="zip-list">
-          {rows.map((r) => (
-            <div className="zip-row" key={r.id}>
-              <span className="zip-row-text">
-                {r.siswa} → {r.perusahaan} — menunggu persetujuan
-              </span>
-              <span className="zip-row-actions">
-                <button
-                  type="button"
-                  className="zip-btn zip-btn-outline"
-                  disabled={acting === r.id}
-                  onClick={() => tolak(r)}
-                >
-                  Tolak
-                </button>
-                <button
-                  type="button"
-                  className="zip-btn zip-btn-success"
-                  disabled={acting === r.id}
-                  onClick={() => setujui(r)}
-                >
-                  {acting === r.id ? "Memproses…" : "Setujui → Resmi"}
-                </button>
-              </span>
-            </div>
-          ))}
+
+      {rows.length > 0 && (
+        <div className="zip-warn" style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <span style={{ width: 36, height: 36, borderRadius: 10, background: "#d97706", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <i className="fa-solid fa-triangle-exclamation"></i>
+          </span>
+          <div>
+            <strong>{rows.length} penempatan menunggu persetujuan sekolah.</strong>{" "}
+            Penerimaan perusahaan belum resmi sebelum disetujui di sini.
+          </div>
         </div>
       )}
+
+      <div className="zip-card" style={{ maxWidth: "none" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
+          <div>
+            <h3 className="zip-card-title" style={{ margin: 0 }}>Antrean Persetujuan</h3>
+            <div className="zip-sub">Diurutkan dari yang paling lama menunggu</div>
+          </div>
+          {rows.length > 0 && <span className="zip-badge b-amber">● {rows.length} menunggu</span>}
+        </div>
+
+        {loading ? (
+          <p className="zip-muted">Memuat persetujuan…</p>
+        ) : rows.length === 0 ? (
+          <p className="zip-muted">Tidak ada lamaran yang menunggu persetujuan sekolah.</p>
+        ) : (
+          <div className="zip-table-wrap" style={{ boxShadow: "none" }}>
+            <table className="zip-table">
+              <thead>
+                <tr>
+                  <th>Siswa</th>
+                  <th>Perusahaan</th>
+                  <th>Tgl Diterima</th>
+                  <th>Guru Pembimbing</th>
+                  <th style={{ textAlign: "right" }}>Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((r) => (
+                  <tr key={r.id}>
+                    <td>
+                      <span className="zip-user-cell">
+                        <span className="zip-avatar" style={{ background: "#0ea5e9" }}>{initials(r.siswa)}</span>
+                        <span>
+                          <div className="zip-user-name">{r.siswa}</div>
+                          <div className="zip-user-email">{r.kelas}</div>
+                        </span>
+                      </span>
+                    </td>
+                    <td>{r.perusahaan}</td>
+                    <td><span className="zip-sub">{r.tglDiterima}</span></td>
+                    <td><span className="zip-sub">{r.guru}</span></td>
+                    <td style={{ textAlign: "right", whiteSpace: "nowrap" }}>
+                      <button
+                        type="button"
+                        className="zip-btn-success"
+                        style={{ marginRight: 8 }}
+                        disabled={acting === r.id}
+                        onClick={() => setujui(r)}
+                      >
+                        {acting === r.id ? "Memproses…" : "Setujui"}
+                      </button>
+                      <button
+                        type="button"
+                        className="zip-btn-outline"
+                        disabled={acting === r.id}
+                        onClick={() => tolak(r)}
+                      >
+                        Tolak
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        <div className="zip-note" style={{ marginTop: 14, marginBottom: 0 }}>
+          ℹ️ Penempatan resmi diterbitkan otomatis setelah disetujui — siswa, guru pembimbing, dan pembimbing industri langsung terhubung.
+        </div>
+      </div>
     </div>
   );
 }
