@@ -168,13 +168,20 @@ function PeriodePKL({ onMeta }) {
 
   const backToList = () => { setView({ name: "list", row: null }); setShowForm(false); load(); };
 
-  const tutupPeriode = async (row) => {
-    if (!window.confirm(`Tutup periode "${row.name}"? Seluruh aktivitas PKL (pengajuan, jurnal, absensi) akan dihentikan. Data arsip tetap tersimpan.`)) return;
+  const [confirmTutup, setConfirmTutup] = useState(null);
+  const [tutupLoading, setTutupLoading] = useState(false);
+
+  const tutupPeriode = async () => {
+    if (!confirmTutup) return;
+    setTutupLoading(true);
     try {
-      await periodsApi.update(row.id, { is_active: false });
+      await periodsApi.update(confirmTutup.id, { is_active: false });
+      setConfirmTutup(null);
       backToList();
     } catch (e) {
       setError(e?.message || "Gagal menutup periode.");
+    } finally {
+      setTutupLoading(false);
     }
   };
 
@@ -218,12 +225,45 @@ function PeriodePKL({ onMeta }) {
               <p className="zip-sub" style={{ margin: "0 0 14px", lineHeight: 1.6 }}>
                 Menutup periode menghentikan seluruh aktivitas PKL: pengajuan, jurnal, dan absensi. Data arsip tetap tersimpan.
               </p>
-              <button type="button" className="zip-btn-danger" onClick={() => tutupPeriode(p)}>
+              <button type="button" className="zip-btn-danger" onClick={() => setConfirmTutup(p)}>
                 Tutup Periode
               </button>
             </div>
           </div>
         </div>
+
+        {confirmTutup && (
+          <div className="zip-modal-backdrop" onClick={() => !tutupLoading && setConfirmTutup(null)}>
+            <div className="zip-modal" onClick={(e) => e.stopPropagation()}>
+              <div className="zip-modal-icon danger">
+                <i className="fa-solid fa-triangle-exclamation"></i>
+              </div>
+              <h3>Tutup periode "{confirmTutup.name}"?</h3>
+              <p>
+                Seluruh aktivitas PKL (pengajuan, jurnal, absensi) akan dihentikan.
+                Data arsip tetap tersimpan dan bisa dilihat di Riwayat Periode.
+              </p>
+              <div className="zip-modal-actions">
+                <button
+                  type="button"
+                  className="zip-btn-outline"
+                  disabled={tutupLoading}
+                  onClick={() => setConfirmTutup(null)}
+                >
+                  Batal
+                </button>
+                <button
+                  type="button"
+                  className="zip-btn-danger"
+                  disabled={tutupLoading}
+                  onClick={tutupPeriode}
+                >
+                  {tutupLoading ? "Menutup…" : "Ya, Tutup Periode"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
