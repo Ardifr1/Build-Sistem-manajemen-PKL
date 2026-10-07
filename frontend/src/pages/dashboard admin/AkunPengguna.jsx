@@ -3,6 +3,148 @@ import { usersApi, journalsApi, applicationsApi, placementsApi, profilesApi, ROL
 import { UserCell, RoleBadge, StatusBadge, initials, avatarColor } from "../../components/admin/user-table.jsx";
 import "./admin-pages.css";
 
+const BULAN = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+const fmtShort = (iso) => {
+  if (!iso) return "-";
+  const s = String(iso).slice(0, 10);
+  const [y, m, d] = s.split("-").map(Number);
+  if (!y || !m || !d || !BULAN[m - 1]) return s;
+  return `${d} ${BULAN[m - 1]}`;
+};
+
+/**
+ * Detail Pengguna ala referensi: header profil + Data Diri + Riwayat Akun.
+ */
+function DetailPengguna({ row, onBack, onEdit, onHapus, onMeta }) {
+  const [profil, setProfil] = useState({});
+  const [placement, setPlacement] = useState(null);
+  const [companyName, setCompanyName] = useState("");
+  const [teacherName, setTeacherName] = useState("");
+
+  useEffect(() => {
+    onMeta?.({ title: "Detail Pengguna", subtitle: row.name });
+    (async () => {
+      try {
+        const [profRes, plRes, cRes, uRes] = await Promise.all([
+          profilesApi.index().catch(() => ({ data: [] })),
+          placementsApi.index().catch(() => ({ data: [] })),
+          companiesApi.index().catch(() => ({ data: [] })),
+          usersApi.index().catch(() => ({ data: [] })),
+        ]);
+        const profiles = Array.isArray(profRes.data) ? profRes.data : [];
+        const placements = Array.isArray(plRes.data) ? plRes.data : [];
+        const companies = Array.isArray(cRes.data) ? cRes.data : [];
+        const users = Array.isArray(uRes.data) ? uRes.data : [];
+        setProfil(profiles.find((p) => p.user_id === row.id) || {});
+        const pl = placements.find((p) => p.student_id === row.id);
+        setPlacement(pl || null);
+        if (pl) {
+          setCompanyName(companies.find((c) => c.id === pl.company_id)?.name || "");
+          const t = users.find((u) => u.id === pl.teacher_id);
+          setTeacherName(t?.name || "");
+        }
+      } catch (e) { /* tampilkan seadanya */ }
+    })();
+  }, [row.id, onMeta]);
+
+  const sub = [profil.nis ? `NIS ${profil.nis}` : null, profil.kelas || profil.class, row.email]
+    .filter(Boolean).join(" • ");
+
+  const riwayat = [
+    {
+      icon: "fa-user",
+      bg: "#dbeafe",
+      color: "#1d4ed8",
+      title: "Akun dibuat",
+      desc: "Didaftarkan oleh admin via menu Pengguna",
+      date: row.created_at ? fmtShort(row.created_at) : "-",
+    },
+  ];
+  if (profil.cv_path || profil.portfolio_path || profil.certificate_path) {
+    riwayat.push({
+      icon: "fa-file-lines",
+      bg: "#dcfce7",
+      color: "#15803d",
+      title: "Dokumen dilengkapi",
+      desc: "CV, portofolio & sertifikat terverifikasi",
+      date: profil.updated_at ? fmtShort(profil.updated_at) : "-",
+    });
+  }
+  if (placement) {
+    riwayat.push({
+      icon: "fa-briefcase",
+      bg: "#fef3c7",
+      color: "#b45309",
+      title: "Penempatan resmi",
+      desc: `${companyName} • disetujui sekolah`,
+      date: placement.updated_at ? fmtShort(placement.updated_at) : "-",
+    });
+  }
+
+  return (
+    <div>
+      <button type="button" className="zip-back" onClick={onBack}>‹ Kembali ke daftar pengguna</button>
+
+      <div className="zip-card" style={{ maxWidth: "none", marginBottom: 16 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 18, flexWrap: "wrap" }}>
+          <span className="zip-avatar" style={{ background: avatarColor(row.name), width: 64, height: 64, fontSize: 20 }}>
+            {initials(row.name)}
+          </span>
+          <div style={{ flex: 1, minWidth: 200 }}>
+            <div style={{ fontSize: 19, fontWeight: 800, color: "#0f172a" }}>{row.name}</div>
+            <div className="zip-sub" style={{ margin: "4px 0 8px" }}>{sub}</div>
+            <div style={{ display: "flex", gap: 8 }}>
+              <RoleBadge role={row.role} />
+              <StatusBadge active={row.is_active} />
+            </div>
+          </div>
+          <div style={{ display: "flex", gap: 8 }}>
+            <button type="button" className="zip-act zip-act-edit" onClick={onEdit}>
+              <i className="fa-solid fa-pen" style={{ marginRight: 6 }}></i>Edit
+            </button>
+            <button type="button" className="zip-act zip-act-hapus" onClick={onHapus}>
+              <i className="fa-solid fa-trash" style={{ marginRight: 6 }}></i>Hapus
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="zip-cols2">
+        <div className="zip-card">
+          <h3 className="zip-card-title" style={{ marginTop: 0 }}>Data Diri</h3>
+          <div className="zip-kv"><span>Nama lengkap</span><strong>{row.name}</strong></div>
+          <div className="zip-kv"><span>NIS / NISN</span><strong>{profil.nis || profil.nisn || "-"}</strong></div>
+          <div className="zip-kv"><span>Kelas</span><strong>{profil.kelas || profil.class || "-"}</strong></div>
+          <div className="zip-kv"><span>Jurusan</span><strong>{profil.jurusan || profil.major || "-"}</strong></div>
+          <div className="zip-kv"><span>Email</span><strong>{row.email}</strong></div>
+          <div className="zip-kv"><span>No. HP</span><strong>{profil.phone || profil.no_hp || "-"}</strong></div>
+          {row.role === "student" && (
+            <div className="zip-kv"><span>Guru pembimbing</span><strong>{teacherName || "-"}</strong></div>
+          )}
+        </div>
+
+        <div className="zip-card">
+          <h3 className="zip-card-title" style={{ marginTop: 0 }}>Riwayat Akun</h3>
+          <div className="zip-timeline">
+            {riwayat.map((r, i) => (
+              <div className="zip-tl-item" key={i}>
+                <span className="zip-tl-icon" style={{ background: r.bg, color: r.color }}>
+                  <i className={`fa-solid ${r.icon}`}></i>
+                </span>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontWeight: 700, fontSize: 13.5 }}>{r.title}</div>
+                  <div className="zip-sub">{r.desc}</div>
+                </div>
+                <span className="zip-sub">{r.date}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /**
  * Konfirmasi hapus pengguna ala referensi: banner permanen + data terkait + checkbox.
  */
@@ -283,6 +425,20 @@ function Pengguna({ onMeta }) {
     );
   }
 
+  if (view.name === "detail") {
+    return (
+      <div className="zip-page">
+        <DetailPengguna
+          row={view.row}
+          onBack={backToList}
+          onEdit={() => setView({ name: "edit", row: view.row })}
+          onHapus={() => setView({ name: "hapus", row: view.row })}
+          onMeta={onMeta}
+        />
+      </div>
+    );
+  }
+
   if (view.name === "edit") {
     return (
       <div className="zip-page">
@@ -336,7 +492,7 @@ function Pengguna({ onMeta }) {
                   <td><RoleBadge role={u.role} /></td>
                   <td><StatusBadge active={u.is_active} /></td>
                   <td style={{ textAlign: "right", whiteSpace: "nowrap" }}>
-                    <button type="button" className="zip-act zip-act-detail" style={{ marginRight: 6 }} onClick={() => { setView({ name: "edit", row: u }); onMeta?.({ title: "Detail / Edit Pengguna", subtitle: "Nama • username • email • password • role • status" }); }}>Detail</button>
+                    <button type="button" className="zip-act zip-act-detail" style={{ marginRight: 6 }} onClick={() => { setView({ name: "detail", row: u }); onMeta?.({ title: "Detail Pengguna", subtitle: u.name }); }}>Detail</button>
                     <button type="button" className="zip-act zip-act-edit" style={{ marginRight: 6 }} onClick={() => { setView({ name: "edit", row: u }); onMeta?.({ title: "Detail / Edit Pengguna", subtitle: "Nama • username • email • password • role • status" }); }}>Edit</button>
                     <button type="button" className="zip-act zip-act-hapus" onClick={() => { setView({ name: "hapus", row: u }); onMeta?.({ title: "Konfirmasi Hapus", subtitle: "Aksi berisiko • butuh konfirmasi" }); }}>Hapus</button>
                   </td>
