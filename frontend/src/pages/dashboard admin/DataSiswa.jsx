@@ -23,7 +23,7 @@ function DataSiswa({ onMeta }) {
           placementsApi.index().catch(() => ({ data: [] })),
           companiesApi.index().catch(() => ({ data: [] })),
         ]);
-        const studs = uRes?.data ?? [];
+        const studs = (uRes?.data ?? []).filter((u) => u.role === "student");
         setStudents(studs);
         setPlacements(pRes?.data ?? []);
         setCompanies(cRes?.data ?? []);

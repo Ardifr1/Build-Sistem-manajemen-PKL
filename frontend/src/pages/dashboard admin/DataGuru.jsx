@@ -22,10 +22,10 @@ function DataGuru({ onMeta }) {
           placementsApi.index().catch(() => ({ data: [] })),
           usersApi.index({ role: "student" }).catch(() => ({ data: [] })),
         ]);
-        const list = tRes?.data ?? [];
+        const list = (tRes?.data ?? []).filter((u) => u.role === "teacher");
         setTeachers(list);
         setPlacements(pRes?.data ?? []);
-        setStudents(sRes?.data ?? []);
+        setStudents((sRes?.data ?? []).filter((u) => u.role === "student"));
         onMeta?.({ title: "Data Guru", subtitle: `${list.length} guru terdaftar` });
       } finally {
         setLoading(false);
