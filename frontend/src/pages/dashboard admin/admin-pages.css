@@ -217,8 +217,8 @@ label.f-label{font-size:11px;font-weight:700;color:var(--text);display:block;mar
 .zip-user-card{display:flex;align-items:center;gap:12px;background:#f8fafc;border:1px solid #f1f5f9;border-radius:12px;padding:14px 16px}
 
 /* --- detail pengguna: tombol kembali + timeline --- */
-.zip-back{background:none;border:0;color:#2563eb;font-size:13.5px;font-weight:600;cursor:pointer;padding:0;margin-bottom:16px}
-.zip-back:hover{text-decoration:underline}
+.zip-back{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid #e2e8f0;border-radius:999px;padding:9px 20px;color:#2563eb;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:16px;box-shadow:0 1px 3px rgba(15,23,42,.06);transition:.15s}
+.zip-back:hover{background:#eff6ff;border-color:#bfdbfe}
 .zip-timeline{display:flex;flex-direction:column}
 .zip-tl-item{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px dashed #f1f5f9;position:relative}
 .zip-tl-item:last-child{border-bottom:0}
