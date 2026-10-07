@@ -8,6 +8,7 @@ const MENU = [
   { key: "perusahaan", label: "Perusahaan Partner" },
   { key: "periode", label: "Periode PKL" },
   { key: "persetujuan", label: "Persetujuan" },
+  { key: "jurnal", label: "Monitoring Jurnal" },
 ];
 
 function Sidebar({

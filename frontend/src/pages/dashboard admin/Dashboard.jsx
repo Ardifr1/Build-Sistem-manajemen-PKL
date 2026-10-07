@@ -58,7 +58,6 @@ function Dashboard({ onMeta }) {
         <StatBox label="Perusahaan" value={Number(summary.total_perusahaan || 0).toLocaleString("id-ID")} hint="mitra aktif" />
         <StatBox label="Pengajuan" value={Number(summary.pengajuan_aktif || 0).toLocaleString("id-ID")} hint="periode ini" />
         <StatBox label="Penempatan" value={Number(summary.siswa_ditempatkan || 0).toLocaleString("id-ID")} hint="resmi" />
-        <StatBox label="Jurnal menunggu" value={Number(jurnalMenunggu).toLocaleString("id-ID")} hint="industri" />
       </div>
     </div>
   );

@@ -31,6 +31,10 @@ export const PAGE_META = {
     title: "Persetujuan Sekolah",
     subtitle: "Diterima perusahaan → resmi • butuh ACC",
   },
+  jurnal: {
+    title: "Monitoring Jurnal",
+    subtitle: "Verifikasi jurnal per perusahaan",
+  },
 };
 
 function AdminLayout({ active = "dashboard", onNavigate, title, subtitle, children }) {
