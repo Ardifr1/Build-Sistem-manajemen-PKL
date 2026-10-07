@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import AdminDashboard from "./pages/dashboard admin/dashboard-admin.jsx";
 import GuruDashboard from "./pages/dashboard guru/dashboard-guru.jsx";
 import IndustriDashboard from "./pages/dashboard industri/dashboard-industri.jsx";
+import PerusahaanDashboard from "./pages/dashboard perusahaan/dashboard-perusahaan.jsx";
 import Login from "./pages/auth/login.jsx";
 import { authApi } from "./api/index.js";
 
@@ -10,7 +11,8 @@ const TOKEN_KEY = "simagang_token";
 const ROLE_HOME = {
   admin: "/admin",
   teacher: "/guru",
-  company: "/industri",
+  company: "/perusahaan",
+  supervisor: "/pembimbing",
   student: "/siswa",
 };
 
@@ -109,13 +111,22 @@ function App() {
           }
         />
         <Route
-          path="/industri/*"
+          path="/perusahaan/*"
           element={
             <ProtectedRoute roles={["company"]}>
+              <PerusahaanDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/pembimbing/*"
+          element={
+            <ProtectedRoute roles={["supervisor"]}>
               <IndustriDashboard />
             </ProtectedRoute>
           }
         />
+        <Route path="/industri/*" element={<Navigate to="/pembimbing" replace />} />
         <Route
           path="/siswa"
           element={

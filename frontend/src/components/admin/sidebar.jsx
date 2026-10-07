@@ -3,6 +3,8 @@ import "./sidebar.css";
 const MENU = [
   { key: "dashboard", label: "Dashboard" },
   { key: "pengguna", label: "Pengguna" },
+  { key: "siswa", label: "Data Siswa" },
+  { key: "guru", label: "Data Guru" },
   { key: "perusahaan", label: "Perusahaan Partner" },
   { key: "periode", label: "Periode PKL" },
   { key: "persetujuan", label: "Persetujuan" },

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { companiesApi } from "../../api/index.js";
+import { companiesApi, placementsApi, usersApi } from "../../api/index.js";
 import "./admin-pages.css";
 
 function CompanyForm({ initial, onCancel, onSaved }) {
@@ -76,17 +76,28 @@ function CompanyForm({ initial, onCancel, onSaved }) {
 
 function PerusahaanPartner({ onMeta }) {
   const [rows, setRows] = useState([]);
+  const [placements, setPlacements] = useState([]);
+  const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState({ name: "list" });
   const [error, setError] = useState("");
 
-  const load = () => {
+  const load = async () => {
     setLoading(true);
-    companiesApi
-      .index()
-      .then((res) => setRows(Array.isArray(res.data) ? res.data : []))
-      .catch((err) => setError(err?.message || "Gagal memuat perusahaan."))
-      .finally(() => setLoading(false));
+    try {
+      const [cRes, pRes, sRes] = await Promise.all([
+        companiesApi.index().catch(() => ({ data: [] })),
+        placementsApi.index().catch(() => ({ data: [] })),
+        usersApi.index({ role: "student" }).catch(() => ({ data: [] })),
+      ]);
+      setRows(Array.isArray(cRes.data) ? cRes.data : []);
+      setPlacements(Array.isArray(pRes.data) ? pRes.data : []);
+      setStudents(Array.isArray(sRes.data) ? sRes.data : []);
+    } catch (err) {
+      setError(err?.message || "Gagal memuat perusahaan.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -139,6 +150,55 @@ function PerusahaanPartner({ onMeta }) {
     );
   }
 
+  const studentById = Object.fromEntries(students.map((st) => [st.id, st]));
+  const terisiOf = (cid) => placements.filter((pl) => String(pl.company_id) === String(cid)).length;
+
+  if (view.name === "detail") {
+    const c = view.row;
+    const terisi = terisiOf(c.id);
+    const kuota = Number(c.student_quota) || 0;
+    const pct = kuota > 0 ? Math.min(100, Math.round((terisi / kuota) * 100)) : 0;
+    const siswaDiSini = placements.filter((pl) => String(pl.company_id) === String(c.id));
+    return (
+      <div className="zip-page">
+        <div className="zip-toolbar">
+          <button type="button" className="zip-btn-outline" onClick={backToList}>
+            ← Kembali
+          </button>
+        </div>
+        <div className="zip-card">
+          <h3 className="zip-card-title">{c.name}</h3>
+          <div className="zip-detail-grid">
+            <div><span className="zip-label">Bidang</span><div>{c.industry || "-"}</div></div>
+            <div><span className="zip-label">Status</span><div>{c.is_active ? "Aktif" : "Nonaktif"}</div></div>
+            <div><span className="zip-label">Telepon</span><div>{c.phone || "-"}</div></div>
+            <div><span className="zip-label">Email</span><div>{c.email || "-"}</div></div>
+          </div>
+          <div style={{ marginTop: 16 }}>
+            <span className="zip-label">Kuota Terisi</span>
+            <div className="zip-progress">
+              <div className="zip-progress-bar" style={{ width: `${pct}%` }} />
+            </div>
+            <div className="zip-muted">{terisi}/{kuota} siswa ({pct}%)</div>
+          </div>
+        </div>
+        <div className="zip-card">
+          <h4 className="zip-card-title">Siswa Diterima ({siswaDiSini.length})</h4>
+          <div className="zip-list">
+            {siswaDiSini.map((pl) => (
+              <div className="zip-row" key={pl.id}>
+                <span className="zip-row-text">
+                  {studentById[pl.student_id]?.name || `Siswa #${pl.student_id}`}
+                </span>
+              </div>
+            ))}
+          </div>
+          {siswaDiSini.length === 0 && <div className="zip-muted">Belum ada siswa.</div>}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="zip-page">
       <div className="zip-toolbar">
@@ -161,15 +221,17 @@ function PerusahaanPartner({ onMeta }) {
         <div className="zip-list">
           {rows.map((c) => (
             <div className="zip-row" key={c.id}>
-              <span className="zip-row-text">
-                {c.name} • {c.industry || "-"} • {c._terisi ?? 0}/{c.student_quota ?? 0} • {c.is_active ? "Aktif" : "Nonaktif"}
+              <span className="zip-row-text" style={{ flex: 1 }}>
+                <strong>{c.name}</strong> • {c.industry || "-"} • {c.is_active ? "Aktif" : "Nonaktif"}
+                <span className="zip-progress" style={{ marginTop: 6, maxWidth: 220 }}>
+                  <span className="zip-progress-bar" style={{ width: `${(Number(c.student_quota) || 0) > 0 ? Math.min(100, Math.round((terisiOf(c.id) / (Number(c.student_quota) || 1)) * 100)) : 0}%` }} />
+                </span>
+                <span className="zip-muted"> {terisiOf(c.id)}/{c.student_quota ?? 0} kuota</span>
               </span>
               <span className="zip-row-actions">
-                <button type="button" onClick={() => { setView({ name: "edit", row: c }); onMeta?.({ title: "Detail / Edit Perusahaan", subtitle: "Nama • bidang • kuota • status" }); }}>Detail</button>
-                <i>•</i>
-                <button type="button" onClick={() => { setView({ name: "edit", row: c }); onMeta?.({ title: "Detail / Edit Perusahaan", subtitle: "Nama • bidang • kuota • status" }); }}>Edit</button>
-                <i>•</i>
-                <button type="button" onClick={() => { setView({ name: "hapus", row: c }); onMeta?.({ title: "Konfirmasi Hapus", subtitle: "Aksi berisiko • butuh konfirmasi" }); }}>Hapus</button>
+                <button type="button" className="zip-btn-outline" onClick={() => { setView({ name: "detail", row: c }); onMeta?.({ title: `Detail — ${c.name}`, subtitle: "Profil • kuota • siswa" }); }}>Detail</button>
+                <button type="button" className="zip-btn-outline" onClick={() => { setView({ name: "edit", row: c }); onMeta?.({ title: "Edit Perusahaan", subtitle: "Nama • bidang • kuota • status" }); }}>Edit</button>
+                <button type="button" className="zip-btn-outline" onClick={() => { setView({ name: "hapus", row: c }); onMeta?.({ title: "Konfirmasi Hapus", subtitle: "Aksi berisiko • butuh konfirmasi" }); }}>Hapus</button>
               </span>
             </div>
           ))}

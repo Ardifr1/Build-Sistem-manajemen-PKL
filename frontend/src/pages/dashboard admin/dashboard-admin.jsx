@@ -7,10 +7,14 @@ import Pengguna from "./AkunPengguna.jsx";
 import PerusahaanPartner from "./PerusahaanMitra.jsx";
 import PeriodePKL from "./PeriodePKL.jsx";
 import Persetujuan from "./PengajuanPKL.jsx";
+import DataSiswa from "./DataSiswa.jsx";
+import DataGuru from "./DataGuru.jsx";
 
 const MENUS = [
   { key: "dashboard", path: "/admin" },
   { key: "pengguna", path: "/admin/pengguna" },
+  { key: "siswa", path: "/admin/siswa" },
+  { key: "guru", path: "/admin/guru" },
   { key: "perusahaan", path: "/admin/perusahaan" },
   { key: "periode", path: "/admin/periode" },
   { key: "persetujuan", path: "/admin/persetujuan" },
@@ -18,6 +22,8 @@ const MENUS = [
 
 function activeKey(pathname) {
   if (pathname.startsWith("/admin/pengguna")) return "pengguna";
+  if (pathname.startsWith("/admin/siswa")) return "siswa";
+  if (pathname.startsWith("/admin/guru")) return "guru";
   if (pathname.startsWith("/admin/perusahaan")) return "perusahaan";
   if (pathname.startsWith("/admin/periode")) return "periode";
   if (pathname.startsWith("/admin/persetujuan")) return "persetujuan";
@@ -46,6 +52,8 @@ function DashboardAdmin() {
       <Routes>
         <Route index element={<Dashboard onMeta={setMeta} />} />
         <Route path="pengguna" element={<Pengguna onMeta={setMeta} />} />
+        <Route path="siswa" element={<DataSiswa onMeta={setMeta} />} />
+        <Route path="guru" element={<DataGuru onMeta={setMeta} />} />
         <Route path="perusahaan" element={<PerusahaanPartner onMeta={setMeta} />} />
         <Route path="periode" element={<PeriodePKL onMeta={setMeta} />} />
         <Route path="persetujuan" element={<Persetujuan onMeta={setMeta} />} />

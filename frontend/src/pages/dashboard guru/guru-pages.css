@@ -34,3 +34,20 @@
 .guru-score-input input {
   width: 90px;
 }
+
+/* --- Absensi: stat cards berwarna + toolbar --- */
+.zip-toolbar{display:flex;gap:10px;margin-bottom:16px;align-items:center;flex-wrap:wrap}
+.zip-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}
+.zip-stat{border-radius:14px;padding:16px 18px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.zip-stat-top{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.zip-stat-lab{font-size:12px;font-weight:600;color:#475569}
+.zip-stat-num{font-size:26px;font-weight:800;color:#0f172a;margin-bottom:4px}
+.zip-stat-trend{font-size:11.5px;font-weight:600}
+.zip-warn{background:#fef3c7;border:1px solid #fde68a;color:#92400e;font-size:12.5px;border-radius:10px;padding:10px 14px;margin-bottom:16px}
+.zip-badge{display:inline-block;padding:4px 12px;border-radius:999px;font-size:11.5px;font-weight:600}
+.zip-badge.b-green{background:#dcfce7;color:#15803d}
+.zip-badge.b-amber{background:#fef3c7;color:#b45309}
+.zip-badge.b-blue{background:#dbeafe;color:#1d4ed8}
+.zip-badge.b-red{background:#fee2e2;color:#dc2626}
+.zip-sub{color:#94a3b8;font-size:12px}
+@media(max-width:900px){.zip-stats{grid-template-columns:repeat(2,1fr)}}

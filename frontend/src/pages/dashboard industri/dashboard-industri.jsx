@@ -46,7 +46,7 @@ function DashboardIndustri() {
   return (
     <RoleLayout
       menus={MENUS}
-      roleLabel="INDUSTRI"
+      roleLabel="PEMBIMBING"
       orgLabel="PT Solusi Digital"
       active={key}
       onNavigate={goMenu}

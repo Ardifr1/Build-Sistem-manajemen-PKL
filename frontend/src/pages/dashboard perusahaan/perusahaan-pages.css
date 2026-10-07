@@ -1,0 +1,35 @@
+/* perusahaan-pages.css — gaya dashboard Perusahaan */
+.zip-school{border:1px solid #e2e8f0;border-radius:12px;margin-bottom:12px;overflow:hidden;background:#fff}
+.zip-school-head{background:#f8fafc;padding:12px 16px;font-weight:700;font-size:13.5px;color:#0f172a;display:flex;justify-content:space-between;align-items:center}
+.zip-srow{padding:10px 16px;border-top:1px solid #f1f5f9;font-size:13px;color:#0f172a;display:flex;justify-content:space-between;align-items:center}
+.zip-cols2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.zip-app-card{background:#fff;border-radius:14px;padding:16px 18px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.zip-app-card .nm{font-weight:700;font-size:14px;color:#0f172a}
+.zip-app-card .meta{font-size:12px;color:#94a3b8;margin:4px 0 8px}
+.zip-tag{display:inline-block;background:#f1f5f9;border-radius:6px;padding:2px 8px;font-size:11px;color:#475569;margin-right:4px}
+.zip-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.zip-tabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+.zip-tab{border-radius:999px;padding:8px 18px;font-size:13px;font-weight:600;border:1px solid #e2e8f0;background:#fff;color:#64748b;cursor:pointer}
+.zip-tab.active{background:#0f172a;color:#fff;border-color:#0f172a}
+.zip-notif{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #f1f5f9;font-size:13px}
+.zip-notif:last-child{border:0}
+.zip-notif .ic{width:32px;height:32px;border-radius:10px;background:#eff6ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px}
+.zip-grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.zip-pcard{background:#fff;border-radius:14px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.zip-av2{width:44px;height:44px;border-radius:50%;background:#dbeafe;color:#1d4ed8;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px}
+.zip-iv{border:1px solid #e2e8f0;border-radius:12px;padding:14px 16px;margin-bottom:10px;cursor:pointer;transition:.15s}
+.zip-iv:hover{border-color:#2563eb}
+.zip-iv.active{border-color:#2563eb;box-shadow:0 0 0 2px #dbeafe}
+.zip-iv .time{font-weight:800;font-size:13px;color:#2563eb}
+.zip-iv .nm{font-weight:600;font-size:14px;color:#0f172a;margin:2px 0}
+.zip-iv .meta{font-size:12px;color:#94a3b8}
+.zip-score{margin:14px 0}
+.zip-score .lab{font-size:13px;color:#0f172a;font-weight:600;display:flex;justify-content:space-between;margin-bottom:6px}
+.zip-modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.5);display:flex;align-items:center;justify-content:center;z-index:50;padding:16px}
+.zip-modal{background:#fff;border-radius:18px;padding:28px;width:480px;max-width:94vw;box-shadow:0 20px 60px rgba(0,0,0,.25);max-height:90vh;overflow:auto}
+.zip-modal h2{font-size:18px;color:#0f172a;margin-bottom:4px}
+.zip-modal .sub{font-size:13px;color:#94a3b8;margin-bottom:20px}
+.zip-popt{border:1px solid #e2e8f0;border-radius:12px;padding:12px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+.zip-popt:hover{border-color:#2563eb}
+.zip-popt.sel{border-color:#2563eb;background:#eff6ff;box-shadow:0 0 0 2px #dbeafe}
+@media(max-width:900px){.zip-cols2,.zip-grid2{grid-template-columns:1fr}}

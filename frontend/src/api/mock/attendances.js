@@ -10,19 +10,19 @@ import { delay, ok, nextId } from "./_shared.js";
 const db = [
   {
     id: 1, placement_id: 1, attendance_date: "2026-10-05",
-    check_in: "07:58:00", check_out: "16:02:00", status: "hadir",
+    check_in: "07:58:00", check_out: "16:02:00", status: "present",
     note: "", photo_path: "/storage/absen/1-20261005.jpg",
     latitude: -6.2088, longitude: 106.8456,
   },
   {
     id: 2, placement_id: 1, attendance_date: "2026-10-06",
-    check_in: "08:01:00", check_out: null, status: "hadir",
+    check_in: "08:01:00", check_out: null, status: "present",
     note: "", photo_path: "/storage/absen/1-20261006.jpg",
     latitude: -6.2088, longitude: 106.8456,
   },
   {
     id: 3, placement_id: 2, attendance_date: "2026-10-05",
-    check_in: "07:55:00", check_out: "16:05:00", status: "hadir",
+    check_in: "07:55:00", check_out: "16:05:00", status: "present",
     note: "", photo_path: "/storage/absen/2-20261005.jpg",
     latitude: -6.9175, longitude: 107.6191,
   },
@@ -46,7 +46,7 @@ export async function show(id) {
 
 export async function store(payload) {
   await delay();
-  const row = { id: nextId(), check_out: null, status: "hadir", note: "", ...payload };
+  const row = { id: nextId(), check_out: null, status: "present", note: "", ...payload };
   db.push(row);
   return ok("Absensi berhasil dicatat.", row);
 }
