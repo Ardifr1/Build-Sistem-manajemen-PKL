@@ -93,7 +93,7 @@ function App() {
         />
         <Route path="/" element={<RoleHome />} />
         <Route
-          path="/admin"
+          path="/admin/*"
           element={
             <ProtectedRoute roles={["admin"]}>
               <AdminDashboard />
@@ -101,7 +101,7 @@ function App() {
           }
         />
         <Route
-          path="/guru"
+          path="/guru/*"
           element={
             <ProtectedRoute roles={["teacher"]}>
               <GuruDashboard />
@@ -109,7 +109,7 @@ function App() {
           }
         />
         <Route
-          path="/industri"
+          path="/industri/*"
           element={
             <ProtectedRoute roles={["company"]}>
               <IndustriDashboard />

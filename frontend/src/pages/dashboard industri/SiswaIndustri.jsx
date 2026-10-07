@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { journalsApi } from "../../api/index.js";
-import DetailSiswa from "../../components/role/detail-siswa.jsx";
+import { useNavigate } from "react-router-dom";
 import {
   getEnrichedPlacements,
   getMyCompanyId,
@@ -8,10 +7,9 @@ import {
 } from "../../lib/role-data.js";
 
 function SiswaIndustri({ onMeta }) {
+  const navigate = useNavigate();
   const [placements, setPlacements] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [detail, setDetail] = useState(null);
-  const [detailJournals, setDetailJournals] = useState([]);
 
   useEffect(() => {
     (async () => {
@@ -32,40 +30,6 @@ function SiswaIndustri({ onMeta }) {
     })();
   }, [onMeta]);
 
-  const openDetail = async (p) => {
-    setDetail(p);
-    setDetailJournals([]);
-    onMeta?.({
-      title: `Detail Siswa — ${p.student?.name || ""}`,
-      subtitle: "Profil • status • jurnal • perkembangan",
-    });
-    try {
-      const res = await journalsApi.index({ placement_id: p.id });
-      setDetailJournals(res?.data ?? []);
-    } catch {
-      /* abaikan */
-    }
-  };
-
-  const closeDetail = () => {
-    setDetail(null);
-    onMeta?.({
-      title: "Siswa Bimbingan",
-      subtitle: `${placements.length} siswa • klik detail`,
-    });
-  };
-
-  if (detail) {
-    return (
-      <DetailSiswa
-        placement={detail}
-        journals={detailJournals}
-        variant="industri"
-        onBack={closeDetail}
-      />
-    );
-  }
-
   return (
     <div className="zip-page">
       {loading && <div className="zip-muted">Memuat…</div>}
@@ -76,7 +40,11 @@ function SiswaIndustri({ onMeta }) {
               {p.student?.name} • {p.company?.name || "-"} • {statusLabel(p.status)}
             </span>
             <span className="zip-row-actions">
-              <button type="button" className="zip-btn-outline" onClick={() => openDetail(p)}>
+              <button
+                type="button"
+                className="zip-btn-outline"
+                onClick={() => navigate(`/industri/siswa/${p.id}`)}
+              >
                 Detail
               </button>
             </span>

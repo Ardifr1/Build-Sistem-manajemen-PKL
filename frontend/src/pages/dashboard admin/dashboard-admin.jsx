@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
 import AdminLayout from "../../layouts/admin layout/admin";
 import "./admin-pages.css";
 import Dashboard from "./Dashboard.jsx";
@@ -7,32 +8,49 @@ import PerusahaanPartner from "./PerusahaanMitra.jsx";
 import PeriodePKL from "./PeriodePKL.jsx";
 import Persetujuan from "./PengajuanPKL.jsx";
 
-const PAGES = {
-  dashboard: Dashboard,
-  pengguna: Pengguna,
-  perusahaan: PerusahaanPartner,
-  periode: PeriodePKL,
-  persetujuan: Persetujuan,
-};
+const MENUS = [
+  { key: "dashboard", path: "/admin" },
+  { key: "pengguna", path: "/admin/pengguna" },
+  { key: "perusahaan", path: "/admin/perusahaan" },
+  { key: "periode", path: "/admin/periode" },
+  { key: "persetujuan", path: "/admin/persetujuan" },
+];
+
+function activeKey(pathname) {
+  if (pathname.startsWith("/admin/pengguna")) return "pengguna";
+  if (pathname.startsWith("/admin/perusahaan")) return "perusahaan";
+  if (pathname.startsWith("/admin/periode")) return "periode";
+  if (pathname.startsWith("/admin/persetujuan")) return "persetujuan";
+  return "dashboard";
+}
 
 function DashboardAdmin() {
-  const [active, setActive] = useState("dashboard");
+  const navigate = useNavigate();
+  const location = useLocation();
   const [meta, setMeta] = useState({});
-  const Page = PAGES[active] || Dashboard;
+  const key = activeKey(location.pathname);
 
-  const navigate = (key) => {
+  const goMenu = (menuKey) => {
     setMeta({});
-    setActive(key);
+    const m = MENUS.find((x) => x.key === menuKey);
+    if (m) navigate(m.path);
   };
 
   return (
     <AdminLayout
-      active={active}
-      onNavigate={navigate}
+      active={key}
+      onNavigate={goMenu}
       title={meta.title}
       subtitle={meta.subtitle !== undefined ? meta.subtitle : undefined}
     >
-      <Page onNavigate={navigate} onMeta={setMeta} />
+      <Routes>
+        <Route index element={<Dashboard onMeta={setMeta} />} />
+        <Route path="pengguna" element={<Pengguna onMeta={setMeta} />} />
+        <Route path="perusahaan" element={<PerusahaanPartner onMeta={setMeta} />} />
+        <Route path="periode" element={<PeriodePKL onMeta={setMeta} />} />
+        <Route path="persetujuan" element={<Persetujuan onMeta={setMeta} />} />
+        <Route path="*" element={<Navigate to="/admin" replace />} />
+      </Routes>
     </AdminLayout>
   );
 }
