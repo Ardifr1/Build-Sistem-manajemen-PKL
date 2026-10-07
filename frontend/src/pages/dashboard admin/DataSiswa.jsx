@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { usersApi, placementsApi, companiesApi, profilesApi } from "../../api/index.js";
 import { statusLabel } from "../../lib/role-data.js";
+import { UserCell, RoleBadge } from "../../components/admin/user-table.jsx";
 
 /**
  * Admin > Data Siswa — lihat data siswa (read-only).
@@ -132,12 +133,11 @@ function DataSiswa({ onMeta }) {
         <table className="zip-table">
           <thead>
             <tr>
-              <th>Nama</th>
-              <th>NIS</th>
-              <th>Kelas</th>
-              <th>Perusahaan</th>
+              <th>Pengguna</th>
+              <th>Peran</th>
+              <th>Detail</th>
               <th>Status PKL</th>
-              <th></th>
+              <th style={{ textAlign: "right" }}>Aksi</th>
             </tr>
           </thead>
           <tbody>
@@ -154,10 +154,9 @@ function DataSiswa({ onMeta }) {
                       : <span className="zip-badge b-gray">{statusLabel(st)}</span>;
               return (
                 <tr key={r.id}>
-                  <td><strong>{r.name}</strong></td>
-                  <td>{r.nis}</td>
-                  <td>{r.kelas}</td>
-                  <td>{r.companyName}</td>
+                  <td><UserCell name={r.name} email={r.email} /></td>
+                  <td><RoleBadge role="student" /></td>
+                  <td><span className="zip-sub">{r.kelas} • NIS {r.nis}</span><br />{r.companyName}</td>
                   <td>{badge}</td>
                   <td style={{ textAlign: "right" }}>
                     <button type="button" className="zip-btn-outline" onClick={() => setDetail(r)}>

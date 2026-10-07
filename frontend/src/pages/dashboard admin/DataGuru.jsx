@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { usersApi, placementsApi } from "../../api/index.js";
 import { statusLabel } from "../../lib/role-data.js";
+import { UserCell, RoleBadge, StatusBadge } from "../../components/admin/user-table.jsx";
 
 /**
  * Admin > Data Guru — lihat data guru & siswa bimbingannya (read-only).
@@ -101,18 +102,20 @@ function DataGuru({ onMeta }) {
         <table className="zip-table">
           <thead>
             <tr>
-              <th>Nama</th>
-              <th>Email</th>
-              <th>Siswa Bimbingan</th>
-              <th></th>
+              <th>Pengguna</th>
+              <th>Peran</th>
+              <th>Detail</th>
+              <th>Status</th>
+              <th style={{ textAlign: "right" }}>Aksi</th>
             </tr>
           </thead>
           <tbody>
             {rows.map((r) => (
               <tr key={r.id}>
-                <td><strong>{r.name}</strong></td>
-                <td><span className="zip-sub">{r.email}</span></td>
-                <td><span className="zip-count">{r.bimbingan.length} siswa</span></td>
+                <td><UserCell name={r.name} email={r.email} /></td>
+                <td><RoleBadge role="teacher" /></td>
+                <td><span className="zip-sub">{r.bimbingan.length} siswa bimbingan</span></td>
+                <td><StatusBadge active={r.is_active} /></td>
                 <td style={{ textAlign: "right" }}>
                   <button type="button" className="zip-btn-outline" onClick={() => setDetail(r)}>
                     Detail

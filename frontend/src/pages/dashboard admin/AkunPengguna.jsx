@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { usersApi, ROLE_LABEL } from "../../api/index.js";
+import { UserCell, RoleBadge, StatusBadge } from "../../components/admin/user-table.jsx";
 import "./admin-pages.css";
 
 const ROLE_OPTIONS = ["admin", "teacher", "student", "company"];
@@ -218,23 +219,35 @@ function Pengguna({ onMeta }) {
       {loading ? (
         <p className="zip-muted">Memuat pengguna…</p>
       ) : (
-        <div className="zip-list">
-          {rows.map((u) => (
-            <div className="zip-row" key={u.id}>
-              <span className="zip-row-text">
-                {u.name} • {roleLabel(u.role)} • {u.is_active ? "Aktif" : "Nonaktif"}
-              </span>
-              <span className="zip-row-actions">
-                <button type="button" onClick={() => { setView({ name: "edit", row: u }); onMeta?.({ title: "Detail / Edit Pengguna", subtitle: "Nama • username • email • password • role • status" }); }}>Detail</button>
-                <i>•</i>
-                <button type="button" onClick={() => { setView({ name: "edit", row: u }); onMeta?.({ title: "Detail / Edit Pengguna", subtitle: "Nama • username • email • password • role • status" }); }}>Edit</button>
-                <i>•</i>
-                <button type="button" onClick={() => { setView({ name: "hapus", row: u }); onMeta?.({ title: "Konfirmasi Hapus", subtitle: "Aksi berisiko • butuh konfirmasi" }); }}>Hapus</button>
-              </span>
-            </div>
-          ))}
-          {rows.length === 0 && <p className="zip-muted">Belum ada pengguna.</p>}
+        <>
+        <div className="zip-table-wrap">
+          <table className="zip-table">
+            <thead>
+              <tr>
+                <th>Pengguna</th>
+                <th>Peran</th>
+                <th>Status</th>
+                <th style={{ textAlign: "right" }}>Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((u) => (
+                <tr key={u.id}>
+                  <td><UserCell name={u.name} email={u.email} /></td>
+                  <td><RoleBadge role={u.role} /></td>
+                  <td><StatusBadge active={u.is_active} /></td>
+                  <td style={{ textAlign: "right", whiteSpace: "nowrap" }}>
+                    <button type="button" className="zip-btn-outline" style={{ marginRight: 6 }} onClick={() => { setView({ name: "edit", row: u }); onMeta?.({ title: "Detail / Edit Pengguna", subtitle: "Nama • username • email • password • role • status" }); }}>Detail</button>
+                    <button type="button" className="zip-btn-outline" style={{ marginRight: 6 }} onClick={() => { setView({ name: "edit", row: u }); onMeta?.({ title: "Detail / Edit Pengguna", subtitle: "Nama • username • email • password • role • status" }); }}>Edit</button>
+                    <button type="button" className="zip-btn-danger-outline" onClick={() => { setView({ name: "hapus", row: u }); onMeta?.({ title: "Konfirmasi Hapus", subtitle: "Aksi berisiko • butuh konfirmasi" }); }}>Hapus</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
+        {rows.length === 0 && <p className="zip-muted">Belum ada pengguna.</p>}
+        </>
       )}
     </div>
   );
