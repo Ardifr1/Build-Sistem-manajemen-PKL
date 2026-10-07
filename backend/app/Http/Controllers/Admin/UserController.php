@@ -11,7 +11,7 @@ use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         $users = User::query()
             ->select([
@@ -24,6 +24,11 @@ class UserController extends Controller
                 'created_at',
                 'updated_at',
             ])
+            ->when($request->filled('role'), fn ($q) => $q->where('role', $request->string('role')))
+            ->when($request->filled('q'), function ($q) use ($request) {
+                $s = '%' . $request->string('q') . '%';
+                $q->where(fn ($w) => $w->where('name', 'like', $s)->orWhere('email', 'like', $s)->orWhere('username', 'like', $s));
+            })
             ->orderBy('name')
             ->get();
 
