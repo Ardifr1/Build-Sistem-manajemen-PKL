@@ -128,33 +128,47 @@ function DataSiswa({ onMeta }) {
         </span>
       </div>
       {loading && <div className="zip-muted">Memuat…</div>}
-      <div className="zip-list">
-        {rows.map((r) => {
-          const st = r.placement?.status;
-          const badge = !r.placement
-            ? <span className="zip-badge b-gray">Belum Ditempatkan</span>
-            : st === "active"
-              ? <span className="zip-badge b-green">PKL Aktif</span>
-              : st === "completed"
-                ? <span className="zip-badge b-blue">Selesai</span>
-                : st === "pending" || st === "submitted"
-                  ? <span className="zip-badge b-amber">Menunggu Persetujuan</span>
-                  : <span className="zip-badge b-gray">{statusLabel(st)}</span>;
-          return (
-            <div className="zip-row" key={r.id}>
-              <span className="zip-row-text">
-                <strong>{r.name}</strong> <span className="zip-sub">• {r.nis} • {r.kelas}</span>
-                <br />
-                <span className="zip-sub">{r.companyName}</span> {badge}
-              </span>
-              <span className="zip-row-actions">
-                <button type="button" className="zip-btn-outline" onClick={() => setDetail(r)}>
-                  Detail
-                </button>
-              </span>
-            </div>
-          );
-        })}
+      <div className="zip-table-wrap">
+        <table className="zip-table">
+          <thead>
+            <tr>
+              <th>Nama</th>
+              <th>NIS</th>
+              <th>Kelas</th>
+              <th>Perusahaan</th>
+              <th>Status PKL</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r) => {
+              const st = r.placement?.status;
+              const badge = !r.placement
+                ? <span className="zip-badge b-gray">Belum Ditempatkan</span>
+                : st === "active"
+                  ? <span className="zip-badge b-green">PKL Aktif</span>
+                  : st === "completed"
+                    ? <span className="zip-badge b-blue">Selesai</span>
+                    : st === "pending" || st === "submitted"
+                      ? <span className="zip-badge b-amber">Menunggu Persetujuan</span>
+                      : <span className="zip-badge b-gray">{statusLabel(st)}</span>;
+              return (
+                <tr key={r.id}>
+                  <td><strong>{r.name}</strong></td>
+                  <td>{r.nis}</td>
+                  <td>{r.kelas}</td>
+                  <td>{r.companyName}</td>
+                  <td>{badge}</td>
+                  <td style={{ textAlign: "right" }}>
+                    <button type="button" className="zip-btn-outline" onClick={() => setDetail(r)}>
+                      Detail
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
       {!loading && rows.length === 0 && (
         <div className="zip-muted">Tidak ada data siswa.</div>
