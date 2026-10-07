@@ -43,6 +43,7 @@ class PklPeriodController extends Controller
             'start_date' => ['required', 'date'],
             'end_date' => ['required', 'date', 'after_or_equal:start_date'],
             'is_active' => ['boolean'],
+            'description' => ['nullable', 'string'],
         ]);
 
         $period = PklPeriod::create($validated);
@@ -64,6 +65,7 @@ class PklPeriodController extends Controller
             'start_date' => ['sometimes', 'date'],
             'end_date' => ['sometimes', 'date'],
             'is_active' => ['sometimes', 'boolean'],
+            'description' => ['sometimes', 'nullable', 'string'],
         ]);
 
         $startDate = $validated['start_date'] ?? $pklPeriod->start_date;

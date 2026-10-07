@@ -31,6 +31,7 @@ function PeriodeForm({ initial, onCancel, onSaved, inline }) {
     start_date: initial?.start_date ? String(initial.start_date).slice(0, 10) : "",
     end_date: initial?.end_date ? String(initial.end_date).slice(0, 10) : "",
     is_active: initial ? !!initial.is_active : false,
+    description: initial?.description || "",
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -51,6 +52,7 @@ function PeriodeForm({ initial, onCancel, onSaved, inline }) {
         start_date: form.start_date,
         end_date: form.end_date,
         is_active: form.is_active,
+        description: form.description.trim() || null,
       };
       if (initial?.id) await periodsApi.update(initial.id, payload);
       else await periodsApi.store(payload);
@@ -79,13 +81,31 @@ function PeriodeForm({ initial, onCancel, onSaved, inline }) {
           <input type="date" value={form.end_date} onChange={set("end_date")} />
         </label>
       </div>
-      <label className="zip-field" style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+      {!inline && (
+        <label className="zip-field">
+          <span>Status</span>
+          <select value={form.is_active ? "aktif" : "draft"} onChange={(e) => setForm((f) => ({ ...f, is_active: e.target.value === "aktif" }))}>
+            <option value="aktif">AKTIF</option>
+            <option value="draft">DRAFT</option>
+          </select>
+        </label>
+      )}
+      <label className="zip-field">
+        <span>Deskripsi</span>
+        <textarea
+          value={form.description}
+          onChange={set("description")}
+          placeholder="cth: Periode Praktik Kerja Lapangan tahun ajaran 2026/2027 untuk kelas XI semua jurusan."
+          rows={3}
+        />
+      </label>
+      <label className="zip-check">
         <input type="checkbox" checked={form.is_active} onChange={(e) => setForm((f) => ({ ...f, is_active: e.target.checked }))} />
         <span>Jadikan periode aktif</span>
       </label>
       <div className="zip-form-actions">
         <button type="button" className="zip-btn-outline" onClick={onCancel}>Batal</button>
-        <button type="submit" className="zip-btn-primary" disabled={saving}>{saving ? "Menyimpan…" : "Simpan"}</button>
+        <button type="submit" className="zip-btn-primary" disabled={saving}>{saving ? "Menyimpan…" : initial ? "Simpan Perubahan" : "Simpan"}</button>
       </div>
     </form>
   );
@@ -148,13 +168,62 @@ function PeriodePKL({ onMeta }) {
 
   const backToList = () => { setView({ name: "list", row: null }); setShowForm(false); load(); };
 
+  const tutupPeriode = async (row) => {
+    if (!window.confirm(`Tutup periode "${row.name}"? Seluruh aktivitas PKL (pengajuan, jurnal, absensi) akan dihentikan. Data arsip tetap tersimpan.`)) return;
+    try {
+      await periodsApi.update(row.id, { is_active: false });
+      backToList();
+    } catch (e) {
+      setError(e?.message || "Gagal menutup periode.");
+    }
+  };
+
   if (view.name === "edit" && view.row) {
+    const p = view.row;
+    const st = statusOf(p);
+    const pct = (() => {
+      const start = new Date(String(p.start_date).slice(0, 10));
+      const end = new Date(String(p.end_date).slice(0, 10));
+      const now = new Date();
+      const total = Math.max(1, Math.round((end - start) / 86400000));
+      const elapsed = Math.min(total, Math.max(0, Math.round((now - start) / 86400000)));
+      return Math.round((elapsed / total) * 100);
+    })();
     return (
       <div className="zip-page">
         <div className="zip-toolbar">
           <button type="button" className="zip-btn-outline" onClick={backToList}>← Kembali</button>
         </div>
-        <PeriodeForm initial={view.row} onCancel={backToList} onSaved={backToList} />
+        {error && <div className="zip-error">{error}</div>}
+        <div className="zip-cols2">
+          <div>
+            <div className="zip-card">
+              <h3 className="zip-card-title" style={{ marginTop: 0 }}>Edit Periode</h3>
+            </div>
+            <PeriodeForm initial={p} onCancel={backToList} onSaved={backToList} />
+          </div>
+          <div>
+            <div className="zip-card" style={{ marginBottom: 16 }}>
+              <h3 className="zip-card-title" style={{ marginTop: 0 }}>Statistik Periode</h3>
+              <div className="zip-kv"><span>Siswa terdaftar</span><strong>{stats.penempatan + stats.menunggu}</strong></div>
+              <div className="zip-kv"><span>Penempatan resmi</span><strong>{stats.penempatan}</strong></div>
+              <div className="zip-kv"><span>Progres</span><strong>{pct}%</strong></div>
+              <div className="zip-progress" style={{ margin: "8px 0 0" }}>
+                <div style={{ width: `${pct}%`, background: "#2563eb" }} />
+              </div>
+            </div>
+            <div className="zip-card zip-danger">
+              <h3 className="zip-card-title" style={{ marginTop: 0 }}>Zona Berbahaya</h3>
+              <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 6 }}>Tutup periode</div>
+              <p className="zip-sub" style={{ margin: "0 0 14px", lineHeight: 1.6 }}>
+                Menutup periode menghentikan seluruh aktivitas PKL: pengajuan, jurnal, dan absensi. Data arsip tetap tersimpan.
+              </p>
+              <button type="button" className="zip-btn-danger" onClick={() => tutupPeriode(p)}>
+                Tutup Periode
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

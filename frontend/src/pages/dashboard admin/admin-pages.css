@@ -190,3 +190,12 @@ label.f-label{font-size:11px;font-weight:700;color:var(--text);display:block;mar
 .zip-kv:last-child{border-bottom:0}
 .zip-kv span{color:#94a3b8}
 .zip-kv strong{color:#0f172a;font-weight:700}
+
+/* --- form checkbox rapi --- */
+.zip-check{display:flex;align-items:center;gap:10px;margin:14px 0;font-size:13.5px;color:#0f172a;cursor:pointer}
+.zip-check input{width:17px;height:17px;accent-color:#2563eb;cursor:pointer}
+/* --- zona berbahaya --- */
+.zip-danger{border:1px solid #fecaca;background:#fff}
+.zip-danger .zip-card-title{color:#dc2626}
+.zip-btn-danger{background:#fee2e2;color:#dc2626;border:1px solid #fecaca;border-radius:999px;padding:9px 20px;font-size:13px;font-weight:600;cursor:pointer;transition:.15s}
+.zip-btn-danger:hover{background:#fecaca}
