@@ -88,14 +88,16 @@ function Absensi({ onMeta }) {
           <i className="fa-solid fa-magnifying-glass"></i>
           <input className="zip-input" placeholder="Cari nama siswa…" value={q} onChange={(e) => setQ(e.target.value)} />
         </span>
-        <input type="date" className="zip-input" value={date} onChange={(e) => setDate(e.target.value)} />
-        <select className="zip-input" value={status} onChange={(e) => setStatus(e.target.value)}>
-          <option value="all">Semua Status</option>
-          <option value="present">Hadir</option>
-          <option value="permission">Izin</option>
-          <option value="sick">Sakit</option>
-          <option value="absent">Alpa</option>
-        </select>
+        <span style={{ display: "flex", gap: 8, marginLeft: "auto" }}>
+          <input type="date" className="zip-input" value={date} onChange={(e) => setDate(e.target.value)} />
+          <select className="zip-input" value={status} onChange={(e) => setStatus(e.target.value)}>
+            <option value="all">Semua Status</option>
+            <option value="present">Hadir</option>
+            <option value="permission">Izin</option>
+            <option value="sick">Sakit</option>
+            <option value="absent">Alpa</option>
+          </select>
+        </span>
       </div>
 
       <div className="zip-stats">
