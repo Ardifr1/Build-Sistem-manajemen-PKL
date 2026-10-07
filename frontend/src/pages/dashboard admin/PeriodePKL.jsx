@@ -146,10 +146,15 @@ function PeriodePKL({ onMeta }) {
         <div className="zip-list">
           {rows.map((p) => {
             const st = statusOf(p);
+            const badge = st === "AKTIF"
+              ? <span className="zip-badge b-green">AKTIF</span>
+              : st === "DRAFT"
+                ? <span className="zip-badge b-amber">DRAFT</span>
+                : <span className="zip-badge b-blue">SELESAI</span>;
             return (
               <div className={`zip-row${st === "AKTIF" ? " highlight" : ""}`} key={p.id}>
                 <span className="zip-row-text">
-                  {p.name} • {fmtDate(p.start_date)}–{fmtDate(p.end_date)} • {st}
+                  {p.name} • {fmtDate(p.start_date)}–{fmtDate(p.end_date)} {badge}
                 </span>
                 <span className="zip-row-actions">
                   <button type="button" onClick={() => { setView({ name: "edit", row: p }); onMeta?.({ title: "Detail / Edit Periode", subtitle: "Nama • tanggal • status" }); }}>Detail</button>
