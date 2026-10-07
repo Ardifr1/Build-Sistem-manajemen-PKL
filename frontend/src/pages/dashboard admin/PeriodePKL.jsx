@@ -130,6 +130,16 @@ function PeriodePKL({ onMeta }) {
   return (
     <div className="zip-page">
       {error && <div className="zip-error">{error}</div>}
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 16 }}>
+        {!showForm && (
+          <button type="button" className="zip-btn zip-btn-primary" onClick={() => setShowForm(true)}>
+            + Tambah Periode
+          </button>
+        )}
+      </div>
+      {showForm && (
+        <PeriodeForm inline onCancel={() => setShowForm(false)} onSaved={backToList} />
+      )}
       {loading ? (
         <p className="zip-muted">Memuat periode…</p>
       ) : (
@@ -139,28 +149,18 @@ function PeriodePKL({ onMeta }) {
             return (
               <div className={`zip-row${st === "AKTIF" ? " highlight" : ""}`} key={p.id}>
                 <span className="zip-row-text">
-                  <strong>{p.name}</strong> • {st}
+                  {p.name} • {fmtDate(p.start_date)}–{fmtDate(p.end_date)} • {st}
                 </span>
-                <span className="zip-row-actions" style={{ flexDirection: "column", alignItems: "flex-end", gap: 4 }}>
-                  <span className="zip-sub">{fmtDate(p.start_date)} – {fmtDate(p.end_date)}</span>
-                  <span>
-                    <button type="button" onClick={() => { setView({ name: "edit", row: p }); onMeta?.({ title: "Detail / Edit Periode", subtitle: "Nama • tanggal • status" }); }}>Detail</button>
-                    <i>•</i>
-                    <button type="button" onClick={() => { setView({ name: "edit", row: p }); onMeta?.({ title: "Detail / Edit Periode", subtitle: "Nama • tanggal • status" }); }}>Edit</button>
-                  </span>
+                <span className="zip-row-actions">
+                  <button type="button" onClick={() => { setView({ name: "edit", row: p }); onMeta?.({ title: "Detail / Edit Periode", subtitle: "Nama • tanggal • status" }); }}>Detail</button>
+                  <i>•</i>
+                  <button type="button" onClick={() => { setView({ name: "edit", row: p }); onMeta?.({ title: "Detail / Edit Periode", subtitle: "Nama • tanggal • status" }); }}>Edit</button>
                 </span>
               </div>
             );
           })}
           {rows.length === 0 && <p className="zip-muted">Belum ada periode.</p>}
         </div>
-      )}
-      {showForm ? (
-        <PeriodeForm inline onCancel={() => setShowForm(false)} onSaved={backToList} />
-      ) : (
-        <button type="button" className="zip-btn zip-btn-primary" onClick={() => setShowForm(true)}>
-          + Tambah Periode
-        </button>
       )}
     </div>
   );
