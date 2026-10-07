@@ -10,6 +10,8 @@ class PklPlacement extends Model
     protected $fillable = [
         'student_id',
         'company_id',
+        'teacher_id',
+        'supervisor_id',
         'pkl_period_id',
         'application_id',
         'start_date',
@@ -33,6 +35,16 @@ class PklPlacement extends Model
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
+    }
+
+    public function teacher(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'teacher_id');
+    }
+
+    public function supervisor(): BelongsTo
+    {
+        return $this->belongsTo(CompanySupervisor::class, 'supervisor_id');
     }
 
     public function pklPeriod(): BelongsTo

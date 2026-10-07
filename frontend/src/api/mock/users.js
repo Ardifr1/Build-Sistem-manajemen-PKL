@@ -14,7 +14,7 @@ const db = [
   { id: 7, name: "Dimas Saputra", username: "dimas.saputra", email: "dimas@smkn1.sch.id", role: "student", is_active: false },
 ];
 
-const ROLE_LABEL = { student: "Siswa", teacher: "Guru", company: "Perusahaan", admin: "Admin" };
+const ROLE_LABEL = { student: "Siswa", teacher: "Guru", company: "Perusahaan", supervisor: "Pembimbing", admin: "Admin" };
 
 export async function index(params = {}) {
   await delay();

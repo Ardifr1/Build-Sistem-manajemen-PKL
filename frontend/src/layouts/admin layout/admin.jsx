@@ -11,6 +11,14 @@ export const PAGE_META = {
     title: "Pengguna",
     subtitle: "Kelola akun • Tambah/Edit/Detail/Hapus",
   },
+  siswa: {
+    title: "Data Siswa",
+    subtitle: "Profil • penempatan • status PKL",
+  },
+  guru: {
+    title: "Data Guru",
+    subtitle: "Profil • siswa bimbingan",
+  },
   perusahaan: {
     title: "Perusahaan Partner",
     subtitle: "",

@@ -73,7 +73,7 @@ class UserController extends Controller
                 'required',
                 'string',
                 'max:50',
-                'in:admin,teacher,student,company',
+                'in:admin,teacher,student,company,supervisor',
             ],
             'is_active' => [
                 'boolean',
@@ -129,7 +129,7 @@ class UserController extends Controller
                 'sometimes',
                 'string',
                 'max:50',
-                'in:admin,teacher,student,company',
+                'in:admin,teacher,student,company,supervisor',
             ],
             'is_active' => [
                 'sometimes',

@@ -22,7 +22,11 @@ class JournalPolicy
             return true;
         }
 
-        return $user->role === 'company'
+        if ($user->role === 'company' && $user->companySupervisor !== null) {
+            return true;
+        }
+
+        return $user->role === 'supervisor'
             && $user->companySupervisor !== null;
     }
 
@@ -39,6 +43,12 @@ class JournalPolicy
             return $journal->placement
                 && $user->companySupervisor
                 && $journal->placement->company_id === $user->companySupervisor->company_id;
+        }
+
+        if ($user->role === 'supervisor') {
+            return $journal->placement
+                && $user->companySupervisor
+                && $journal->placement->supervisor_id === $user->companySupervisor->id;
         }
 
         return $user->role === 'student'

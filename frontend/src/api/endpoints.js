@@ -22,6 +22,12 @@ export const ep = {
     update: id("/companies"),
     destroy: id("/companies"),
   },
+  schools: {
+    index: "/schools",
+    store: "/schools",
+    update: id("/schools"),
+    destroy: id("/schools"),
+  },
   companySupervisors: {
     index: "/company-supervisors",
     show: id("/company-supervisors"),

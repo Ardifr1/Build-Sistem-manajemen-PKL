@@ -23,3 +23,5 @@ export const liveCrud = (eps) => ({
 /** Ambil .data dari respons { message, data }, aman untuk array. */
 export const dataOf = (res) => res?.data ?? null;
 export const arrOf = (res) => (Array.isArray(res?.data) ? res.data : []);
+
+/** live schools API. */
