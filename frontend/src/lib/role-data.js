@@ -20,26 +20,18 @@ export async function getEnrichedPlacements() {
   const needUsers = rows.some((p) => !p.student);
   const needCompanies = rows.some((p) => !p.company);
 
-  let users = {};
-  let companies = {};
+  // Ambil paralel, bukan satu per satu.
+  const [uRes, cRes] = await Promise.all([
+    needUsers
+      ? usersApi.index({ role: "student" }).catch(() => ({ data: [] }))
+      : Promise.resolve({ data: [] }),
+    needCompanies
+      ? companiesApi.index().catch(() => ({ data: [] }))
+      : Promise.resolve({ data: [] }),
+  ]);
 
-  if (needUsers) {
-    try {
-      const uRes = await usersApi.index({ role: "student" });
-      users = Object.fromEntries(arr(uRes).map((u) => [u.id, u]));
-    } catch {
-      /* mode live non-admin: pakai relasi nested saja */
-    }
-  }
-
-  if (needCompanies) {
-    try {
-      const cRes = await companiesApi.index();
-      companies = Object.fromEntries(arr(cRes).map((c) => [c.id, c]));
-    } catch {
-      /* abaikan */
-    }
-  }
+  const users = Object.fromEntries(arr(uRes).map((u) => [u.id, u]));
+  const companies = Object.fromEntries(arr(cRes).map((c) => [c.id, c]));
 
   return rows.map((p) => ({
     ...p,
@@ -48,20 +40,23 @@ export async function getEnrichedPlacements() {
   }));
 }
 
-/** Semua jurnal dari daftar penempatan (backend butuh placement_id per panggilan). */
+/** Semua jurnal dari daftar penempatan — diambil paralel, bukan antri. */
 export async function getJournalsForPlacements(placements) {
-  const all = [];
-  for (const p of placements) {
-    try {
-      const res = await journalsApi.index({ placement_id: p.id });
-      for (const j of arr(res)) all.push({ ...j, placement: p });
-    } catch {
-      /* abaikan penempatan yang gagal dimuat */
-    }
-  }
-  return all.sort((a, b) =>
-    String(b.journal_date || "").localeCompare(String(a.journal_date || ""))
+  const results = await Promise.all(
+    placements.map(async (p) => {
+      try {
+        const res = await journalsApi.index({ placement_id: p.id });
+        return arr(res).map((j) => ({ ...j, placement: p }));
+      } catch {
+        return [];
+      }
+    })
   );
+  return results
+    .flat()
+    .sort((a, b) =>
+      String(b.journal_date || "").localeCompare(String(a.journal_date || ""))
+    );
 }
 
 /** company_id milik user industri yang sedang login (via company-supervisors). */
