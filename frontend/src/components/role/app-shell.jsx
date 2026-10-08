@@ -31,6 +31,7 @@ function doLogout() {
  * @param {string} title       judul topbar
  * @param {string} subtitle    subjudul topbar
  * @param {string} periodeLabel label badge periode (opsional; tampil bila diisi)
+ * @param {string} profileKey key menu profil (opsional; jika diisi, user card & avatar bisa diklik ke profil)
  */
 function AppShell({
   roleLabel = "ADMIN",
@@ -42,6 +43,7 @@ function AppShell({
   title = "",
   subtitle = "",
   periodeLabel = "",
+  profileKey = "",
   children,
 }) {
   const [navOpen, setNavOpen] = useState(false);
@@ -49,6 +51,10 @@ function AppShell({
   const goNav = (menuKey) => {
     setNavOpen(false);
     onNavigate?.(menuKey);
+  };
+
+  const goProfile = () => {
+    if (profileKey) goNav(profileKey);
   };
 
   const roleKey =
@@ -97,7 +103,11 @@ function AppShell({
             </div>
           ))}
         </nav>
-        <div className="shell-user">
+        <div
+          className={`shell-user ${profileKey ? "clickable" : ""}`}
+          onClick={goProfile}
+          title={profileKey ? "Lihat Profil" : undefined}
+        >
           <span className="shell-user-av">{initials(user?.name)}</span>
           <span className="shell-user-tx">
             <strong>{user?.name || roleLabel}</strong>
@@ -123,9 +133,15 @@ function AppShell({
               <span className="shell-periode"><span className="dot"></span>{periodeLabel}</span>
             )}
             <NotifBell role={roleKey} ctx={{ user }} btnClass="shell-bell" />
-            <span className="shell-avatar" title="Keluar" onClick={doLogout}>
-              {initials(user?.name)}
-            </span>
+            {profileKey ? (
+              <span className="shell-avatar clickable" title="Lihat Profil" onClick={goProfile}>
+                {initials(user?.name)}
+              </span>
+            ) : (
+              <span className="shell-avatar" title="Keluar" onClick={doLogout}>
+                {initials(user?.name)}
+              </span>
+            )}
           </div>
         </header>
         <main className="shell-content">{children}</main>

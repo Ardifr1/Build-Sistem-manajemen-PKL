@@ -84,3 +84,9 @@
 @media(max-width:420px){
   .shell-topbar-tx p{display:none}
 }
+
+/* --- user card & avatar bisa diklik ke profil --- */
+.shell-user.clickable{cursor:pointer;transition:background .15s}
+.shell-user.clickable:hover{background:#1e2c4e}
+.shell-avatar.clickable{transition:transform .15s,box-shadow .15s}
+.shell-avatar.clickable:hover{transform:scale(1.06);box-shadow:0 0 0 3px rgba(37,99,235,.25)}

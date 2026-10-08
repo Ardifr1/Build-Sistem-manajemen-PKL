@@ -2,64 +2,93 @@ import { useEffect, useMemo, useState } from "react";
 import { Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
 import { journalsApi, authApi } from "../../api/index.js";
 
-/* ---------- analisis sederhana (client-side) ---------- */
-function analisisDraf(teks) {
+/* ---------- generate pertanyaan dari draf (rule-based, client-side) ---------- */
+const TOOL_LIST = ["Laravel", "Postman", "MySQL", "Git", "Figma", "React", "Vue", "PHP", "JavaScript", "Docker", "VS Code"];
+
+function generatePertanyaan(teks) {
   const t = teks.toLowerCase();
-  const saran = [];
-  const pasif = ["dibenerin", "dibenerkan", "dikerjain", "dilakuin"].filter((w) => t.includes(w));
-  const adaPasif = pasif.length > 0 || /sudah di\w+/.test(t);
-  if (adaPasif) {
-    saran.push({
-      id: "pasif",
-      judul: "Ubah kalimat pasif menjadi aktif",
-      desc: `${pasif.length || 1} kata terdeteksi — mis. "${pasif[0] || "sudah dibenerin"}" → "saya perbaiki"`,
-      on: true,
-    });
-  }
-  saran.push({
-    id: "teknologi",
-    judul: "Tambahkan detail teknologi yang dipakai",
-    desc: "Sebutkan versi framework dan tools pengujian endpoint",
-    on: true,
-  });
-  if (/error|kendala|masalah|tapi|namun|galat/i.test(teks)) {
-    saran.push({
-      id: "kendala",
-      judul: "Pisahkan kendala & solusi lebih jelas",
-      desc: "Saat ini tercampur dalam satu kalimat",
-      on: true,
-    });
-  }
-  saran.push({
-    id: "ringkas",
-    judul: "Ringkas bagian hasil (maks 2 kalimat)",
-    desc: "Draf saat ini cukup singkat — opsional",
-    on: false,
-  });
-  return saran;
+
+  // 1. Alat / teknologi
+  const terdeteksi = TOOL_LIST.filter((tool) => t.includes(tool.toLowerCase()));
+  const opsiAlat = [...new Set([...terdeteksi, "Laravel", "Postman", "MySQL", "Git"])].slice(0, 6);
+
+  // 2. Kendala
+  const kendalaMap = [
+    { kunci: ["error 500", "500"], label: "Error 500 saat deploy" },
+    { kunci: ["lambat", "lemot", "timeout"], label: "Koneksi server lambat" },
+    { kunci: ["error", "galat", "bug"], label: "Error / bug di kode" },
+    { kunci: ["bingung", "sulit", "susah"], label: "Kesulitan memahami tugas" },
+  ];
+  const kendalaTerdeteksi = kendalaMap
+    .filter((k) => k.kunci.some((kw) => t.includes(kw)))
+    .map((k) => k.label);
+  const opsiKendala = [...new Set([...kendalaTerdeteksi, "Error 500 saat deploy", "Koneksi server lambat", "Tidak ada kendala"])];
+
+  // Ringkasan: kalimat pertama yang bermakna
+  const ringkasan = teks.split(/[.!?\n]/).find((s) => s.trim().length > 10)?.trim() || teks.slice(0, 80).trim();
+
+  // Yang belum jelas
+  const belumJelas = [];
+  if (terdeteksi.length === 0) belumJelas.push("alat yang dipakai");
+  if (kendalaTerdeteksi.length === 0) belumJelas.push("kendala yang dihadapi");
+  belumJelas.push("durasi pengerjaan");
+
+  return {
+    ringkasan,
+    belumJelas,
+    pertanyaan: [
+      {
+        id: "alat",
+        tipe: "multi",
+        judul: "Alat / teknologi apa yang kamu pakai?",
+        hint: "Centang semua yang sesuai",
+        opsi: opsiAlat,
+        awal: terdeteksi.slice(0, 4),
+      },
+      {
+        id: "kendala",
+        tipe: "multi",
+        judul: "Apa kendala yang kamu hadapi?",
+        hint: "Centang semua yang sesuai",
+        opsi: opsiKendala,
+        awal: kendalaTerdeteksi,
+      },
+      {
+        id: "durasi",
+        tipe: "single",
+        judul: "Berapa lama kegiatan ini dikerjakan?",
+        hint: "Pilih satu",
+        opsi: ["< 1 jam", "1–3 jam", "Seharian penuh"],
+        awal: null,
+      },
+    ],
+  };
 }
 
-function terapkanRevisi(teks, ids) {
-  let out = teks.trim();
-  const pakai = new Set(ids);
-  if (pakai.has("pasif")) {
-    out = out
-      .replace(/sudah dibenerin/gi, "berhasil saya perbaiki")
-      .replace(/dibenerin/gi, "diperbaiki")
-      .replace(/dikerjain/gi, "dikerjakan")
-      .replace(/dilakuin/gi, "dilakukan");
-  }
-  if (pakai.has("kendala")) {
-    out = out
-      .replace(/ada error sedikit tapi/gi, "Sempat terjadi galat kecil, namun")
-      .replace(/ada error tapi/gi, "Sempat terjadi galat, namun")
-      .replace(/\btapi\b/gi, "namun");
-  }
+/* ---------- buat revisi dari draf + jawaban ---------- */
+function buatRevisiDariJawaban(draf, jawaban) {
+  let out = draf.trim();
+  // rapikan kata informal
+  out = out
+    .replace(/sudah dibenerin/gi, "berhasil saya perbaiki")
+    .replace(/dibenerin/gi, "diperbaiki")
+    .replace(/dikerjain/gi, "dikerjakan")
+    .replace(/dilakuin/gi, "dilakukan");
   // kapitalisasi awal kalimat
   out = out.replace(/(^\s*\w|[.!?]\s+\w)/g, (m) => m.toUpperCase());
-  out = out.replace(/\bapi\b/g, "API").replace(/\bnya\b/g, "nya");
-  if (pakai.has("teknologi") && !/laravel|postman|react|vue|mysql/i.test(out)) {
-    out += " (Teknologi: Laravel • Postman)";
+  out = out.replace(/\bapi\b/g, "API");
+
+  // rangkai detail dari jawaban
+  const detail = [];
+  if (jawaban.alat?.length) detail.push(`menggunakan ${jawaban.alat.join(", ")}`);
+  const kendala = (jawaban.kendala || []).filter((k) => k !== "Tidak ada kendala");
+  if (kendala.length) detail.push(`dengan kendala ${kendala.join(", ").toLowerCase()}`);
+  else if (jawaban.kendala?.includes("Tidak ada kendala")) detail.push("tanpa kendala berarti");
+  if (jawaban.durasi) detail.push(`selama ${jawaban.durasi.replace("–", "-").toLowerCase()}`);
+
+  if (detail.length) {
+    if (!/[.!?]$/.test(out)) out += ".";
+    out += ` Kegiatan ini dikerjakan ${detail.join(", ")}.`;
   }
   return out;
 }
@@ -91,7 +120,7 @@ function InputDraf({ draf, setDraf, onAnalisis }) {
           {[
             ["Tulis draf", "Ceritakan kegiatan harianmu apa adanya"],
             ["AI menganalisis", "Struktur, kejelasan, dan kelengkapan draf"],
-            ["Pilih rekomendasi", "Centang saran yang sesuai dengan kenyataan"],
+            ["Jawab pertanyaan", "AI bertanya yang belum jelas dari drafmu"],
             ["Terapkan & kirim", "Hasil revisi singkat, kamu yang memutuskan"],
           ].map(([t, d], i) => (
             <div className="siswa-langkah" key={i}>
@@ -109,32 +138,80 @@ function InputDraf({ draf, setDraf, onAnalisis }) {
   );
 }
 
-/* ================= LANGKAH 2: rekomendasi ================= */
-function Rekomendasi({ saran, toggleSaran, onTerapkan, tanggalLabel }) {
-  const navigate = useNavigate();
-  const terpilih = saran.filter((s) => s.on);
+/* ================= LANGKAH 2: pertanyaan AI ================= */
+function PertanyaanAI({ draf, tanggalLabel, onKembali, onBuatRevisi }) {
+  const data = useMemo(() => generatePertanyaan(draf), [draf]);
+  const [jawaban, setJawaban] = useState(() => ({
+    alat: data.pertanyaan[0].awal,
+    kendala: data.pertanyaan[1].awal,
+    durasi: null,
+  }));
+
+  const toggleMulti = (id, opsi) => {
+    setJawaban((j) => {
+      const cur = j[id] || [];
+      return { ...j, [id]: cur.includes(opsi) ? cur.filter((x) => x !== opsi) : [...cur, opsi] };
+    });
+  };
+  const setSingle = (id, opsi) => setJawaban((j) => ({ ...j, [id]: opsi }));
+
+  const judulDraf = draf.split(/[.!?\n]/).find((s) => s.trim())?.trim().slice(0, 48) || "Draf jurnal";
+
   return (
     <div className="siswa-card" style={{ maxWidth: 760 }}>
       <div className="siswa-between" style={{ marginBottom: 4 }}>
-        <h3 className="siswa-card-title">Hasil Analisis AI</h3>
-        <span className="siswa-badge s-badge-blue"><span className="dot"></span>{saran.length} saran</span>
+        <h3 className="siswa-card-title">Hasil Pemeriksaan AI</h3>
+        <span className="siswa-badge s-badge-blue"><span className="dot"></span>{data.pertanyaan.length} pertanyaan</span>
       </div>
-      <p className="siswa-sub" style={{ marginBottom: 18 }}>Draf jurnal {tanggalLabel} — pilih saran yang sesuai kenyataan</p>
-      {saran.map((s) => (
-        <div key={s.id} className={`siswa-saran ${s.on ? "on" : ""}`} onClick={() => toggleSaran(s.id)}>
-          <span className="siswa-check">{s.on && <i className="fa-solid fa-check"></i>}</span>
-          <div><b>{s.judul}</b><small>{s.desc}</small></div>
+      <p className="siswa-sub" style={{ marginBottom: 18 }}>
+        Draf jurnal {tanggalLabel} — &ldquo;{judulDraf}&rdquo;
+      </p>
+
+      <div className="siswa-ai-info">
+        <p style={{ margin: "0 0 8px" }}>
+          <b>Yang AI pahami:</b> {data.ringkasan}.
+        </p>
+        <p style={{ margin: 0 }}>
+          <b>Yang belum jelas:</b> {data.belumJelas.join(", ")} — jawab di bawah ya.
+        </p>
+      </div>
+
+      {data.pertanyaan.map((p, i) => (
+        <div key={p.id} className="siswa-ai-q">
+          <b>{i + 1}. {p.judul}</b>
+          <small>{p.hint}</small>
+          <div className="siswa-ai-pills">
+            {p.opsi.map((opsi) => {
+              const selected = p.tipe === "multi"
+                ? (jawaban[p.id] || []).includes(opsi)
+                : jawaban[p.id] === opsi;
+              return (
+                <label key={opsi} className={`siswa-ai-pill ${selected ? "on" : ""}`}>
+                  <input
+                    type={p.tipe === "multi" ? "checkbox" : "radio"}
+                    name={`ai-q-${p.id}`}
+                    checked={selected}
+                    onChange={() => (p.tipe === "multi" ? toggleMulti(p.id, opsi) : setSingle(p.id, opsi))}
+                  />
+                  <span>{opsi}</span>
+                </label>
+              );
+            })}
+          </div>
         </div>
       ))}
+
       <p className="siswa-muted" style={{ margin: "6px 0 18px" }}>
-        Hanya centang yang benar-benar terjadi. AI tidak boleh mengarang kegiatan.
+        Centang sesuai kenyataan. AI menyempurnakan jurnal berdasarkan jawabanmu — tidak mengarang kegiatan.
+        Pertanyaan dibuat otomatis dari isi drafmu — tiap draf bisa berbeda.
       </p>
+
       <div className="siswa-form-actions">
-        <button type="button" className="siswa-btn siswa-btn-outline" onClick={() => navigate("/siswa/ai")}>
+        <button type="button" className="siswa-btn siswa-btn-outline" onClick={onKembali}>
           Kembali
         </button>
-        <button type="button" className="siswa-btn siswa-btn-primary" disabled={terpilih.length === 0} onClick={onTerapkan}>
-          <i className="fa-solid fa-wand-magic-sparkles"></i> Terapkan Revisi Terpilih ({terpilih.length})
+        <button type="button" className="siswa-btn siswa-btn-primary" onClick={() => onBuatRevisi(jawaban)}>
+          <i className="fa-solid fa-wand-magic-sparkles"></i> Buat Revisi dari Jawabanku
         </button>
       </div>
     </div>
@@ -176,8 +253,8 @@ function HasilRevisi({ draf, revisi, onEditManual, onKirim }) {
           </button>
         </div>
       </div>
-      <button type="button" className="siswa-btn siswa-btn-outline siswa-btn-sm" onClick={() => navigate("/siswa/ai/rekomendasi")}>
-        <i className="fa-solid fa-arrow-left"></i> Kembali ke Rekomendasi
+      <button type="button" className="siswa-btn siswa-btn-outline siswa-btn-sm" onClick={() => navigate("/siswa/ai/pertanyaan")}>
+        <i className="fa-solid fa-arrow-left"></i> Kembali ke Pertanyaan
       </button>
     </div>
   );
@@ -251,7 +328,7 @@ function AiAssistant({ onMeta, placement }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [draf, setDraf] = useState("");
-  const [saran, setSaran] = useState([]);
+  const [siap, setSiap] = useState(false);
   const [revisi, setRevisi] = useState("");
   const [tanggal] = useState(new Date().toISOString().slice(0, 10));
 
@@ -267,7 +344,7 @@ function AiAssistant({ onMeta, placement }) {
   );
 
   const metaFor = (p) => {
-    if (p.includes("rekomendasi")) onMeta?.({ title: "Rekomendasi AI", subtitle: "Pilih saran yang sesuai dengan kegiatan sebenarnya" });
+    if (p.includes("pertanyaan")) onMeta?.({ title: "Pertanyaan AI", subtitle: "AI sudah memeriksa drafmu — jawab dulu biar revisinya akurat" });
     else if (p.includes("hasil")) onMeta?.({ title: "Hasil Revisi AI", subtitle: "Periksa kembali — pastikan sesuai kegiatan sebenarnya" });
     else if (p.includes("konfirmasi")) onMeta?.({ title: "Konfirmasi Kirim", subtitle: "Periksa ringkasan jurnal sebelum dikirim" });
     else onMeta?.({ title: "AI Journal Assistant", subtitle: "Rapikan draf jurnal sebelum dikirim ke pembimbing industri" });
@@ -276,29 +353,29 @@ function AiAssistant({ onMeta, placement }) {
   useEffect(() => { metaFor(location.pathname); /* eslint-disable-next-line */ }, [location.pathname]);
 
   const onAnalisis = () => {
-    setSaran(analisisDraf(draf));
-    navigate("/siswa/ai/rekomendasi");
+    setSiap(true);
+    navigate("/siswa/ai/pertanyaan");
   };
-  const toggleSaran = (id) => setSaran((s) => s.map((x) => (x.id === id ? { ...x, on: !x.on } : x)));
-  const onTerapkan = () => {
-    const ids = saran.filter((s) => s.on).map((s) => s.id);
-    setRevisi(terapkanRevisi(draf, ids));
+  const onBuatRevisi = (jawaban) => {
+    setRevisi(buatRevisiDariJawaban(draf, jawaban));
     navigate("/siswa/ai/hasil");
   };
 
   return (
     <Routes>
       <Route index element={<InputDraf draf={draf} setDraf={setDraf} onAnalisis={onAnalisis} />} />
-      <Route path="rekomendasi" element={
-        saran.length === 0
+      <Route path="pertanyaan" element={
+        !siap || !draf.trim()
           ? <Navigate to="/siswa/ai" replace />
-          : <Rekomendasi saran={saran} toggleSaran={toggleSaran} onTerapkan={onTerapkan} tanggalLabel={tanggalLabel} />
+          : <PertanyaanAI draf={draf} tanggalLabel={tanggalLabel}
+              onKembali={() => navigate("/siswa/ai")}
+              onBuatRevisi={onBuatRevisi} />
       } />
       <Route path="hasil" element={
         !revisi
           ? <Navigate to="/siswa/ai" replace />
           : <HasilRevisi draf={draf} revisi={revisi}
-              onEditManual={() => { setDraf(revisi); navigate("/siswa/ai"); }}
+              onEditManual={() => { setDraf(revisi); setSiap(false); navigate("/siswa/ai"); }}
               onKirim={() => navigate("/siswa/ai/konfirmasi")} />
       } />
       <Route path="konfirmasi" element={

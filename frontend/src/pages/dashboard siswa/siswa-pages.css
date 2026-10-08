@@ -335,3 +335,25 @@
 /* --- stat label & value (dipakai DashboardSiswa, JurnalSiswa) --- */
 .siswa-stat-lb{font-size:11px;font-weight:700;letter-spacing:.8px;color:#94a3b8;text-transform:uppercase}
 .siswa-stat-vl{font-size:30px;font-weight:800;color:#0f172a}
+
+/* --- user card & avatar bisa diklik ke profil --- */
+.siswa-user.clickable{cursor:pointer;transition:background .15s,transform .15s}
+.siswa-user.clickable:hover{background:#1e2c4e}
+.siswa-avatar.clickable{transition:transform .15s,box-shadow .15s}
+.siswa-avatar.clickable:hover{transform:scale(1.06);box-shadow:0 0 0 3px rgba(37,99,235,.25)}
+
+/* --- Pertanyaan AI --- */
+.siswa-ai-info{background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:14px 16px;margin-bottom:20px;font-size:13px;color:#334155;line-height:1.6}
+.siswa-ai-q{margin-bottom:20px}
+.siswa-ai-q>b{display:block;font-size:14px;margin-bottom:2px}
+.siswa-ai-q>small{display:block;color:#94a3b8;font-size:12px;margin-bottom:10px}
+.siswa-ai-pills{display:flex;flex-wrap:wrap;gap:8px}
+.siswa-ai-pill{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;border-radius:999px;border:1px solid #e2e8f0;background:#fff;cursor:pointer;font-size:13px;font-weight:600;color:#475569;transition:.15s}
+.siswa-ai-pill:hover{border-color:#bfdbfe}
+.siswa-ai-pill input{accent-color:#2563eb;width:15px;height:15px;margin:0;cursor:pointer}
+.siswa-ai-pill.on{border:2px solid #2563eb;background:#eff6ff;color:#1d4ed8;padding:8px 15px}
+@media(max-width:480px){
+  .siswa-ai-pills{gap:6px}
+  .siswa-ai-pill{font-size:12px;padding:8px 12px}
+  .siswa-ai-pill.on{padding:7px 11px}
+}

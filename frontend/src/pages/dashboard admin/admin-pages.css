@@ -257,3 +257,62 @@ label.f-label{font-size:11px;font-weight:700;color:var(--text);display:block;mar
 .zip-form{display:flex;flex-direction:column;gap:4px}
 .zip-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
 @media(max-width:640px){.zip-form-grid{grid-template-columns:1fr}}
+
+/* ===== Dashboard Admin (mockup) ===== */
+.adm-dash{display:flex;flex-direction:column;gap:18px}
+.adm-stats{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+.adm-stat{background:#fff;border:1px solid #eef2f7;border-radius:16px;padding:16px 18px;box-shadow:0 1px 3px rgba(15,23,42,.05)}
+.adm-stat-label{font-size:11px;letter-spacing:.08em;font-weight:700;color:#94a3b8;margin-bottom:6px}
+.adm-stat-value{font-size:30px;font-weight:800;color:#0f172a;line-height:1.1}
+.adm-stat-sub{font-size:12px;color:#94a3b8;margin-top:4px}
+.adm-grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.adm-grid2b{display:grid;grid-template-columns:1.6fr 1fr;gap:18px}
+.adm-card{background:#fff;border:1px solid #eef2f7;border-radius:16px;padding:20px;box-shadow:0 1px 3px rgba(15,23,42,.05)}
+.adm-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.adm-card-head h3{margin:0;font-size:15.5px;font-weight:700;color:#0f172a}
+.adm-badge{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;padding:5px 12px;border-radius:999px}
+.adm-badge i{font-size:7px}
+.adm-badge.yellow{background:#fef3c7;color:#b45309}
+.adm-badge.green{background:#dcfce7;color:#15803d}
+.adm-action{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px dashed #f1f5f9}
+.adm-action:first-of-type{border-top:0}
+.adm-action-ic{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.adm-action-ic.yellow{background:#fef3c7;color:#d97706}
+.adm-action-ic.blue{background:#dbeafe;color:#2563eb}
+.adm-action-ic.green{background:#dcfce7;color:#16a34a}
+.adm-action-tx{flex:1;min-width:0}
+.adm-action-tx strong{display:block;font-size:13.5px;color:#0f172a}
+.adm-action-tx small{color:#94a3b8;font-size:12px}
+.adm-periode-name{font-size:17px;font-weight:800;color:#0f172a;margin-bottom:14px}
+.adm-kv{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-top:1px dashed #f1f5f9;font-size:13.5px}
+.adm-kv span{color:#64748b}
+.adm-kv strong{color:#0f172a;font-weight:700}
+.adm-progress{height:8px;background:#eef2f7;border-radius:999px;margin-top:10px;overflow:hidden}
+.adm-progress-fill{height:100%;background:linear-gradient(90deg,#2563eb,#1d4ed8);border-radius:999px;transition:width .4s}
+.adm-link{background:none;border:0;color:#2563eb;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:4px}
+.adm-link:hover{text-decoration:underline}
+.adm-table-wrap{overflow-x:auto}
+.adm-table{width:100%;border-collapse:collapse;font-size:13px;min-width:520px}
+.adm-table thead th{font-size:10.5px;letter-spacing:.06em;color:#94a3b8;font-weight:700;text-align:left;padding:10px 12px;background:#f8fafc;border-radius:8px}
+.adm-table tbody td{padding:13px 12px;border-top:1px solid #f1f5f9;vertical-align:top;color:#334155}
+.adm-table tbody td strong{display:block;color:#0f172a;font-size:13.5px}
+.adm-td-sub{color:#94a3b8;font-size:11.5px}
+.adm-table .right{text-align:right}
+.adm-pill{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;padding:5px 12px;border-radius:999px;white-space:nowrap}
+.adm-pill i{font-size:6px}
+.adm-pill.blue{background:#eff6ff;color:#2563eb}
+.adm-pill.yellow{background:#fef9c3;color:#a16207}
+.adm-pill.green{background:#dcfce7;color:#15803d}
+.adm-pill.red{background:#fee2e2;color:#dc2626}
+.adm-pill.gray{background:#f1f5f9;color:#64748b}
+.adm-dist{margin-bottom:14px}
+.adm-dist-row{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px}
+.adm-dist-row span{color:#334155;font-weight:600}
+.adm-dist-row strong{color:#0f172a}
+.adm-bar{height:8px;background:#eef2f7;border-radius:999px;overflow:hidden}
+.adm-bar-fill{height:100%;border-radius:999px;transition:width .4s}
+@media(max-width:1200px){.adm-stats{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:900px){
+  .adm-grid2,.adm-grid2b{grid-template-columns:1fr}
+  .adm-stats{grid-template-columns:repeat(2,1fr)}
+}

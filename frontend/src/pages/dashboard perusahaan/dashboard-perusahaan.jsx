@@ -64,6 +64,7 @@ function DashboardPerusahaan() {
       userSub={user?.company_name || "Perusahaan Mitra"}
       title={meta.title || base.title}
       subtitle={meta.subtitle !== undefined ? meta.subtitle : base.subtitle}
+      profileKey="profil"
     >
       <Routes>
         <Route index element={<Dashboard onMeta={setMeta} />} />

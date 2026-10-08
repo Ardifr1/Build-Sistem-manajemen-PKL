@@ -58,7 +58,7 @@ function SiswaSidebar({ menus, active, onNavigate, user, fase, onLogout, open, o
           </div>
         ))}
       </nav>
-      <div className="siswa-user">
+      <div className="siswa-user clickable" onClick={() => onNavigate("profil")} title="Lihat Profil Saya">
         <span className="siswa-user-av">{initials(user?.name)}</span>
         <span className="siswa-user-tx">
           <strong>{user?.name || "Siswa"}</strong>
@@ -75,15 +75,7 @@ function SiswaSidebar({ menus, active, onNavigate, user, fase, onLogout, open, o
 }
 
 /* ---------- topbar ---------- */
-function SiswaTopbar({ title, subtitle, periodeLabel, fase, user, placement, onMenu }) {
-  const logout = () => {
-    authApi.logout().catch(() => {});
-    try {
-      localStorage.removeItem("simagang_token");
-      localStorage.removeItem("simagang_user");
-    } catch { /* abaikan */ }
-    window.location.href = "/login";
-  };
+function SiswaTopbar({ title, subtitle, periodeLabel, fase, user, placement, onMenu, onNavigate }) {
   return (
     <header className="siswa-topbar">
       <button type="button" className="siswa-hamburger" onClick={onMenu} aria-label="Menu">
@@ -98,7 +90,7 @@ function SiswaTopbar({ title, subtitle, periodeLabel, fase, user, placement, onM
           <span className="siswa-periode"><span className="dot"></span>{periodeLabel} • AKTIF</span>
         )}
         <NotifBell role="student" ctx={{ user, placement }} btnClass="siswa-bell" />
-        <span className="siswa-avatar" title="Keluar" onClick={logout}>{initials(user?.name)}</span>
+        <span className="siswa-avatar clickable" title="Lihat Profil Saya" onClick={() => onNavigate?.("profil")}>{initials(user?.name)}</span>
       </div>
     </header>
   );
@@ -167,7 +159,7 @@ function activeKey(pathname) {
   if (pathname.startsWith("/siswa/absen")) return "absen";
   if (pathname.startsWith("/siswa/jurnal/tulis")) return "tulis-jurnal";
   if (pathname.startsWith("/siswa/jurnal")) return "jurnal";
-  if (pathname.startsWith("/siswa/ai/rekomendasi")) return "rekomendasi";
+  if (pathname.startsWith("/siswa/ai/pertanyaan")) return "ai";
   if (pathname.startsWith("/siswa/ai/hasil")) return "hasil-revisi";
   if (pathname.startsWith("/siswa/ai/konfirmasi")) return "konfirmasi";
   if (pathname.startsWith("/siswa/ai")) return "ai";
@@ -255,6 +247,7 @@ function DashboardSiswaShell() {
           user={user}
           placement={placement}
           onMenu={() => setNavOpen(true)}
+          onNavigate={goMenu}
         />
         <main className="siswa-content">
           <Routes>
