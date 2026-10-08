@@ -86,9 +86,18 @@ function AbsenSiswa({ onMeta, placement }) {
         `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=id`
       );
       const d = await res.json();
-      const parts = [d.road || d.street, d.city || d.locality, d.principalSubdivision, d.countryName]
-        .filter(Boolean);
-      setAlamat(parts.join(", ") || "Alamat tidak ditemukan");
+      // Format lengkap ala referensi: jalan, area, kota, provinsi, kodepos, negara
+      const parts = [
+        d.street || d.road,
+        d.neighbourhood || d.locality,
+        d.city,
+        d.principalSubdivision,
+        d.postcode,
+        d.countryName,
+      ].filter(Boolean);
+      // Hilangkan duplikat berurutan
+      const unik = parts.filter((p, i) => parts.indexOf(p) === i);
+      setAlamat(unik.join(", ") || "Alamat tidak ditemukan");
     } catch {
       setAlamat("Gagal memuat alamat");
     } finally {
