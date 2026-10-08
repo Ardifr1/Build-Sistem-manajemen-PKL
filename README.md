@@ -132,6 +132,17 @@ Base URL: `http://localhost:8000/api` — format respons `{ message, data }`.
 - `progress-records`, `feedbacks`, `assessments`, `final-assessments`
 - `student-profiles`, `teacher-profiles`, `assessment-components`
 
+
+## License
+
+This project is proprietary software and is provided for viewing and evaluation purposes only.
+
+The source code may be viewed through this repository, but may not be used, copied, modified, distributed, reproduced, or incorporated into other projects without prior written permission from the copyright holder.
+
+See the [LICENSE](LICENSE) file for the complete terms.
+
+**© 2026 Ardi Fauzan Ramadhan. All Rights Reserved.**
+
 ## Roadmap
 
 - **V1** (berjalan): satu sekolah, semua role, sesuai PRD V1.2
