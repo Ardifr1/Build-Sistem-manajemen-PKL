@@ -3,6 +3,7 @@ import AdminDashboard from "./pages/dashboard admin/dashboard-admin.jsx";
 import GuruDashboard from "./pages/dashboard guru/dashboard-guru.jsx";
 import IndustriDashboard from "./pages/dashboard industri/dashboard-industri.jsx";
 import PerusahaanDashboard from "./pages/dashboard perusahaan/dashboard-perusahaan.jsx";
+import SiswaDashboard from "./pages/dashboard siswa/dashboard-siswa.jsx";
 import Login from "./pages/auth/login.jsx";
 import { authApi } from "./api/index.js";
 
@@ -57,30 +58,6 @@ function GuestRoute({ children }) {
   return children;
 }
 
-/** Halaman siswa belum dibangun — placeholder jujur. */
-function SiswaSegera() {
-  const user = authApi.currentUser();
-  const logout = () => {
-    authApi.logout().catch(() => {});
-    try {
-      localStorage.removeItem(TOKEN_KEY);
-      localStorage.removeItem("simagang_user");
-    } catch {
-      /* abaikan */
-    }
-    window.location.href = "/login";
-  };
-  return (
-    <div style={{ padding: 32, fontFamily: "inherit" }}>
-      <h2>Halo, {user?.name || "Siswa"}!</h2>
-      <p>Halaman siswa sedang dalam pengembangan. Silakan kembali lagi nanti.</p>
-      <button type="button" onClick={logout}>
-        Keluar
-      </button>
-    </div>
-  );
-}
-
 function App() {
   return (
     <BrowserRouter>
@@ -128,10 +105,10 @@ function App() {
         />
         <Route path="/industri/*" element={<Navigate to="/pembimbing" replace />} />
         <Route
-          path="/siswa"
+          path="/siswa/*"
           element={
             <ProtectedRoute roles={["student"]}>
-              <SiswaSegera />
+              <SiswaDashboard />
             </ProtectedRoute>
           }
         />
