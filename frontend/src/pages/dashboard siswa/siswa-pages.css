@@ -247,3 +247,12 @@
 .siswa-stat{min-width:0}
 .siswa-stat-val{white-space:nowrap}
 .siswa-stat-hint{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* --- perbaikan spacing 2026-10-08 --- */
+/* 1. Jurnal & Dashboard: jarak icon di kartu stat */
+.siswa-stat .siswa-stat-ic{margin-top:14px}
+/* 2. Jurnal: jarak antara kartu stat dan Riwayat Jurnal */
+.siswa-grid3{margin-bottom:20px}
+/* 3. Perusahaan Partner: kartu lebih tegas (tidak menyatu dengan background) */
+.siswa-co-card{border:1px solid #e2e8f0;border-radius:14px;padding:18px;background:#fff;box-shadow:0 2px 8px rgba(15,23,42,.06)}
+.siswa-search{border:1px solid #e2e8f0 !important;box-shadow:0 1px 4px rgba(15,23,42,.05)}

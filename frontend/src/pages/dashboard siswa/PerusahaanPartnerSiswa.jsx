@@ -36,7 +36,7 @@ function PerusahaanPartnerSiswa({ onMeta, readonly = false }) {
           <h3 className="siswa-card-title">{companies.length} Perusahaan Mitra</h3>
           <span style={{ position: "relative" }}>
             <i className="fa-solid fa-magnifying-glass" style={{ position: "absolute", left: 14, top: 13, color: "#94a3b8", fontSize: 13 }}></i>
-            <input className="siswa-input" style={{ paddingLeft: 36, width: 240 }} placeholder="Cari perusahaan…"
+            <input className="siswa-input siswa-search" style={{ paddingLeft: 36, width: 240 }} placeholder="Cari perusahaan…"
               value={q} onChange={(e) => setQ(e.target.value)} />
           </span>
         </div>
@@ -47,7 +47,7 @@ function PerusahaanPartnerSiswa({ onMeta, readonly = false }) {
             {list.map((c) => {
               const pct = c.student_quota ? Math.round(((c._terisi || 0) / c.student_quota) * 100) : 0;
               return (
-                <div key={c.id} style={{ border: "1px solid #eef2f7", borderRadius: 14, padding: 18 }}>
+                <div key={c.id} className="siswa-co-card">
                   <div className="siswa-co" style={{ marginBottom: 10 }}>
                     <span className="siswa-co-logo">{String(c.name || "?").charAt(0)}</span>
                     <div className="siswa-co-tx">
