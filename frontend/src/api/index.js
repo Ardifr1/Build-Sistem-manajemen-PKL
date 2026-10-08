@@ -62,9 +62,9 @@ export const placementsApi = pick(placementsMock, placementsLive);
 export const journalsApi = pick(journalsMock, journalsLive);
 export const interviewsApi = pick(interviewsMock, interviewsLive);
 export const attendancesApi = pick(attendancesMock, attendancesLive);
-export const progressApi = pick(progressMock, progressLive);
 export const feedbacksApi = pick(feedbacksMock, feedbacksLive);
 export const assessmentsApi = pick(assessmentsMock, assessmentsLive);
+export const componentsApi = pick(assessmentsMock, assessmentsLive).componentsApi;
 export const profilesApi = pick(profilesMock, profilesLive);
 export const usersApi = pick(usersMock, usersLive);
 export const dashboardApi = pick(dashboardMock, dashboardLive);
@@ -74,10 +74,6 @@ export const schoolsApi = pick(schoolsMock, schoolsLive);
 export const supervisorsApi = pick(companiesMock, companiesLive).supervisorsApi;
 export const documentsApi = pick(applicationsMock, applicationsLive).documentsApi;
 export const reviewsApi = pick(applicationsMock, applicationsLive).reviewsApi;
-export const recommendationsApi = pick(journalsMock, journalsLive).recommendationsApi;
-export const componentsApi = pick(assessmentsMock, assessmentsLive).componentsApi;
-export const finalsApi = pick(assessmentsMock, assessmentsLive).finalsApi;
-export const teachersApi = pick(profilesMock, profilesLive).teachersApi;
 
 // Konstanta label (tidak terkait sumber data).
 export { ROLE_LABEL } from "./mock/users.js";

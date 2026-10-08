@@ -8,12 +8,6 @@
  */
 import { delay, ok, nextId } from "./_shared.js";
 
-const components = [
-  { id: 1, name: "Kedisiplinan", description: "Kehadiran dan ketepatan waktu", weight: 20, is_active: true },
-  { id: 2, name: "Keterampilan Teknis", description: "Penguasaan kompetensi jurusan", weight: 40, is_active: true },
-  { id: 3, name: "Sikap & Kerja Sama", description: "Etika dan kolaborasi tim", weight: 20, is_active: true },
-  { id: 4, name: "Laporan & Jurnal", description: "Kelengkapan dokumentasi", weight: 20, is_active: true },
-];
 
 const assessments = [
   { id: 1, placement_id: 3, component_id: 1, score: 90, note: "Selalu tepat waktu" },
@@ -22,9 +16,6 @@ const assessments = [
   { id: 4, placement_id: 3, component_id: 4, score: 82, note: "" },
 ];
 
-const finals = [
-  { id: 1, placement_id: 3, final_score: 86.25, status: "finalized", finalized_by: 2, finalized_at: "2026-04-02 09:00:00" },
-];
 
 function crud(store, singular, plural) {
   return {
@@ -65,6 +56,14 @@ function crud(store, singular, plural) {
   };
 }
 
-export const componentsApi = crud(components, "Komponen penilaian", "komponen penilaian");
 export const { index, show, store, update, destroy } = crud(assessments, "Penilaian", "penilaian");
-export const finalsApi = crud(finals, "Nilai akhir", "nilai akhir");
+
+const components = [
+  { id: 1, name: "Kedisiplinan", weight: 20, is_active: true },
+  { id: 2, name: "Sikap", weight: 15, is_active: true },
+  { id: 3, name: "Tanggung Jawab", weight: 20, is_active: true },
+  { id: 4, name: "Komunikasi", weight: 15, is_active: true },
+  { id: 5, name: "Kemampuan Kerja", weight: 20, is_active: true },
+  { id: 6, name: "Perkembangan Kompetensi", weight: 10, is_active: true },
+];
+export const componentsApi = crud(components, "Komponen penilaian", "komponen penilaian");

@@ -86,26 +86,12 @@ export const ep = {
     submit: (journalId) => `/journals/${journalId}/submit`,
     verify: (journalId) => `/journals/${journalId}/verify`,
   },
-  journalRecommendations: {
-    index: "/journal-recommendations",
-    show: id("/journal-recommendations"),
-    store: "/journal-recommendations",
-    update: id("/journal-recommendations"),
-    destroy: id("/journal-recommendations"),
-  },
   attendances: {
     index: "/attendances",
     show: id("/attendances"),
     store: "/attendances",
     update: id("/attendances"),
     destroy: id("/attendances"),
-  },
-  progressRecords: {
-    index: "/progress-records",
-    show: id("/progress-records"),
-    store: "/progress-records",
-    update: id("/progress-records"),
-    destroy: id("/progress-records"),
   },
   feedbacks: {
     index: "/feedbacks",
@@ -129,26 +115,12 @@ export const ep = {
     update: id("/assessments"),
     destroy: id("/assessments"),
   },
-  finalAssessments: {
-    index: "/final-assessments",
-    show: id("/final-assessments"),
-    store: "/final-assessments",
-    update: id("/final-assessments"),
-    destroy: id("/final-assessments"),
-  },
   studentProfiles: {
     index: "/student-profiles",
     show: id("/student-profiles"),
     store: "/student-profiles",
     update: id("/student-profiles"),
     destroy: id("/student-profiles"),
-  },
-  teacherProfiles: {
-    index: "/teacher-profiles",
-    show: id("/teacher-profiles"),
-    store: "/teacher-profiles",
-    update: id("/teacher-profiles"),
-    destroy: id("/teacher-profiles"),
   },
   users: {
     index: "/users",

@@ -46,23 +46,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('pkl-placements', PklPlacementController::class);
 
     // Schools (pengelompokan per sekolah, fondasi multi-sekolah)
-    Route::apiResource('schools', SchoolController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::apiResource('schools', SchoolController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
 
     // Journal
     Route::apiResource('journals', JournalController::class);
     Route::post('/journals/{journal}/submit', [JournalController::class, 'submit']);
     Route::post('/journals/{journal}/verify', [JournalController::class, 'verify']);
 
-    Route::apiResource(
-        'journal-recommendations',
-        JournalRecommendationController::class
-    );
-
     // Attendance
     Route::apiResource('attendances', AttendanceController::class);
-
-    // Progress
-    Route::apiResource('progress-records', ProgressRecordController::class);
 
     // Feedback (PRD seksi 27, BR-19)
     Route::apiResource('feedbacks', FeedbackController::class);
@@ -75,12 +67,8 @@ Route::middleware('auth:sanctum')->group(function () {
     );
 
     Route::apiResource('assessments', AssessmentController::class);
-    Route::apiResource('final-assessments', FinalAssessmentController::class);
-
     // Profile
     Route::apiResource('student-profiles', StudentProfileController::class);
-    Route::apiResource('teacher-profiles', TeacherProfileController::class);
-
     // User
     Route::middleware('role:admin')->group(function () {
     Route::apiResource('users', UserController::class);

@@ -35,11 +35,6 @@ const db = [
   },
 ];
 
-const recommendations = [
-  { id: 1, journal_id: 2, recommendation: "Ubah kalimat pasif menjadi aktif", is_selected: true, is_applied: false },
-  { id: 2, journal_id: 2, recommendation: "Tambahkan detail teknologi yang dipakai", is_selected: true, is_applied: false },
-  { id: 3, journal_id: 2, recommendation: "Pisahkan kendala & solusi lebih jelas", is_selected: true, is_applied: false },
-];
 
 export async function index(params = {}) {
   await delay();
