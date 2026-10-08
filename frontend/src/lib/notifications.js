@@ -64,18 +64,23 @@ async function teacherNotifs() {
   if (placements.length) {
     const journals = await safe(() => getJournalsForPlacements(placements));
     const batas = Date.now() - 3 * 864e5;
-    let sepi = 0;
+    const sepiList = [];
     for (const p of placements) {
       const js = journals.filter((j) => String(j.placement_id) === String(p.id));
       const terakhir = js[0]?.journal_date;
-      if (!terakhir || new Date(terakhir).getTime() < batas) sepi += 1;
+      if (!terakhir || new Date(terakhir).getTime() < batas) {
+        sepiList.push(p.student?.name || p.student_name || `Siswa #${p.id}`);
+      }
     }
-    if (sepi) {
+    if (sepiList.length) {
+      const nama = sepiList.length <= 3
+        ? sepiList.join(", ")
+        : `${sepiList.slice(0, 3).join(", ")} +${sepiList.length - 3} lainnya`;
       out.push({
         icon: "fa-bell",
         tone: "red",
-        text: `${sepi} siswa belum jurnal 3 hari`,
-        time: "Hubungi siswa",
+        text: `${sepiList.length} siswa belum jurnal 3 hari`,
+        time: nama,
         to: "siswa",
       });
     }
