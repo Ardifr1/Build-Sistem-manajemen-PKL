@@ -8,7 +8,7 @@ import "./notif-bell.css";
  * @param {Object} ctx       { user, placement } — diteruskan ke getNotifications
  * @param {string} btnClass  kelas tombol (mis. "siswa-bell" / "shell-bell")
  */
-function NotifBell({ role, ctx = {}, btnClass = "siswa-bell" }) {
+function NotifBell({ role, ctx = {}, btnClass = "siswa-bell", onNavigate }) {
   const [items, setItems] = useState([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -84,7 +84,18 @@ function NotifBell({ role, ctx = {}, btnClass = "siswa-bell" }) {
               </div>
             ) : (
               items.map((n, i) => (
-                <div className="notif-item" key={i}>
+                <button
+                  type="button"
+                  className={`notif-item${n.to ? " clickable" : ""}`}
+                  key={i}
+                  onClick={() => {
+                    if (n.to && onNavigate) {
+                      setOpen(false);
+                      onNavigate(n.to);
+                    }
+                  }}
+                  disabled={!n.to}
+                >
                   <span className={`notif-ic tone-${n.tone || "blue"}`}>
                     <i className={`fa-solid ${n.icon || "fa-bell"}`}></i>
                   </span>
@@ -92,7 +103,8 @@ function NotifBell({ role, ctx = {}, btnClass = "siswa-bell" }) {
                     <span>{n.text}</span>
                     {n.time && <small>{n.time}</small>}
                   </span>
-                </div>
+                  {n.to && <i className="fa-solid fa-chevron-right notif-go"></i>}
+                </button>
               ))
             )}
           </div>

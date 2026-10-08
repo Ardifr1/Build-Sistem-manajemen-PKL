@@ -132,7 +132,7 @@ function AppShell({
             {periodeLabel && (
               <span className="shell-periode"><span className="dot"></span>{periodeLabel}</span>
             )}
-            <NotifBell role={roleKey} ctx={{ user }} btnClass="shell-bell" />
+            <NotifBell role={roleKey} ctx={{ user }} btnClass="shell-bell" onNavigate={onNavigate} />
             {profileKey ? (
               <span className="shell-avatar clickable" title="Lihat Profil" onClick={goProfile}>
                 {initials(user?.name)}

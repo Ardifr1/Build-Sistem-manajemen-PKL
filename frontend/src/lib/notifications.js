@@ -36,6 +36,7 @@ async function studentNotifs({ placement } = {}) {
         tone: "amber",
         text: `${revisi.length} jurnal perlu direvisi`,
         time: "Segera perbaiki & kirim ulang",
+        to: "jurnal",
       });
     }
   }
@@ -50,6 +51,7 @@ async function studentNotifs({ placement } = {}) {
       tone: decided.status === "rejected" ? "red" : "green",
       text: `Pengajuan ke ${co} ${decided.status === "rejected" ? "ditolak" : "diterima"}`,
       time: "Pengajuan PKL",
+      to: "pengajuan",
     });
   }
   return out;
@@ -74,6 +76,7 @@ async function teacherNotifs() {
         tone: "red",
         text: `${sepi} siswa belum jurnal 3 hari`,
         time: "Hubungi siswa",
+        to: "siswa",
       });
     }
   }
@@ -85,6 +88,7 @@ async function teacherNotifs() {
       tone: "green",
       text: `${evaluasi.length} evaluasi masuk dari perusahaan`,
       time: "Lihat penilaian",
+      to: "penilaian",
     });
   }
   return out;
@@ -101,6 +105,7 @@ async function companyNotifs() {
       tone: "blue",
       text: `${baru.length} pengajuan magang baru`,
       time: "Perlu ditinjau",
+        to: "pengajuan",
     });
   }
   const companyId = await safe(getMyCompanyId);
@@ -139,6 +144,7 @@ async function supervisorNotifs() {
       tone: "amber",
       text: `${menunggu} jurnal menunggu verifikasi`,
       time: "Siswa bimbinganmu",
+        to: "jurnal",
     });
   }
   return out;
@@ -155,6 +161,7 @@ async function adminNotifs() {
       tone: "blue",
       text: `${pending.length} pengajuan menunggu persetujuan`,
       time: "Persetujuan PKL",
+        to: "persetujuan",
     });
   }
   const journals = await safe(() => journalsApi.index().then(arr));
@@ -165,6 +172,7 @@ async function adminNotifs() {
       tone: "amber",
       text: `${menunggu} jurnal belum diverifikasi perusahaan`,
       time: "Monitoring jurnal",
+      to: "jurnal",
     });
   }
   return out;
