@@ -328,3 +328,15 @@ label.f-label{font-size:11px;font-weight:700;color:var(--text);display:block;mar
   .zip-dl dd{margin-bottom:8px}
   .zip-profil-head{flex-wrap:wrap}
 }
+
+/* --- skeleton loading dashboard --- */
+.adm-skel{pointer-events:none}
+.adm-skel-line{height:12px;border-radius:6px;margin-bottom:10px;
+  background:linear-gradient(90deg,#eef2f7 25%,#e2e8f0 50%,#eef2f7 75%);
+  background-size:200% 100%;animation:adm-shimmer 1.2s infinite}
+.adm-skel-line.big{height:28px}
+.adm-skel-line.w40{width:40%}.adm-skel-line.w50{width:50%}
+.adm-skel-line.w60{width:60%}.adm-skel-line.w70{width:70%}
+.adm-skel-line.w80{width:80%}.adm-skel-line.w90{width:90%}
+.adm-skel-block{padding:6px 0}
+@keyframes adm-shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
