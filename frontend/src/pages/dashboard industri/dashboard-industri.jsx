@@ -10,10 +10,10 @@ import EvaluasiIndustri from "./EvaluasiIndustri.jsx";
 import SiswaDetailRoute from "../../components/role/siswa-detail-route.jsx";
 
 const MENUS = [
-  { key: "dashboard", label: "Dashboard", path: "/industri" },
-  { key: "siswa", label: "Siswa Bimbingan", path: "/industri/siswa" },
-  { key: "jurnal", label: "Verifikasi Jurnal", path: "/industri/jurnal" },
-  { key: "evaluasi", label: "Evaluasi", path: "/industri/evaluasi" },
+  { key: "dashboard", label: "Dashboard", path: "/pembimbing" },
+  { key: "siswa", label: "Siswa Bimbingan", path: "/pembimbing/siswa" },
+  { key: "jurnal", label: "Verifikasi Jurnal", path: "/pembimbing/jurnal" },
+  { key: "evaluasi", label: "Evaluasi", path: "/pembimbing/evaluasi" },
 ];
 
 const META = {
@@ -24,9 +24,9 @@ const META = {
 };
 
 function activeKey(pathname) {
-  if (pathname.startsWith("/industri/siswa")) return "siswa";
-  if (pathname.startsWith("/industri/jurnal")) return "jurnal";
-  if (pathname.startsWith("/industri/evaluasi")) return "evaluasi";
+  if (pathname.startsWith("/pembimbing/siswa")) return "siswa";
+  if (pathname.startsWith("/pembimbing/jurnal")) return "jurnal";
+  if (pathname.startsWith("/pembimbing/evaluasi")) return "evaluasi";
   return "dashboard";
 }
 
@@ -58,11 +58,11 @@ function DashboardIndustri() {
         <Route path="siswa" element={<SiswaIndustri onMeta={setMeta} />} />
         <Route
           path="siswa/:id"
-          element={<SiswaDetailRoute variant="industri" listPath="/industri/siswa" onMeta={setMeta} />}
+          element={<SiswaDetailRoute variant="industri" listPath="/pembimbing/siswa" onMeta={setMeta} />}
         />
         <Route path="jurnal" element={<VerifikasiJurnal onMeta={setMeta} />} />
         <Route path="evaluasi" element={<EvaluasiIndustri onMeta={setMeta} />} />
-        <Route path="*" element={<Navigate to="/industri" replace />} />
+        <Route path="*" element={<Navigate to="/pembimbing" replace />} />
       </Routes>
     </RoleLayout>
   );

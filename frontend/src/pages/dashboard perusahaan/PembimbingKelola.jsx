@@ -6,6 +6,7 @@ function PembimbingForm({ initial, onCancel, onSaved }) {
     name: initial?.name || "",
     email: initial?.email || "",
     password: "",
+    password_confirmation: "",
     position: initial?.position || "",
     phone: initial?.phone || "",
   });
@@ -24,6 +25,10 @@ function PembimbingForm({ initial, onCancel, onSaved }) {
       setError("Password minimal 8 karakter.");
       return;
     }
+    if (!initial && form.password !== form.password_confirmation) {
+      setError("Konfirmasi password tidak cocok.");
+      return;
+    }
     setSaving(true);
     try {
       const payload = {
@@ -32,7 +37,10 @@ function PembimbingForm({ initial, onCancel, onSaved }) {
         position: form.position.trim(),
         phone: form.phone.trim(),
       };
-      if (!initial) payload.password = form.password;
+      if (!initial) {
+        payload.password = form.password;
+        payload.password_confirmation = form.password_confirmation;
+      }
       if (initial?.id) await supervisorsApi.update(initial.id, payload);
       else await supervisorsApi.store(payload);
       onSaved?.();
@@ -51,7 +59,10 @@ function PembimbingForm({ initial, onCancel, onSaved }) {
         <label className="zip-field"><span>Nama lengkap</span><input value={form.name} onChange={set("name")} placeholder="Nama lengkap" /></label>
         <label className="zip-field"><span>Email</span><input type="email" value={form.email} onChange={set("email")} placeholder="Email" /></label>
         {!initial && (
-          <label className="zip-field"><span>Password (min. 8 karakter)</span><input type="password" value={form.password} onChange={set("password")} placeholder="Password" /></label>
+          <label className="zip-field"><span>Password (min. 8 karakter)</span><input type="password" value={form.password} onChange={set("password")} placeholder="Password" autoComplete="new-password" /></label>
+        )}
+        {!initial && (
+          <label className="zip-field"><span>Konfirmasi Password</span><input type="password" value={form.password_confirmation} onChange={set("password_confirmation")} placeholder="Ulangi password" autoComplete="new-password" /></label>
         )}
         <label className="zip-field"><span>Posisi / Jabatan</span><input value={form.position} onChange={set("position")} placeholder="cth: Frontend Dev" /></label>
         <label className="zip-field"><span>No. HP</span><input value={form.phone} onChange={set("phone")} placeholder="No. HP" /></label>
