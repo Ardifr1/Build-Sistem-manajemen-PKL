@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
-import RoleLayout from "../../layouts/role/role.jsx";
+import AppShell from "../../components/role/app-shell.jsx";
+import { authApi } from "../../api/index.js";
 import "../dashboard admin/admin-pages.css";
 import "./perusahaan-pages.css";
 import Dashboard from "./PerusahaanDashboard.jsx";
@@ -11,12 +12,14 @@ import PembimbingKelola from "./PembimbingKelola.jsx";
 import EvaluasiPerusahaan from "./EvaluasiPerusahaan.jsx";
 
 const MENUS = [
-  { key: "dashboard", label: "Dashboard", path: "/perusahaan" },
-  { key: "profil", label: "Profil Perusahaan", path: "/perusahaan/profil" },
-  { key: "pengajuan", label: "Pengajuan Magang", path: "/perusahaan/pengajuan" },
-  { key: "interview", label: "Seleksi & Interview", path: "/perusahaan/interview" },
-  { key: "pembimbing", label: "Pembimbing", path: "/perusahaan/pembimbing" },
-  { key: "evaluasi", label: "Evaluasi", path: "/perusahaan/evaluasi" },
+  { title: "Menu Utama", items: [
+    { key: "dashboard", label: "Dashboard", icon: "fa-table-cells-large", path: "/perusahaan" },
+    { key: "profil", label: "Profil Perusahaan", icon: "fa-building", path: "/perusahaan/profil" },
+    { key: "pengajuan", label: "Pengajuan Magang", icon: "fa-inbox", path: "/perusahaan/pengajuan" },
+    { key: "interview", label: "Seleksi & Interview", icon: "fa-comments", path: "/perusahaan/interview" },
+    { key: "pembimbing", label: "Pembimbing", icon: "fa-user-tie", path: "/perusahaan/pembimbing" },
+    { key: "evaluasi", label: "Evaluasi", icon: "fa-star", path: "/perusahaan/evaluasi" },
+  ]},
 ];
 
 const META = {
@@ -43,20 +46,22 @@ function DashboardPerusahaan() {
   const [meta, setMeta] = useState({});
   const key = activeKey(location.pathname);
   const base = META[key] || META.dashboard;
+  const user = authApi.currentUser();
 
   const goMenu = (menuKey) => {
     setMeta({});
-    const m = MENUS.find((x) => x.key === menuKey);
+    const m = MENUS[0].items.find((x) => x.key === menuKey);
     if (m) navigate(m.path);
   };
 
   return (
-    <RoleLayout
-      menus={MENUS}
+    <AppShell
       roleLabel="PERUSAHAAN"
-      orgLabel="PT Maju Digital"
+      menus={MENUS}
       active={key}
       onNavigate={goMenu}
+      user={user}
+      userSub={user?.company_name || "Perusahaan Mitra"}
       title={meta.title || base.title}
       subtitle={meta.subtitle !== undefined ? meta.subtitle : base.subtitle}
     >
@@ -69,7 +74,7 @@ function DashboardPerusahaan() {
         <Route path="evaluasi" element={<EvaluasiPerusahaan onMeta={setMeta} />} />
         <Route path="*" element={<Navigate to="/perusahaan" replace />} />
       </Routes>
-    </RoleLayout>
+    </AppShell>
   );
 }
 

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
-import RoleLayout from "../../layouts/role/role.jsx";
+import AppShell from "../../components/role/app-shell.jsx";
+import { authApi } from "../../api/index.js";
 import "../dashboard admin/admin-pages.css";
 import "./guru-pages.css";
 import Dashboard from "./GuruDashboard.jsx";
@@ -11,11 +12,13 @@ import Penilaian from "./Penilaian.jsx";
 import SiswaDetailRoute from "../../components/role/siswa-detail-route.jsx";
 
 const MENUS = [
-  { key: "dashboard", label: "Dashboard", path: "/guru" },
-  { key: "siswa", label: "Siswa Bimbingan", path: "/guru/siswa" },
-  { key: "absensi", label: "Absensi", path: "/guru/absensi" },
-  { key: "jurnal", label: "Monitoring Jurnal", path: "/guru/jurnal" },
-  { key: "penilaian", label: "Penilaian", path: "/guru/penilaian" },
+  { title: "Menu Utama", items: [
+    { key: "dashboard", label: "Dashboard", icon: "fa-table-cells-large", path: "/guru" },
+    { key: "siswa", label: "Siswa Bimbingan", icon: "fa-users", path: "/guru/siswa" },
+    { key: "absensi", label: "Absensi", icon: "fa-calendar-check", path: "/guru/absensi" },
+    { key: "jurnal", label: "Monitoring Jurnal", icon: "fa-book-open", path: "/guru/jurnal" },
+    { key: "penilaian", label: "Penilaian", icon: "fa-award", path: "/guru/penilaian" },
+  ]},
 ];
 
 const META = {
@@ -40,20 +43,22 @@ function DashboardGuru() {
   const [meta, setMeta] = useState({});
   const key = activeKey(location.pathname);
   const base = META[key] || META.dashboard;
+  const user = authApi.currentUser();
 
   const goMenu = (menuKey) => {
     setMeta({});
-    const m = MENUS.find((x) => x.key === menuKey);
+    const m = MENUS[0].items.find((x) => x.key === menuKey);
     if (m) navigate(m.path);
   };
 
   return (
-    <RoleLayout
-      menus={MENUS}
+    <AppShell
       roleLabel="GURU"
-      orgLabel="SMKN 1"
+      menus={MENUS}
       active={key}
       onNavigate={goMenu}
+      user={user}
+      userSub="Guru Pembimbing"
       title={meta.title || base.title}
       subtitle={meta.subtitle !== undefined ? meta.subtitle : base.subtitle}
     >
@@ -69,7 +74,7 @@ function DashboardGuru() {
         <Route path="penilaian" element={<Penilaian onMeta={setMeta} />} />
         <Route path="*" element={<Navigate to="/guru" replace />} />
       </Routes>
-    </RoleLayout>
+    </AppShell>
   );
 }
 

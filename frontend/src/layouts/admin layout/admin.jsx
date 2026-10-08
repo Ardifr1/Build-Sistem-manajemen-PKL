@@ -1,6 +1,5 @@
-import Sidebar from "../../components/admin/sidebar";
-import Topbar from "../../components/admin/Topbar.jsx";
-import "./admin.css";
+import AppShell from "../../components/role/app-shell.jsx";
+import { authApi } from "../../api/index.js";
 
 export const PAGE_META = {
   dashboard: {
@@ -37,19 +36,39 @@ export const PAGE_META = {
   },
 };
 
+const MENUS = [
+  { title: "Menu Utama", items: [
+    { key: "dashboard", label: "Dashboard", icon: "fa-table-cells-large" },
+  ]},
+  { title: "Data Master", items: [
+    { key: "pengguna", label: "Pengguna", icon: "fa-users" },
+    { key: "siswa", label: "Data Siswa", icon: "fa-user-graduate" },
+    { key: "guru", label: "Data Guru", icon: "fa-chalkboard-user" },
+    { key: "perusahaan", label: "Perusahaan Partner", icon: "fa-building" },
+  ]},
+  { title: "PKL", items: [
+    { key: "periode", label: "Periode PKL", icon: "fa-calendar-days" },
+    { key: "persetujuan", label: "Persetujuan", icon: "fa-clipboard-check" },
+    { key: "jurnal", label: "Monitoring Jurnal", icon: "fa-book-open" },
+  ]},
+];
+
 function AdminLayout({ active = "dashboard", onNavigate, title, subtitle, children }) {
   const meta = PAGE_META[active] || PAGE_META.dashboard;
+  const user = authApi.currentUser();
   return (
-    <div className="admin-layout">
-      <Sidebar active={active} onNavigate={onNavigate} />
-      <div className="admin-right">
-        <Topbar
-          title={title || meta.title}
-          subtitle={subtitle !== undefined ? subtitle : meta.subtitle || ""}
-        />
-        <main className="admin-content">{children}</main>
-      </div>
-    </div>
+    <AppShell
+      roleLabel="ADMIN"
+      menus={MENUS}
+      active={active}
+      onNavigate={onNavigate}
+      user={user}
+      userSub="Administrator"
+      title={title || meta.title}
+      subtitle={subtitle !== undefined ? subtitle : meta.subtitle || ""}
+    >
+      {children}
+    </AppShell>
   );
 }
 

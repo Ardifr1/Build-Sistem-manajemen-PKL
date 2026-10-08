@@ -20,9 +20,15 @@ function initials(name) {
 }
 
 /* ---------- sidebar ---------- */
-function SiswaSidebar({ menus, active, onNavigate, user, fase, onLogout }) {
+function SiswaSidebar({ menus, active, onNavigate, user, fase, onLogout, open, onClose }) {
   return (
-    <aside className="siswa-sidebar">
+    <>
+      <div
+        className={`siswa-overlay ${open ? "show" : ""}`}
+        onClick={onClose}
+        aria-hidden="true"
+      />
+      <aside className={`siswa-sidebar ${open ? "open" : ""}`}>
       <div className="siswa-brand">
         <span className="siswa-brand-mark">
           <img src="/logo-simagang.png" alt="SiMagang" onError={(e) => { e.currentTarget.style.display = "none"; }} />
@@ -63,11 +69,12 @@ function SiswaSidebar({ menus, active, onNavigate, user, fase, onLogout }) {
         <span>Keluar</span>
       </button>
     </aside>
+    </>
   );
 }
 
 /* ---------- topbar ---------- */
-function SiswaTopbar({ title, subtitle, periodeLabel, fase, user }) {
+function SiswaTopbar({ title, subtitle, periodeLabel, fase, user, onMenu }) {
   const logout = () => {
     authApi.logout().catch(() => {});
     try {
@@ -78,6 +85,9 @@ function SiswaTopbar({ title, subtitle, periodeLabel, fase, user }) {
   };
   return (
     <header className="siswa-topbar">
+      <button type="button" className="siswa-hamburger" onClick={onMenu} aria-label="Menu">
+        <i className="fa-solid fa-bars"></i>
+      </button>
       <div className="siswa-topbar-tx">
         <h1>{title}</h1>
         {subtitle && <p>{subtitle}</p>}
@@ -184,6 +194,7 @@ function DashboardSiswaShell() {
   const [fase, setFase] = useState(1);
   const [placement, setPlacement] = useState(null);
   const [periodeLabel, setPeriodeLabel] = useState("");
+  const [navOpen, setNavOpen] = useState(false);
   const user = authApi.currentUser();
 
   useEffect(() => {
@@ -209,8 +220,13 @@ function DashboardSiswaShell() {
   const key = activeKey(location.pathname);
   const base = META[key] || META.dashboard;
   const flat = menus.flatMap((s) => s.items);
+
+  useEffect(() => {
+    setNavOpen(false);
+  }, [location.pathname]);
   const goMenu = (menuKey) => {
     setMeta({});
+    setNavOpen(false);
     const m = flat.find((x) => x.key === menuKey);
     if (m) navigate(m.path);
   };
@@ -224,7 +240,7 @@ function DashboardSiswaShell() {
 
   return (
     <div className="siswa-layout">
-      <SiswaSidebar menus={menus} active={key} onNavigate={goMenu} user={user} fase={fase} onLogout={() => {
+      <SiswaSidebar menus={menus} active={key} onNavigate={goMenu} user={user} fase={fase} open={navOpen} onClose={() => setNavOpen(false)} onLogout={() => {
         authApi.logout().catch(() => {});
         try {
           localStorage.removeItem("simagang_token");
@@ -239,6 +255,7 @@ function DashboardSiswaShell() {
           periodeLabel={periodeLabel}
           fase={fase}
           user={user}
+          onMenu={() => setNavOpen(true)}
         />
         <main className="siswa-content">
           <Routes>

@@ -1,0 +1,86 @@
+/* app-shell.css — shell bersama dashboard (adaptasi gaya dashboard siswa).
+   Dipakai: admin, guru, perusahaan, pembimbing. */
+
+.shell-layout{display:flex;min-height:100vh;background:#f3f6fb;font-family:inherit}
+.shell-main{flex:1;min-width:0;display:flex;flex-direction:column}
+.shell-content{padding:24px 28px;max-width:1280px;width:100%;margin:0 auto;flex:1;min-width:0}
+
+.shell-sidebar{width:252px;min-width:252px;background:#0c1424;color:#cbd5e1;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.shell-brand{display:flex;align-items:center;gap:12px;padding:22px 20px 18px}
+.shell-brand-mark{width:44px;height:44px;border-radius:10px;background:#1e293b;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}
+.shell-brand-mark img{width:100%;height:100%;object-fit:cover}
+.shell-brand-text{display:flex;flex-direction:column;line-height:1.25}
+.shell-brand-text strong{font-size:16px;font-weight:700;color:#fff}
+.shell-brand-text small{font-size:10px;letter-spacing:.14em;color:#64748b;font-weight:600}
+.shell-nav{flex:1;padding:4px 12px 12px;overflow-y:auto}
+.shell-nav-sec{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#64748b;font-weight:600;padding:14px 12px 8px}
+.shell-nav-item{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:transparent;border:0;color:#94a3b8;font-size:13.5px;font-weight:500;padding:10px 12px;border-radius:10px;cursor:pointer;margin-bottom:2px;transition:background .15s,color .15s}
+.shell-nav-item i{width:18px;text-align:center;font-size:14px;flex-shrink:0}
+.shell-nav-item:hover{background:#16203a;color:#e2e8f0}
+.shell-nav-item.active{background:#2563eb;color:#fff;font-weight:600;box-shadow:0 4px 12px rgba(37,99,235,.35)}
+.shell-nav-item .lock{margin-left:auto;font-size:11px;color:#475569}
+.shell-nav-item.active .lock{color:#bfdbfe}
+.shell-user{margin:12px;padding:12px;background:#16203a;border-radius:12px;display:flex;align-items:center;gap:12px}
+.shell-user-av{width:40px;height:40px;border-radius:50%;background:#2563eb;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0}
+.shell-user-tx{display:flex;flex-direction:column;line-height:1.35;min-width:0}
+.shell-user-tx strong{font-size:13px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.shell-user-tx small{font-size:11px;color:#64748b}
+
+.shell-logout{display:flex;align-items:center;gap:10px;width:calc(100% - 24px);margin:0 12px 12px;padding:11px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:#fca5a5;font-size:13.5px;font-weight:600;cursor:pointer;transition:.15s}
+.shell-logout:hover{background:rgba(220,38,38,.25);border-color:rgba(252,165,165,.3);color:#fecaca}
+.shell-logout i{font-size:14px}
+
+.shell-topbar{display:flex;align-items:center;gap:16px;padding:18px 28px;background:#f3f6fb;position:sticky;top:0;z-index:50}
+.shell-topbar-tx h1{margin:0;font-size:20px;font-weight:700;color:#0f172a}
+.shell-topbar-tx p{margin:4px 0 0;font-size:12.5px;color:#94a3b8}
+.shell-topbar-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.shell-periode{display:inline-flex;align-items:center;gap:7px;background:#dbeafe;border:1px solid #bfdbfe;color:#1d4ed8;font-size:12px;font-weight:700;border-radius:999px;padding:8px 16px}
+.shell-periode .dot{width:7px;height:7px;border-radius:50%;background:#2563eb}
+.shell-bell{width:40px;height:40px;border-radius:12px;background:#fff;border:1px solid #e2e8f0;display:flex;align-items:center;justify-content:center;color:#64748b;cursor:pointer;font-size:15px;position:relative;transition:.15s}
+.shell-bell:hover{border-color:#bfdbfe;color:#2563eb}
+.shell-bell .ping{position:absolute;top:9px;right:11px;width:7px;height:7px;border-radius:50%;background:#ef4444;border:2px solid #fff}
+.shell-avatar{width:40px;height:40px;border-radius:50%;background:#2563eb;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;cursor:pointer}
+
+@media(max-width:900px){
+  .shell-sidebar{width:210px;min-width:210px}
+  .shell-content{padding:16px}
+  .shell-topbar{padding:14px 16px}
+}
+
+/* ============================================================
+   RESPONSIF MOBILE (≤768px) — 2026-10-08
+   ============================================================ */
+
+/* --- hamburger (disembunyikan di desktop) --- */
+.shell-hamburger{display:none;width:40px;height:40px;border-radius:12px;background:#fff;border:1px solid #e2e8f0;color:#334155;font-size:16px;cursor:pointer;align-items:center;justify-content:center;flex-shrink:0}
+.shell-hamburger:hover{border-color:#bfdbfe;color:#2563eb}
+
+/* --- overlay drawer --- */
+.shell-overlay{position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:998;opacity:0;pointer-events:none;transition:opacity .2s}
+.shell-overlay.show{opacity:1;pointer-events:auto}
+
+/* --- sembunyikan scrollbar nav --- */
+.shell-nav{scrollbar-width:none;-ms-overflow-style:none}
+.shell-nav::-webkit-scrollbar{display:none}
+
+@media(max-width:768px){
+  /* sidebar jadi drawer */
+  .shell-sidebar{position:fixed;left:0;top:0;bottom:0;height:100dvh;z-index:999;transform:translateX(-105%);transition:transform .25s ease;box-shadow:8px 0 30px rgba(0,0,0,.25);width:252px;min-width:252px}
+  .shell-sidebar.open{transform:translateX(0)}
+  .shell-hamburger{display:inline-flex}
+
+  /* topbar */
+  .shell-topbar{padding:12px 14px;gap:10px}
+  .shell-topbar-tx h1{font-size:16px}
+  .shell-topbar-tx p{font-size:11.5px;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+  .shell-periode{display:none}
+  .shell-bell{width:36px;height:36px}
+  .shell-avatar{width:36px;height:36px}
+
+  /* konten */
+  .shell-content{padding:14px}
+}
+
+@media(max-width:420px){
+  .shell-topbar-tx p{display:none}
+}
