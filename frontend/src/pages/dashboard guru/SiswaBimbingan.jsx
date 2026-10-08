@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getEnrichedPlacements, statusLabel } from "../../lib/role-data.js";
+import { getEnrichedPlacements, getJournalsForPlacements, statusLabel } from "../../lib/role-data.js";
 import { initials, avatarColor } from "../../components/admin/user-table.jsx";
 
 function SiswaBimbingan({ onMeta }) {
   const navigate = useNavigate();
   const [placements, setPlacements] = useState([]);
+  const [sepiIds, setSepiIds] = useState(new Set());
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -14,6 +15,18 @@ function SiswaBimbingan({ onMeta }) {
       try {
         const rows = await getEnrichedPlacements();
         setPlacements(rows);
+        // Cek jurnal 3 hari terakhir per siswa
+        try {
+          const journals = await getJournalsForPlacements(rows);
+          const batas = Date.now() - 3 * 864e5;
+          const sepi = new Set();
+          for (const pl of rows) {
+            const js = journals.filter((j) => String(j.placement_id) === String(pl.id));
+            const terakhir = js[0]?.journal_date;
+            if (!terakhir || new Date(terakhir).getTime() < batas) sepi.add(pl.id);
+          }
+          setSepiIds(sepi);
+        } catch { /* abaikan */ }
         onMeta?.({ title: "Siswa Bimbingan", subtitle: `${rows.length} siswa • klik detail` });
       } finally {
         setLoading(false);
@@ -55,6 +68,11 @@ function SiswaBimbingan({ onMeta }) {
                     : p.status === "completed"
                       ? <span className="zip-badge b-blue">Selesai</span>
                       : <span className="zip-badge b-gray">{statusLabel(p.status)}</span>}
+                  {sepiIds.has(p.id) && p.status === "active" && (
+                    <span className="zip-badge b-red" title="Belum mengisi jurnal 3 hari terakhir" style={{ marginLeft: 6 }}>
+                      <i className="fa-solid fa-triangle-exclamation"></i> Jurnal sepi
+                    </span>
+                  )}
                 </td>
                 <td style={{ textAlign: "right" }}>
                   <button
