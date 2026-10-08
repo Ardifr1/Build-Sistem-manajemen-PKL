@@ -87,9 +87,9 @@ function PerusahaanDashboard({ onMeta }) {
         </div>
         <div className="zip-card">
           <h3 className="zip-card-title" style={{ marginTop: 0 }}>Notifikasi</h3>
-          <div className="zip-notif"><div className="ic">📥</div><div><strong>Pengajuan baru</strong> — perlu review & jadwal interview</div></div>
-          <div className="zip-notif"><div className="ic">🗓️</div><div><strong>Interview terjadwal</strong> — cek menu Seleksi & Interview</div></div>
-          <div className="zip-notif"><div className="ic">⭐</div><div><strong>Evaluasi</strong> — siswa aktif perlu dinilai</div></div>
+          <div className="zip-notif"><div className="ic"><i className="fa-solid fa-inbox"></i></div><div><strong>Pengajuan baru</strong> — perlu review & jadwal interview</div></div>
+          <div className="zip-notif"><div className="ic"><i className="fa-solid fa-calendar-days"></i></div><div><strong>Interview terjadwal</strong> — cek menu Seleksi & Interview</div></div>
+          <div className="zip-notif"><div className="ic"><i className="fa-solid fa-star"></i></div><div><strong>Evaluasi</strong> — siswa aktif perlu dinilai</div></div>
         </div>
       </div>
     </div>
