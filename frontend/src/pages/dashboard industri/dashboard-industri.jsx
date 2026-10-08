@@ -8,6 +8,7 @@ import Dashboard from "./IndustriDashboard.jsx";
 import SiswaIndustri from "./SiswaIndustri.jsx";
 import VerifikasiJurnal from "./VerifikasiJurnal.jsx";
 import EvaluasiIndustri from "./EvaluasiIndustri.jsx";
+import ProfilPembimbing from "./ProfilPembimbing.jsx";
 import SiswaDetailRoute from "../../components/role/siswa-detail-route.jsx";
 
 const MENUS = [
@@ -24,12 +25,16 @@ const META = {
   siswa: { title: "Siswa Bimbingan", subtitle: "" },
   jurnal: { title: "Verifikasi Jurnal", subtitle: "Setujui / Minta Revisi + catatan" },
   evaluasi: { title: "Evaluasi Siswa", subtitle: "Disiplin • sikap • kompetensi • feedback" },
+  profil: { title: "Profil Saya", subtitle: "Data diri pembimbing industri" },
 };
+
+const HIDDEN = { profil: "/pembimbing/profil" };
 
 function activeKey(pathname) {
   if (pathname.startsWith("/pembimbing/siswa")) return "siswa";
   if (pathname.startsWith("/pembimbing/jurnal")) return "jurnal";
   if (pathname.startsWith("/pembimbing/evaluasi")) return "evaluasi";
+  if (pathname.startsWith("/pembimbing/profil")) return "profil";
   return "dashboard";
 }
 
@@ -44,7 +49,8 @@ function DashboardIndustri() {
   const goMenu = (menuKey) => {
     setMeta({});
     const m = MENUS[0].items.find((x) => x.key === menuKey);
-    if (m) navigate(m.path);
+    if (m) { navigate(m.path); return; }
+    if (HIDDEN[menuKey]) navigate(HIDDEN[menuKey]);
   };
 
   return (
@@ -55,6 +61,7 @@ function DashboardIndustri() {
       onNavigate={goMenu}
       user={user}
       userSub="Pembimbing Industri"
+      profileKey="profil"
       title={meta.title || base.title}
       subtitle={meta.subtitle !== undefined ? meta.subtitle : base.subtitle}
     >
@@ -67,6 +74,7 @@ function DashboardIndustri() {
         />
         <Route path="jurnal" element={<VerifikasiJurnal onMeta={setMeta} />} />
         <Route path="evaluasi" element={<EvaluasiIndustri onMeta={setMeta} />} />
+        <Route path="profil" element={<ProfilPembimbing onMeta={setMeta} />} />
         <Route path="*" element={<Navigate to="/pembimbing" replace />} />
       </Routes>
     </AppShell>

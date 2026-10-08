@@ -34,6 +34,10 @@ export const PAGE_META = {
     title: "Monitoring Jurnal",
     subtitle: "Verifikasi jurnal per perusahaan",
   },
+  profil: {
+    title: "Profil Saya",
+    subtitle: "Data diri administrator",
+  },
 };
 
 const MENUS = [
@@ -64,6 +68,7 @@ function AdminLayout({ active = "dashboard", onNavigate, title, subtitle, childr
       onNavigate={onNavigate}
       user={user}
       userSub="Administrator"
+      profileKey="profil"
       title={title || meta.title}
       subtitle={subtitle !== undefined ? subtitle : meta.subtitle || ""}
     >

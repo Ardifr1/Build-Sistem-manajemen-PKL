@@ -9,6 +9,7 @@ import SiswaBimbingan from "./SiswaBimbingan.jsx";
 import Absensi from "./Absensi.jsx";
 import MonitoringJurnal from "./MonitoringJurnal.jsx";
 import Penilaian from "./Penilaian.jsx";
+import ProfilGuru from "./ProfilGuru.jsx";
 import SiswaDetailRoute from "../../components/role/siswa-detail-route.jsx";
 
 const MENUS = [
@@ -27,13 +28,17 @@ const META = {
   absensi: { title: "Absensi Siswa Bimbingan", subtitle: "Rekap kehadiran" },
   jurnal: { title: "Monitoring Jurnal", subtitle: "Read-only • filter siswa & status" },
   penilaian: { title: "Penilaian Detail", subtitle: "Rekap • nilai akhir setelah SELESAI" },
+  profil: { title: "Profil Saya", subtitle: "Data diri guru pembimbing" },
 };
+
+const HIDDEN = { profil: "/guru/profil" };
 
 function activeKey(pathname) {
   if (pathname.startsWith("/guru/siswa")) return "siswa";
   if (pathname.startsWith("/guru/absensi")) return "absensi";
   if (pathname.startsWith("/guru/jurnal")) return "jurnal";
   if (pathname.startsWith("/guru/penilaian")) return "penilaian";
+  if (pathname.startsWith("/guru/profil")) return "profil";
   return "dashboard";
 }
 
@@ -48,7 +53,8 @@ function DashboardGuru() {
   const goMenu = (menuKey) => {
     setMeta({});
     const m = MENUS[0].items.find((x) => x.key === menuKey);
-    if (m) navigate(m.path);
+    if (m) { navigate(m.path); return; }
+    if (HIDDEN[menuKey]) navigate(HIDDEN[menuKey]);
   };
 
   return (
@@ -59,6 +65,7 @@ function DashboardGuru() {
       onNavigate={goMenu}
       user={user}
       userSub="Guru Pembimbing"
+      profileKey="profil"
       title={meta.title || base.title}
       subtitle={meta.subtitle !== undefined ? meta.subtitle : base.subtitle}
     >
@@ -72,6 +79,7 @@ function DashboardGuru() {
         <Route path="jurnal" element={<MonitoringJurnal onMeta={setMeta} />} />
         <Route path="absensi" element={<Absensi onMeta={setMeta} />} />
         <Route path="penilaian" element={<Penilaian onMeta={setMeta} />} />
+        <Route path="profil" element={<ProfilGuru onMeta={setMeta} />} />
         <Route path="*" element={<Navigate to="/guru" replace />} />
       </Routes>
     </AppShell>
