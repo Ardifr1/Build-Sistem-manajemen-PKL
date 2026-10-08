@@ -58,15 +58,19 @@ function AbsenSiswa({ onMeta, placement }) {
     try {
       const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
       streamRef.current = s;
-      if (videoRef.current) {
-        videoRef.current.srcObject = s;
-        await videoRef.current.play().catch(() => {});
-      }
-      setCamOn(true);
+      setCamOn(true); // video element muncul setelah ini, stream di-attach via effect
     } catch {
       setMsg({ t: "Kamera tidak bisa diakses. Pakai tombol pilih file sebagai gantinya.", ok: false });
     }
   };
+
+  // Attach stream ke video setiap kali camOn true & video sudah di DOM
+  useEffect(() => {
+    if (camOn && videoRef.current && streamRef.current) {
+      videoRef.current.srcObject = streamRef.current;
+      videoRef.current.play().catch(() => {});
+    }
+  }, [camOn]);
 
   const stopCam = () => {
     streamRef.current?.getTracks().forEach((t) => t.stop());
