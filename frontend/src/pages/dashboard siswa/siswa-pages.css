@@ -242,4 +242,8 @@
 .siswa-loc-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px dashed #e2e8f0;font-size:13.5px}
 .siswa-loc-row span:first-child{color:#64748b}
 .siswa-btn-lg{padding:16px;font-size:15px}
-@media(max-width:900px){.siswa-stats{grid-template-columns:repeat(2,1fr)}.siswa-absen-grid{grid-template-columns:1fr}}
+@media(max-width:1200px){.siswa-stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:900px){.siswa-absen-grid{grid-template-columns:1fr}}
+.siswa-stat{min-width:0}
+.siswa-stat-val{white-space:nowrap}
+.siswa-stat-hint{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
