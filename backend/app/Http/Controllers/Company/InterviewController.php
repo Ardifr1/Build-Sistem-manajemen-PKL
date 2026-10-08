@@ -1,0 +1,159 @@
+<?php
+
+namespace App\Http\Controllers\Company;
+
+use App\Http\Controllers\Controller;
+use App\Models\Interview;
+use App\Models\PklApplication;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+
+class InterviewController extends Controller
+{
+    /**
+     * Interview dijadwalkan oleh perusahaan/pembimbing.
+     * Siswa hanya boleh melihat interview atas lamarannya sendiri.
+     */
+    private function canManage(Request $request): bool
+    {
+        return in_array($request->user()->role, ['admin', 'company', 'supervisor'], true);
+    }
+
+    private function scopeForUser(Request $request, $query)
+    {
+        $user = $request->user();
+
+        // Company/supervisor hanya melihat interview atas lamaran ke perusahaannya.
+        if (in_array($user->role, ['company', 'supervisor'], true)) {
+            $query->whereHas('application', function ($q) use ($user) {
+                $q->whereIn(
+                    'company_id',
+                    \App\Models\CompanySupervisor::query()
+                        ->where('user_id', $user->id)
+                        ->select('company_id')
+                );
+            });
+        }
+
+        // Siswa hanya melihat interview atas lamarannya sendiri.
+        if ($user->role === 'student') {
+            $query->whereHas('application', function ($q) use ($user) {
+                $q->where('student_id', $user->id);
+            });
+        }
+
+        return $query;
+    }
+
+    public function index(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'application_id' => ['nullable', 'integer', 'exists:pkl_applications,id'],
+            'status' => ['nullable', 'string', 'in:scheduled,done,cancelled'],
+        ]);
+
+        $query = $this->scopeForUser($request, Interview::with([
+            'application.company',
+            'application.student',
+        ])->orderByDesc('scheduled_at'));
+
+        if (!empty($validated['application_id'])) {
+            $query->where('application_id', $validated['application_id']);
+        }
+
+        if (!empty($validated['status'])) {
+            $query->where('status', $validated['status']);
+        }
+
+        return response()->json([
+            'message' => 'Data interview berhasil diambil.',
+            'data' => $query->get(),
+        ]);
+    }
+
+    public function show(Request $request, Interview $interview): JsonResponse
+    {
+        $this->scopeForUser($request, Interview::where('id', $interview->id))->firstOrFail();
+
+        $interview->load(['application.company', 'application.student']);
+
+        return response()->json([
+            'message' => 'Data interview berhasil diambil.',
+            'data' => $interview,
+        ]);
+    }
+
+    public function store(Request $request): JsonResponse
+    {
+        if (!$this->canManage($request)) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'application_id' => ['required', 'integer', 'exists:pkl_applications,id'],
+            'scheduled_at' => ['nullable', 'date'],
+            'place' => ['nullable', 'string', 'max:255'],
+            'mode' => ['nullable', 'string', 'in:offline,online'],
+            'status' => ['nullable', 'string', 'in:scheduled,done,cancelled'],
+            'result' => ['nullable', 'string', 'in:passed,failed'],
+            'note' => ['nullable', 'string'],
+        ]);
+
+        $application = PklApplication::findOrFail($validated['application_id']);
+
+        $interview = Interview::create($validated);
+        $interview->load(['application.company', 'application.student']);
+
+        // Otomatis set status lamaran jadi "interview" saat dijadwalkan.
+        if ($application->status === 'pending') {
+            $application->update(['status' => 'interview']);
+        }
+
+        return response()->json([
+            'message' => 'Jadwal interview berhasil disimpan.',
+            'data' => $interview,
+        ], 201);
+    }
+
+    public function update(Request $request, Interview $interview): JsonResponse
+    {
+        if (!$this->canManage($request)) {
+            abort(403);
+        }
+
+        $this->scopeForUser($request, Interview::where('id', $interview->id))->firstOrFail();
+
+        $validated = $request->validate([
+            'scheduled_at' => ['sometimes', 'nullable', 'date'],
+            'place' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'mode' => ['sometimes', 'nullable', 'string', 'in:offline,online'],
+            'status' => ['sometimes', 'nullable', 'string', 'in:scheduled,done,cancelled'],
+            'result' => ['sometimes', 'nullable', 'string', 'in:passed,failed'],
+            'note' => ['sometimes', 'nullable', 'string'],
+        ]);
+
+        $interview->update($validated);
+
+        $interview->load(['application.company', 'application.student']);
+
+        return response()->json([
+            'message' => 'Jadwal interview berhasil diperbarui.',
+            'data' => $interview,
+        ]);
+    }
+
+    public function destroy(Request $request, Interview $interview): JsonResponse
+    {
+        if (!$this->canManage($request)) {
+            abort(403);
+        }
+
+        $this->scopeForUser($request, Interview::where('id', $interview->id))->firstOrFail();
+
+        $interview->delete();
+
+        return response()->json([
+            'message' => 'Jadwal interview berhasil dihapus.',
+        ]);
+    }
+}

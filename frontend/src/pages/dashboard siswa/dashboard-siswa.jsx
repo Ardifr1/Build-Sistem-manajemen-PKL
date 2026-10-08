@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
 import { authApi, placementsApi, periodsApi, companiesApi } from "../../api/index.js";
+import NotifBell from "../../components/role/notif-bell.jsx";
 import "./siswa-pages.css";
 import DashboardSiswa from "./DashboardSiswa.jsx";
 import Pengajuan, { PengajuanDetail, RiwayatPengajuan } from "./Pengajuan.jsx";
@@ -74,7 +75,7 @@ function SiswaSidebar({ menus, active, onNavigate, user, fase, onLogout, open, o
 }
 
 /* ---------- topbar ---------- */
-function SiswaTopbar({ title, subtitle, periodeLabel, fase, user, onMenu }) {
+function SiswaTopbar({ title, subtitle, periodeLabel, fase, user, placement, onMenu }) {
   const logout = () => {
     authApi.logout().catch(() => {});
     try {
@@ -96,10 +97,7 @@ function SiswaTopbar({ title, subtitle, periodeLabel, fase, user, onMenu }) {
         {fase === 2 && periodeLabel && (
           <span className="siswa-periode"><span className="dot"></span>{periodeLabel} • AKTIF</span>
         )}
-        <button type="button" className="siswa-bell" aria-label="Notifikasi">
-          <i className="fa-regular fa-bell"></i>
-          <span className="ping"></span>
-        </button>
+        <NotifBell role="student" ctx={{ user, placement }} btnClass="siswa-bell" />
         <span className="siswa-avatar" title="Keluar" onClick={logout}>{initials(user?.name)}</span>
       </div>
     </header>
@@ -255,6 +253,7 @@ function DashboardSiswaShell() {
           periodeLabel={periodeLabel}
           fase={fase}
           user={user}
+          placement={placement}
           onMenu={() => setNavOpen(true)}
         />
         <main className="siswa-content">

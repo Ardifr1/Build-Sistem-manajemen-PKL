@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { authApi } from "../../api/index.js";
+import NotifBell from "./notif-bell.jsx";
 import "./app-shell.css";
 
 function initials(name) {
@@ -49,6 +50,12 @@ function AppShell({
     setNavOpen(false);
     onNavigate?.(menuKey);
   };
+
+  const roleKey =
+    roleLabel === "GURU" ? "teacher"
+    : roleLabel === "PERUSAHAAN" ? "company"
+    : roleLabel === "PEMBIMBING" ? "supervisor"
+    : "admin";
 
   return (
     <div className="shell-layout">
@@ -115,10 +122,7 @@ function AppShell({
             {periodeLabel && (
               <span className="shell-periode"><span className="dot"></span>{periodeLabel}</span>
             )}
-            <button type="button" className="shell-bell" aria-label="Notifikasi">
-              <i className="fa-regular fa-bell"></i>
-              <span className="ping"></span>
-            </button>
+            <NotifBell role={roleKey} ctx={{ user }} btnClass="shell-bell" />
             <span className="shell-avatar" title="Keluar" onClick={doLogout}>
               {initials(user?.name)}
             </span>

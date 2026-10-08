@@ -1,30 +1,100 @@
 import { useEffect, useState } from "react";
-import { applicationsApi } from "../../api/index.js";
+import { applicationsApi, interviewsApi } from "../../api/index.js";
 
-/* Halaman Seleksi & Interview — jadwal + hasil + form jadwalkan.
-   Backend interviews: tabel sudah ada; endpoint menyusul (sementara data jadwal dari aplikasi berstatus interview). */
+/* Halaman Seleksi & Interview — jadwal + hasil + form jadwalkan (tersambung ke API interviews). */
 function SeleksiInterview({ onMeta }) {
   const [items, setItems] = useState([]);
   const [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [form, setForm] = useState({ student: "", mode: "Online (Google Meet)", date: "", time: "", link: "", pewawancara: "" });
+  const [apps, setApps] = useState([]);
+  const [editingId, setEditingId] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [formError, setFormError] = useState("");
+  const [formOk, setFormOk] = useState("");
+  const [form, setForm] = useState({ application_id: "", mode: "offline", date: "", time: "", link: "", pewawancara: "" });
+
+  const load = async () => {
+    try {
+      const [ir, ar] = await Promise.all([
+        interviewsApi.index().catch(() => ({ data: [] })),
+        applicationsApi.index().catch(() => ({ data: [] })),
+      ]);
+      const ivs = Array.isArray(ir) ? ir : ir?.data || [];
+      const a = Array.isArray(ar) ? ar : ar?.data || [];
+      setItems(ivs);
+      setApps(a.filter((x) => ["pending", "interview"].includes(x.status)));
+      if (ivs[0] && !selected) setSelected(ivs[0]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     onMeta?.({ title: "Seleksi & Interview", subtitle: "Jadwal interview • hasil penilaian" });
-    (async () => {
-      try {
-        const r = await applicationsApi.index();
-        const a = Array.isArray(r) ? r : r?.data || [];
-        const iv = a.filter((x) => x.status === "interview");
-        setItems(iv);
-        if (iv[0]) setSelected(iv[0]);
-      } finally {
-        setLoading(false);
-      }
-    })();
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onMeta]);
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
+
+  const resetForm = () => {
+    setForm({ application_id: "", mode: "offline", date: "", time: "", link: "", pewawancara: "" });
+    setEditingId(null);
+    setFormError("");
+  };
+
+  const simpanJadwal = async () => {
+    setFormError("");
+    setFormOk("");
+    if (!form.application_id) { setFormError("Pilih siswa/lamaran dulu."); return; }
+    if (!form.date || !form.time) { setFormError("Tanggal dan jam wajib diisi."); return; }
+    setSaving(true);
+    try {
+      const payload = {
+        application_id: Number(form.application_id),
+        scheduled_at: `${form.date} ${form.time}:00`,
+        mode: form.mode,
+        place: form.link,
+        note: form.pewawancara ? `Pewawancara: ${form.pewawancara}` : "",
+        status: "scheduled",
+      };
+      if (editingId) {
+        await interviewsApi.update(editingId, payload);
+        setFormOk("Jadwal berhasil diperbarui.");
+      } else {
+        await interviewsApi.store(payload);
+        await applicationsApi.update(Number(form.application_id), { status: "interview" }).catch(() => {});
+        setFormOk("Jadwal berhasil disimpan.");
+      }
+      resetForm();
+      await load();
+    } catch (e) {
+      setFormError(e?.message || "Gagal menyimpan jadwal.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const jadwalUlang = (iv) => {
+    const [d, t] = String(iv.scheduled_at || "").split(/[T ]/);
+    setEditingId(iv.id);
+    setForm({
+      application_id: String(iv.application_id || ""),
+      mode: iv.mode || "offline",
+      date: d || "",
+      time: (t || "").slice(0, 5),
+      link: iv.place || "",
+      pewawancara: String(iv.note || "").replace(/^Pewawancara:\s*/, ""),
+    });
+    setFormError("");
+    setFormOk("");
+    window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+  };
+
+  const appName = (id) => {
+    const a = apps.find((x) => String(x.id) === String(id));
+    return a ? `${a.student?.name || "-"} • ${a.position || a.division || "-"}` : "-";
+  };
 
   return (
     <div className="zip-page">
@@ -35,50 +105,64 @@ function SeleksiInterview({ onMeta }) {
           {items.length === 0 && <div className="zip-muted">Belum ada jadwal interview.</div>}
           {items.map((x) => (
             <div key={x.id} className={`zip-iv${selected?.id === x.id ? " active" : ""}`} onClick={() => setSelected(x)}>
-              <span className="zip-badge b-blue" style={{ float: "right" }}>Interview</span>
-              <div className="time">{x.interview_time || "—"}</div>
-              <div className="nm">{x.student?.name || "-"}</div>
-              <div className="meta">{x.position || "-"} • {x.interview_mode || "Online"}</div>
+              <span className={`zip-badge ${x.status === "done" ? "b-green" : x.status === "cancelled" ? "b-red" : "b-blue"}`} style={{ float: "right" }}>
+                {x.status === "done" ? "Selesai" : x.status === "cancelled" ? "Batal" : "Terjadwal"}
+              </span>
+              <div className="time">{String(x.scheduled_at || "—").slice(0, 16).replace("T", " ")}</div>
+              <div className="nm">{x.application?.student?.name || appName(x.application_id)}</div>
+              <div className="meta">{x.mode === "online" ? "Online" : "Offline"} • {x.place || "-"}</div>
             </div>
           ))}
         </div>
         <div className="zip-card">
-          <h3 className="zip-card-title" style={{ marginTop: 0 }}>Hasil Interview{selected ? ` — ${selected.student?.name}` : ""}</h3>
+          <h3 className="zip-card-title" style={{ marginTop: 0 }}>Hasil Interview{selected ? ` — ${selected.application?.student?.name || appName(selected.application_id)}` : ""}</h3>
           {!selected && <div className="zip-muted">Pilih jadwal di kiri.</div>}
           {selected && (
             <>
-              <div style={{ fontSize: 12.5, color: "#94a3b8", marginBottom: 6 }}>
-                {selected.interview_date || ""} • {selected.interview_time || ""} • {selected.interview_mode || ""}
-              </div>
-              {(selected.scores || [
-                { label: "Komunikasi", value: selected.score_communication ?? "-" },
-                { label: "Teknis / Skill", value: selected.score_technical ?? "-" },
-                { label: "Sikap & Motivasi", value: selected.score_attitude ?? "-" },
-              ]).map((s) => (
-                <div className="zip-score" key={s.label}>
-                  <div className="lab"><span>{s.label}</span><span>{s.value}</span></div>
-                  <div className="zip-progress"><div style={{ width: `${Number(s.value) || 0}%` }} /></div>
-                </div>
-              ))}
-              {selected.interview_note && (
-                <div className="zip-note">💬 <strong>Catatan:</strong> {selected.interview_note}</div>
+              <div className="zip-kv"><span>Jadwal</span><b>{String(selected.scheduled_at || "-").slice(0, 16).replace("T", " ")}</b></div>
+              <div className="zip-kv"><span>Mode</span><b>{selected.mode === "online" ? "Online" : "Offline"}</b></div>
+              <div className="zip-kv"><span>Tempat / Link</span><b>{selected.place || "-"}</b></div>
+              <div className="zip-kv"><span>Status</span><b>{selected.status === "done" ? "Selesai" : selected.status === "cancelled" ? "Dibatalkan" : "Terjadwal"}</b></div>
+              <div className="zip-kv"><span>Hasil</span><b>{selected.result === "passed" ? "Lulus" : selected.result === "failed" ? "Tidak lulus" : "-"}</b></div>
+              {selected.note && (
+                <div className="zip-note"><i className="fa-solid fa-note-sticky"></i> <strong>Catatan:</strong> {selected.note}</div>
               )}
-              <div className="zip-actions">
-                <button type="button" className="zip-btn-success" onClick={() => applicationsApi.update(selected.id, { status: "accepted" })}>✓ Terima</button>
-                <button type="button" className="zip-btn-danger" onClick={() => applicationsApi.update(selected.id, { status: "rejected" })}>✕ Tolak</button>
-                <button type="button" className="zip-btn-outline">Jadwal Ulang</button>
+              <div className="zip-actions" style={{ marginTop: 14 }}>
+                <button type="button" className="zip-btn-success" onClick={async () => {
+                  await interviewsApi.update(selected.id, { status: "done", result: "passed" });
+                  if (selected.application_id) await applicationsApi.update(selected.application_id, { status: "accepted" }).catch(() => {});
+                  await load();
+                }}>Lulus & Terima</button>
+                <button type="button" className="zip-btn-danger" onClick={async () => {
+                  await interviewsApi.update(selected.id, { status: "done", result: "failed" });
+                  if (selected.application_id) await applicationsApi.update(selected.application_id, { status: "rejected" }).catch(() => {});
+                  await load();
+                }}>Tidak Lulus</button>
+                <button type="button" className="zip-btn-outline" onClick={() => jadwalUlang(selected)}>Jadwal Ulang</button>
               </div>
             </>
           )}
         </div>
       </div>
 
-      <h3 className="zip-card-title">Jadwalkan Interview Baru</h3>
+      <h3 className="zip-card-title">{editingId ? "Jadwal Ulang Interview" : "Jadwalkan Interview Baru"}</h3>
       <div className="zip-card" style={{ maxWidth: "none" }}>
+        {formError && <div className="zip-error">{formError}</div>}
+        {formOk && <div className="zip-success">{formOk}</div>}
         <div className="zip-form-grid">
-          <label className="zip-field"><span>Nama Siswa</span><input value={form.student} onChange={set("student")} placeholder="Nama siswa" /></label>
+          <label className="zip-field"><span>Siswa / Lamaran</span>
+            <select value={form.application_id} onChange={set("application_id")} disabled={!!editingId}>
+              <option value="">— Pilih lamaran —</option>
+              {apps.map((a) => (
+                <option key={a.id} value={a.id}>{a.student?.name || "-"} • {a.position || a.division || "-"} ({a.status})</option>
+              ))}
+            </select>
+          </label>
           <label className="zip-field"><span>Mode</span>
-            <select value={form.mode} onChange={set("mode")}><option>Online (Google Meet)</option><option>Onsite</option></select>
+            <select value={form.mode} onChange={set("mode")}>
+              <option value="offline">Offline (di lokasi)</option>
+              <option value="online">Online (video call)</option>
+            </select>
           </label>
           <label className="zip-field"><span>Tanggal</span><input type="date" value={form.date} onChange={set("date")} /></label>
           <label className="zip-field"><span>Jam</span><input type="time" value={form.time} onChange={set("time")} /></label>
@@ -86,7 +170,10 @@ function SeleksiInterview({ onMeta }) {
           <label className="zip-field"><span>Pewawancara</span><input value={form.pewawancara} onChange={set("pewawancara")} placeholder="cth: H. Wijaya" /></label>
         </div>
         <div className="zip-form-actions">
-          <button type="button" className="zip-btn-primary">Simpan Jadwal</button>
+          {editingId && <button type="button" className="zip-btn-outline" onClick={resetForm}>Batal Edit</button>}
+          <button type="button" className="zip-btn-primary" disabled={saving} onClick={simpanJadwal}>
+            {saving ? "Menyimpan…" : editingId ? "Perbarui Jadwal" : "Simpan Jadwal"}
+          </button>
         </div>
       </div>
     </div>

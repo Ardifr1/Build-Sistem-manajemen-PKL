@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { applicationsApi, placementsApi, supervisorsApi } from "../../api/index.js";
+import { applicationsApi, interviewsApi, placementsApi, supervisorsApi } from "../../api/index.js";
 
 const TABS = [
   { key: "all", label: "Semua" },
@@ -15,6 +15,12 @@ function PengajuanMagang({ onMeta }) {
   const [assigning, setAssigning] = useState(null);
   const [supervisors, setSupervisors] = useState([]);
   const [selSup, setSelSup] = useState(null);
+  const [scheduling, setScheduling] = useState(null);
+  const [schedForm, setSchedForm] = useState({ date: "", time: "", mode: "offline", place: "", note: "" });
+  const [schedSaving, setSchedSaving] = useState(false);
+  const [schedError, setSchedError] = useState("");
+  const [viewIv, setViewIv] = useState(null);
+  const [viewIvLoading, setViewIvLoading] = useState(false);
 
   const load = async () => {
     try {
@@ -76,6 +82,53 @@ function PengajuanMagang({ onMeta }) {
     }
   };
 
+  const openSchedule = (a) => {
+    setScheduling(a);
+    setSchedForm({ date: "", time: "", mode: "offline", place: "", note: "" });
+    setSchedError("");
+  };
+
+  const doSchedule = async () => {
+    if (!scheduling) return;
+    if (!schedForm.date || !schedForm.time) {
+      setSchedError("Tanggal dan jam wajib diisi.");
+      return;
+    }
+    setSchedSaving(true);
+    setSchedError("");
+    try {
+      await interviewsApi.store({
+        application_id: scheduling.id,
+        scheduled_at: `${schedForm.date} ${schedForm.time}:00`,
+        mode: schedForm.mode,
+        place: schedForm.place,
+        note: schedForm.note,
+        status: "scheduled",
+      });
+      await applicationsApi.update(scheduling.id, { status: "interview" });
+      setScheduling("done");
+      load();
+    } catch (e) {
+      setSchedError(e?.message || "Gagal menyimpan jadwal interview.");
+    } finally {
+      setSchedSaving(false);
+    }
+  };
+
+  const openViewIv = async (a) => {
+    setViewIvLoading(true);
+    setViewIv({ _loading: true, app: a });
+    try {
+      const r = await interviewsApi.index({ application_id: a.id });
+      const rows = Array.isArray(r) ? r : r?.data || [];
+      setViewIv(rows[0] ? { ...rows[0], app: a } : { _empty: true, app: a });
+    } catch {
+      setViewIv({ _empty: true, app: a });
+    } finally {
+      setViewIvLoading(false);
+    }
+  };
+
   const badge = (s) =>
     s === "accepted" ? "b-green" : s === "interview" ? "b-blue" : s === "rejected" ? "b-red" : "b-amber";
   const badgeLabel = (s) =>
@@ -94,7 +147,7 @@ function PengajuanMagang({ onMeta }) {
       {Object.entries(groups).map(([sch, list]) => (
         <div key={sch} style={{ marginBottom: 18 }}>
           <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 10 }}>
-            🏫 {sch} <span className="zip-count">{list.length} pengajuan</span>
+            <i className="fa-solid fa-school"></i> {sch} <span className="zip-count">{list.length} pengajuan</span>
           </div>
           <div className="zip-grid2">
             {list.map((a) => (
@@ -108,14 +161,14 @@ function PengajuanMagang({ onMeta }) {
                 <div className="zip-actions">
                   {a.status === "pending" && (
                     <>
-                      <button type="button" className="zip-btn-primary" onClick={() => act(a, "interview")}>Jadwalkan Interview</button>
+                      <button type="button" className="zip-btn-primary" onClick={() => openSchedule(a)}>Jadwalkan Interview</button>
                       <button type="button" className="zip-btn-success" onClick={() => act(a, "accepted")}>Terima</button>
                       <button type="button" className="zip-btn-danger" onClick={() => act(a, "rejected")}>Tolak</button>
                     </>
                   )}
                   {a.status === "interview" && (
                     <>
-                      <button type="button" className="zip-btn-outline">Lihat Hasil Interview</button>
+                      <button type="button" className="zip-btn-outline" onClick={() => openViewIv(a)}>Lihat Hasil Interview</button>
                       <button type="button" className="zip-btn-success" onClick={() => act(a, "accepted")}>Terima</button>
                       <button type="button" className="zip-btn-danger" onClick={() => act(a, "rejected")}>Tolak</button>
                     </>
@@ -152,6 +205,78 @@ function PengajuanMagang({ onMeta }) {
             <div className="zip-actions" style={{ justifyContent: "flex-end", marginTop: 20 }}>
               <button type="button" className="zip-btn-outline" onClick={() => setAssigning(null)}>Batal</button>
               <button type="button" className="zip-btn-primary" disabled={!selSup} onClick={doAssign}>Tugaskan</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal jadwalkan interview */}
+      {scheduling && scheduling !== "done" && (
+        <div className="zip-modal-overlay" onClick={() => setScheduling(null)}>
+          <div className="zip-modal" onClick={(e) => e.stopPropagation()}>
+            <h2>Jadwalkan Interview</h2>
+            <div className="sub">{scheduling.student?.name || "-"} • {scheduling.position || scheduling.division || "-"}</div>
+            {schedError && <div className="zip-error">{schedError}</div>}
+            <div className="zip-form-grid">
+              <label className="zip-field"><span>Tanggal</span><input type="date" value={schedForm.date} onChange={(e) => setSchedForm((f) => ({ ...f, date: e.target.value }))} /></label>
+              <label className="zip-field"><span>Jam</span><input type="time" value={schedForm.time} onChange={(e) => setSchedForm((f) => ({ ...f, time: e.target.value }))} /></label>
+              <label className="zip-field"><span>Mode</span>
+                <select value={schedForm.mode} onChange={(e) => setSchedForm((f) => ({ ...f, mode: e.target.value }))}>
+                  <option value="offline">Offline (di lokasi)</option>
+                  <option value="online">Online (video call)</option>
+                </select>
+              </label>
+              <label className="zip-field"><span>Tempat / Link</span><input value={schedForm.place} onChange={(e) => setSchedForm((f) => ({ ...f, place: e.target.value }))} placeholder="Ruang meeting / link meet" /></label>
+              <label className="zip-field" style={{ gridColumn: "1 / -1" }}><span>Catatan (opsional)</span><input value={schedForm.note} onChange={(e) => setSchedForm((f) => ({ ...f, note: e.target.value }))} placeholder="cth: bawa CV cetak" /></label>
+            </div>
+            <div className="zip-actions" style={{ justifyContent: "flex-end", marginTop: 20 }}>
+              <button type="button" className="zip-btn-outline" onClick={() => setScheduling(null)}>Batal</button>
+              <button type="button" className="zip-btn-primary" disabled={schedSaving} onClick={doSchedule}>
+                {schedSaving ? "Menyimpan…" : "Simpan Jadwal"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Sukses jadwal */}
+      {scheduling === "done" && (
+        <div className="zip-modal-overlay" onClick={() => setScheduling(null)}>
+          <div className="zip-modal" style={{ textAlign: "center" }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ width: 72, height: 72, borderRadius: "50%", background: "#dbeafe", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
+              <i className="fa-solid fa-calendar-check" style={{ fontSize: 30, color: "#1d4ed8" }}></i>
+            </div>
+            <h2>Interview Terjadwal!</h2>
+            <div className="sub">Status lamaran otomatis menjadi "Interview". Kelola jadwal di menu Seleksi & Interview.</div>
+            <div className="zip-actions" style={{ justifyContent: "center" }}>
+              <button type="button" className="zip-btn-primary" onClick={() => { setScheduling(null); load(); }}>Kembali ke Daftar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal lihat hasil interview */}
+      {viewIv && (
+        <div className="zip-modal-overlay" onClick={() => setViewIv(null)}>
+          <div className="zip-modal" onClick={(e) => e.stopPropagation()}>
+            <h2>Hasil Interview</h2>
+            <div className="sub">{viewIv.app?.student?.name || "-"}</div>
+            {viewIvLoading || viewIv._loading ? (
+              <div className="zip-muted">Memuat…</div>
+            ) : viewIv._empty ? (
+              <div className="zip-muted">Belum ada jadwal interview untuk lamaran ini.</div>
+            ) : (
+              <div>
+                <div className="zip-kv"><span>Jadwal</span><b>{String(viewIv.scheduled_at || "-").slice(0, 16).replace("T", " ")}</b></div>
+                <div className="zip-kv"><span>Mode</span><b>{viewIv.mode === "online" ? "Online" : "Offline"}</b></div>
+                <div className="zip-kv"><span>Tempat / Link</span><b>{viewIv.place || "-"}</b></div>
+                <div className="zip-kv"><span>Status</span><b>{viewIv.status === "done" ? "Selesai" : viewIv.status === "cancelled" ? "Dibatalkan" : "Terjadwal"}</b></div>
+                <div className="zip-kv"><span>Hasil</span><b>{viewIv.result === "passed" ? "Lulus" : viewIv.result === "failed" ? "Tidak lulus" : "-"}</b></div>
+                {viewIv.note && <div className="zip-note"><i className="fa-solid fa-note-sticky"></i> <strong>Catatan:</strong> {viewIv.note}</div>}
+              </div>
+            )}
+            <div className="zip-actions" style={{ justifyContent: "flex-end", marginTop: 20 }}>
+              <button type="button" className="zip-btn-outline" onClick={() => setViewIv(null)}>Tutup</button>
             </div>
           </div>
         </div>

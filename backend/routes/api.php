@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Company\ApplicationReviewController;
 use App\Http\Controllers\Company\CompanyController;
 use App\Http\Controllers\Company\CompanySupervisorController;
+use App\Http\Controllers\Company\InterviewController;
 use App\Http\Controllers\Student\ApplicationDocumentController;
 use App\Http\Controllers\Student\AttendanceController;
 use App\Http\Controllers\Student\JournalController;
@@ -39,6 +40,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('pkl-applications', PklApplicationController::class);
     Route::apiResource('application-documents', ApplicationDocumentController::class);
     Route::apiResource('application-reviews', ApplicationReviewController::class);
+    Route::apiResource('interviews', InterviewController::class);
 
     // PKL Placement
     Route::apiResource('pkl-placements', PklPlacementController::class);

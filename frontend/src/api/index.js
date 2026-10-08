@@ -19,7 +19,7 @@
  * ============================================================================
  */
 
-export const USE_MOCK = false;
+export const USE_MOCK = true;
 
 import * as authMock from "./mock/auth.js";
 import * as authLive from "./live/auth.js";
@@ -32,7 +32,9 @@ import * as applicationsLive from "./live/applications.js";
 import * as placementsMock from "./mock/placements.js";
 import * as placementsLive from "./live/placements.js";
 import * as journalsMock from "./mock/journals.js";
+import * as interviewsMock from "./mock/interviews.js";
 import * as journalsLive from "./live/journals.js";
+import * as interviewsLive from "./live/interviews.js";
 import * as attendancesMock from "./mock/attendances.js";
 import * as attendancesLive from "./live/attendances.js";
 import * as progressMock from "./mock/progress.js";
@@ -58,6 +60,7 @@ export const periodsApi = pick(periodsMock, periodsLive);
 export const applicationsApi = pick(applicationsMock, applicationsLive);
 export const placementsApi = pick(placementsMock, placementsLive);
 export const journalsApi = pick(journalsMock, journalsLive);
+export const interviewsApi = pick(interviewsMock, interviewsLive);
 export const attendancesApi = pick(attendancesMock, attendancesLive);
 export const progressApi = pick(progressMock, progressLive);
 export const feedbacksApi = pick(feedbacksMock, feedbacksLive);

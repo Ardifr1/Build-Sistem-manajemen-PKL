@@ -63,6 +63,13 @@ export const ep = {
     update: id("/application-reviews"),
     destroy: id("/application-reviews"),
   },
+  interviews: {
+    index: "/interviews",
+    show: id("/interviews"),
+    store: "/interviews",
+    update: id("/interviews"),
+    destroy: id("/interviews"),
+  },
   placements: {
     index: "/pkl-placements",
     show: id("/pkl-placements"),
