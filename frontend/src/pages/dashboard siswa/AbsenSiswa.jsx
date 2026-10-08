@@ -82,11 +82,11 @@ function AbsenSiswa({ onMeta, placement }) {
   const reverseGeocode = async (lat, lng) => {
     setAlamatLoading(true);
     try {
+      // Coba BigDataCloud dulu
       const res = await fetch(
         `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=id`
       );
       const d = await res.json();
-      // Format lengkap ala referensi: jalan, area, kota, provinsi, kodepos, negara
       const parts = [
         d.street || d.road,
         d.neighbourhood || d.locality,
@@ -95,13 +95,37 @@ function AbsenSiswa({ onMeta, placement }) {
         d.postcode,
         d.countryName,
       ].filter(Boolean);
-      // Hilangkan duplikat berurutan
       const unik = parts.filter((p, i) => parts.indexOf(p) === i);
-      setAlamat(unik.join(", ") || "Alamat tidak ditemukan");
+      if (unik.length >= 3) {
+        setAlamat(unik.join(", "));
+      } else {
+        // Fallback: Nominatim (OpenStreetMap) untuk detail lebih
+        const nres = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=id`,
+          { headers: { "Accept": "application/json" } }
+        );
+        const nd = await nres.json();
+        setAlamat(nd.display_name || unik.join(", ") || "Alamat tidak ditemukan");
+      }
     } catch {
       setAlamat("Gagal memuat alamat");
     } finally {
       setAlamatLoading(false);
+    }
+  };
+
+  // Paksa ambil ulang lokasi (reset akurasi terbaik)
+  const refreshLokasi = () => {
+    bestAccRef.current = Infinity;
+    setGps(null);
+    setAlamat("");
+    setGpsErr("");
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => terimaPosisi(pos.coords),
+        () => setGpsErr("Izin lokasi ditolak."),
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+      );
     }
   };
 
@@ -276,7 +300,12 @@ function AbsenSiswa({ onMeta, placement }) {
 
           {/* lokasi */}
           <div>
-            <div className="siswa-loc-title">Lokasi Terkini • Real-time</div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+              <div className="siswa-loc-title" style={{ margin: 0 }}>Lokasi Terkini • Real-time</div>
+              <button type="button" className="siswa-btn siswa-btn-outline siswa-btn-sm" onClick={refreshLokasi} title="Perbarui lokasi">
+                <i className="fa-solid fa-rotate"></i> Perbarui
+              </button>
+            </div>
             <div className="siswa-loc-row">
               <span>Koordinat</span>
               <b>{gps ? `${gps.lat.toFixed(4)}, ${gps.lng.toFixed(4)}` : "—"}</b>
