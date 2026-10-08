@@ -20,7 +20,7 @@ function initials(name) {
 }
 
 /* ---------- sidebar ---------- */
-function SiswaSidebar({ menus, active, onNavigate, user, fase }) {
+function SiswaSidebar({ menus, active, onNavigate, user, fase, onLogout }) {
   return (
     <aside className="siswa-sidebar">
       <div className="siswa-brand">
@@ -58,6 +58,10 @@ function SiswaSidebar({ menus, active, onNavigate, user, fase }) {
           <small>{user?.kelas || "Siswa"}{fase === 2 ? " • PKL Aktif" : ""}</small>
         </span>
       </div>
+      <button type="button" className="siswa-logout" onClick={onLogout}>
+        <i className="fa-solid fa-right-from-bracket"></i>
+        <span>Keluar</span>
+      </button>
     </aside>
   );
 }
@@ -220,7 +224,14 @@ function DashboardSiswaShell() {
 
   return (
     <div className="siswa-layout">
-      <SiswaSidebar menus={menus} active={key} onNavigate={goMenu} user={user} fase={fase} />
+      <SiswaSidebar menus={menus} active={key} onNavigate={goMenu} user={user} fase={fase} onLogout={() => {
+        authApi.logout().catch(() => {});
+        try {
+          localStorage.removeItem("simagang_token");
+          localStorage.removeItem("simagang_user");
+        } catch { /* abaikan */ }
+        window.location.href = "/login";
+      }} />
       <div className="siswa-main">
         <SiswaTopbar
           title={meta.title || base.title}

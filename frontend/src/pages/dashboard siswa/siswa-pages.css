@@ -256,3 +256,8 @@
 /* 3. Perusahaan Partner: kartu lebih tegas (tidak menyatu dengan background) */
 .siswa-co-card{border:1px solid #e2e8f0;border-radius:14px;padding:18px;background:#fff;box-shadow:0 2px 8px rgba(15,23,42,.06)}
 .siswa-search{border:1px solid #e2e8f0 !important;box-shadow:0 1px 4px rgba(15,23,42,.05)}
+
+/* --- tombol logout sidebar --- */
+.siswa-logout{display:flex;align-items:center;gap:10px;width:100%;margin-top:10px;padding:11px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:#fca5a5;font-size:13.5px;font-weight:600;cursor:pointer;transition:.15s}
+.siswa-logout:hover{background:rgba(220,38,38,.25);border-color:rgba(252,165,165,.3);color:#fecaca}
+.siswa-logout i{font-size:14px}
