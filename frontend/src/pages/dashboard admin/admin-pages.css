@@ -252,3 +252,8 @@ label.f-label{font-size:11px;font-weight:700;color:var(--text);display:block;mar
 .zip-modal-actions{display:flex;gap:10px;justify-content:center}
 @keyframes zipFade{from{opacity:0}}
 @keyframes zipPop{from{opacity:0;transform:scale(.95) translateY(8px)}}
+
+/* --- form container & grid (dipakai berbagai halaman zip-*) --- */
+.zip-form{display:flex;flex-direction:column;gap:4px}
+.zip-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
+@media(max-width:640px){.zip-form-grid{grid-template-columns:1fr}}

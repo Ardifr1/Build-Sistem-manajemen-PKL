@@ -17,6 +17,14 @@ class SchoolController extends Controller
         ]);
     }
 
+    public function show(School $school): JsonResponse
+    {
+        return response()->json([
+            'message' => 'Data sekolah berhasil diambil.',
+            'data' => $school,
+        ]);
+    }
+
     public function store(Request $request): JsonResponse
     {
         if ($request->user()->role !== 'admin') {

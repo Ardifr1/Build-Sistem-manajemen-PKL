@@ -9,7 +9,8 @@
  *   // res selalu berbentuk { message, data } seperti backend Laravel.
  * ============================================================================
  * CARA MENGHUBUNGKAN BACKEND ASLI:
- *   1. Set USE_MOCK = false di bawah.
+ *   1. Set VITE_USE_MOCK=false di file .env (jangan edit file ini —
+ *      nilainya ikut ke-reset setiap git pull).
  *   2. Set VITE_API_URL di file .env ke alamat backend Laravel
  *      (mis. VITE_API_URL=http://localhost:8000/api).
  *   3. Login lewat halaman login — token tersimpan otomatis di
@@ -19,7 +20,9 @@
  * ============================================================================
  */
 
-export const USE_MOCK = true;
+// Dibaca dari env agar tidak ke-reset saat git pull.
+// Default: false (live, konek backend). Set VITE_USE_MOCK=true untuk mode mock.
+export const USE_MOCK = import.meta.env.VITE_USE_MOCK === "true";
 
 import * as authMock from "./mock/auth.js";
 import * as authLive from "./live/auth.js";
