@@ -222,3 +222,29 @@
 .siswa-flex{display:flex;align-items:center;gap:12px}
 .siswa-between{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .siswa-mt{margin-top:16px}
+
+/* --- absensi ala mockup --- */
+.siswa-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}
+.siswa-stat{background:#fff;border-radius:14px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.siswa-stat-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.siswa-stat-label{font-size:11px;font-weight:700;letter-spacing:.8px;color:#94a3b8;text-transform:uppercase}
+.siswa-stat-ic{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.siswa-stat-val{font-size:30px;font-weight:800;color:#0f172a}
+.siswa-stat-hint{font-size:12px;color:#94a3b8;margin-top:2px}
+.siswa-absen-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.siswa-viewfinder{position:relative;background:#0f172a;border-radius:16px;aspect-ratio:4/3;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.siswa-viewfinder img,.siswa-viewfinder video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.vf-corner{position:absolute;width:28px;height:28px;border:3px solid rgba(255,255,255,.7);z-index:2}
+.vf-corner.tl{top:14px;left:14px;border-right:0;border-bottom:0;border-radius:8px 0 0 0}
+.vf-corner.tr{top:14px;right:14px;border-left:0;border-bottom:0;border-radius:0 8px 0 0}
+.vf-corner.bl{bottom:14px;left:14px;border-right:0;border-top:0;border-radius:0 0 0 8px}
+.vf-corner.br{bottom:14px;right:14px;border-left:0;border-top:0;border-radius:0 0 8px 0}
+.vf-ph{text-align:center;color:#94a3b8;z-index:1}
+.vf-ph i{font-size:40px;margin-bottom:12px;opacity:.6}
+.vf-ph b{display:block;color:#e2e8f0;font-size:14px;margin-bottom:4px}
+.vf-ph small{font-size:12px}
+.siswa-loc-title{font-size:11px;font-weight:700;letter-spacing:.8px;color:#94a3b8;text-transform:uppercase;margin-bottom:14px}
+.siswa-loc-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px dashed #e2e8f0;font-size:13.5px}
+.siswa-loc-row span:first-child{color:#64748b}
+.siswa-btn-lg{padding:16px;font-size:15px}
+@media(max-width:900px){.siswa-stats{grid-template-columns:repeat(2,1fr)}.siswa-absen-grid{grid-template-columns:1fr}}
