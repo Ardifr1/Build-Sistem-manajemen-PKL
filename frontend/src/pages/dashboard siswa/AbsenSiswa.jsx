@@ -22,6 +22,10 @@ function AbsenSiswa({ onMeta, placement }) {
   const [foto, setFoto] = useState(null);
   const [gps, setGps] = useState(null);
   const [gpsErr, setGpsErr] = useState("");
+  const [alamat, setAlamat] = useState("");
+  const [alamatLoading, setAlamatLoading] = useState(false);
+  const bestAccRef = useRef(Infinity);
+  const alamatTimerRef = useRef(null);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState({ t: "", ok: true });
   const [riwayat, setRiwayat] = useState([]);
@@ -33,14 +37,17 @@ function AbsenSiswa({ onMeta, placement }) {
     });
 
     if ("geolocation" in navigator) {
-      watchRef.current = navigator.geolocation.watchPosition(
-        (pos) => setGps({
-          lat: pos.coords.latitude,
-          lng: pos.coords.longitude,
-          acc: Math.round(pos.coords.accuracy || 0),
-        }),
+      // Minta posisi akurat dulu (seperti Google Maps), timeout 15 detik
+      navigator.geolocation.getCurrentPosition(
+        (pos) => terimaPosisi(pos.coords),
         () => setGpsErr("Izin lokasi ditolak. Aktifkan GPS untuk absen."),
-        { enableHighAccuracy: true, maximumAge: 5000 }
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+      );
+      // Lanjutkan pantau untuk perbaikan akurasi
+      watchRef.current = navigator.geolocation.watchPosition(
+        (pos) => terimaPosisi(pos.coords),
+        () => {},
+        { enableHighAccuracy: true, maximumAge: 3000 }
       );
     } else {
       setGpsErr("Perangkat tidak mendukung GPS.");
@@ -50,10 +57,44 @@ function AbsenSiswa({ onMeta, placement }) {
 
     return () => {
       if (watchRef.current) navigator.geolocation.clearWatch(watchRef.current);
+      if (alamatTimerRef.current) clearTimeout(alamatTimerRef.current);
       stopCam();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [placement?.id]);
+
+  // Simpan fix dengan akurasi terbaik; reverse-geocode alamat (debounced 1 detik)
+  const terimaPosisi = (coords) => {
+    const acc = Math.round(coords.accuracy || 9999);
+    if (acc < bestAccRef.current) {
+      bestAccRef.current = acc;
+      setGps({ lat: coords.latitude, lng: coords.longitude, acc });
+      // debounce reverse geocode
+      if (alamatTimerRef.current) clearTimeout(alamatTimerRef.current);
+      alamatTimerRef.current = setTimeout(() => {
+        reverseGeocode(coords.latitude, coords.longitude);
+      }, 1000);
+    } else if (!gps) {
+      setGps({ lat: coords.latitude, lng: coords.longitude, acc });
+    }
+  };
+
+  const reverseGeocode = async (lat, lng) => {
+    setAlamatLoading(true);
+    try {
+      const res = await fetch(
+        `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=id`
+      );
+      const d = await res.json();
+      const parts = [d.road || d.street, d.city || d.locality, d.principalSubdivision, d.countryName]
+        .filter(Boolean);
+      setAlamat(parts.join(", ") || "Alamat tidak ditemukan");
+    } catch {
+      setAlamat("Gagal memuat alamat");
+    } finally {
+      setAlamatLoading(false);
+    }
+  };
 
   const loadRiwayat = async () => {
     try {
@@ -240,7 +281,7 @@ function AbsenSiswa({ onMeta, placement }) {
             <div className="siswa-loc-row">
               <span>Alamat</span>
               <b style={{ textAlign: "right", maxWidth: "60%" }}>
-                {gpsErr ? gpsErr : "Mendeteksi…"}
+                {gpsErr ? gpsErr : alamatLoading ? "Mendeteksi…" : alamat || "—"}
               </b>
             </div>
             <p className="siswa-sub" style={{ marginTop: 12 }}>
