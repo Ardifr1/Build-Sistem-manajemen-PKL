@@ -16,20 +16,33 @@ class PklApplicationController extends Controller
     {
         Gate::authorize('viewAny', PklApplication::class);
         $validated = $request->validate([
-            'student_id' => ['required', 'integer', 'exists:users,id'],
+            'student_id' => ['nullable', 'integer', 'exists:users,id'],
             'pkl_period_id' => ['nullable', 'integer', 'exists:pkl_periods,id'],
         ]);
 
-        if (
-            $request->user()->role === 'student'
-            && (int) $validated['student_id'] !== $request->user()->id
-        ) {
-            abort(403);
-        }
-
+        $user = $request->user();
         $query = PklApplication::with(['company', 'pklPeriod'])
-            ->where('student_id', $validated['student_id'])
             ->orderBy('choice_order');
+
+        if (! empty($validated['student_id'])) {
+            if ($user->role === 'student' && (int) $validated['student_id'] !== $user->id) {
+                abort(403);
+            }
+            $query->where('student_id', $validated['student_id']);
+        } else {
+            // Tanpa student_id: batasi sesuai role
+            if ($user->role === 'student') {
+                $query->where('student_id', $user->id);
+            } elseif ($user->role === 'teacher') {
+                $query->whereHas('student', fn ($q) => $q->where('teacher_id', $user->id));
+            } elseif (in_array($user->role, ['company', 'supervisor'], true)) {
+                $companyId = $user->companySupervisor?->company_id;
+                if ($companyId) {
+                    $query->where('company_id', $companyId);
+                }
+            }
+            // admin: semua
+        }
 
         if (isset($validated['pkl_period_id'])) {
             $query->where('pkl_period_id', $validated['pkl_period_id']);

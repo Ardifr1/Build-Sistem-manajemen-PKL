@@ -39,6 +39,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // PKL Application
     Route::apiResource('pkl-applications', PklApplicationController::class);
     Route::apiResource('application-documents', ApplicationDocumentController::class);
+    Route::get('application-documents/{applicationDocument}/download', [ApplicationDocumentController::class, 'download']);
     Route::apiResource('application-reviews', ApplicationReviewController::class);
     Route::apiResource('interviews', InterviewController::class);
 
@@ -70,7 +71,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Profile
     Route::apiResource('student-profiles', StudentProfileController::class);
     // User
-    Route::middleware('role:admin')->group(function () {
+    Route::middleware('role:admin,company,supervisor,teacher')->group(function () {
     Route::apiResource('users', UserController::class);
 });
 });

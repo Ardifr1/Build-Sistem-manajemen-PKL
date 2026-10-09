@@ -12,7 +12,7 @@ class PklPlacementPolicy
 
     public function viewAny(User $user): bool
     {
-        return in_array($user->role, ['admin', 'teacher', 'student'], true);
+        return in_array($user->role, ['admin', 'teacher', 'student', 'company', 'supervisor'], true);
     }
 
     public function view(User $user, PklPlacement $placement): bool

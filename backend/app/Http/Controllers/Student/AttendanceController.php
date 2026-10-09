@@ -17,22 +17,41 @@ class AttendanceController extends Controller
 
         $validated = $request->validate([
             'placement_id' => [
-                'required',
+                'nullable',
                 'integer',
                 'exists:pkl_placements,id',
             ],
         ]);
 
-        $placement = PklPlacement::findOrFail($validated['placement_id']);
+        $query = Attendance::query()->orderByDesc('attendance_date');
 
-        if (! Gate::forUser($request->user())->check('view', $placement)) {
-            abort(403);
+        if (! empty($validated['placement_id'])) {
+            $placement = PklPlacement::findOrFail($validated['placement_id']);
+
+            if (! Gate::forUser($request->user())->check('view', $placement)) {
+                abort(403);
+            }
+
+            $query->where('placement_id', $validated['placement_id']);
+        } else {
+            $user = $request->user();
+            $query->whereHas('placement', function ($q) use ($user) {
+                if ($user->role === 'student') {
+                    $q->where('student_id', $user->id);
+                } elseif ($user->role === 'teacher') {
+                    $q->where('teacher_id', $user->id);
+                } elseif (in_array($user->role, ['company', 'supervisor'], true)) {
+                    $companyId = $user->companySupervisor?->company_id;
+                    if ($companyId) {
+                        $q->where('company_id', $companyId);
+                    } else {
+                        $q->whereRaw('1 = 0');
+                    }
+                }
+            });
         }
 
-        $attendances = Attendance::query()
-            ->where('placement_id', $validated['placement_id'])
-            ->orderByDesc('attendance_date')
-            ->get();
+        $attendances = $query->get();
 
         return response()->json([
             'message' => 'Data absensi berhasil diambil.',

@@ -18,35 +18,54 @@ class JournalController extends Controller
 
         $validated = $request->validate([
             'placement_id' => [
-                'required',
+                'nullable',
                 'integer',
                 'exists:pkl_placements,id',
             ],
         ]);
 
-        $placement = PklPlacement::findOrFail($validated['placement_id']);
-
         $user = $request->user();
+        $query = Journal::query()->orderByDesc('journal_date');
 
-        if (
-            $user->role === 'student'
-            && $placement->student_id !== $user->id
-        ) {
-            abort(403);
-        }
+        if (! empty($validated['placement_id'])) {
+            $placement = PklPlacement::findOrFail($validated['placement_id']);
 
-        if ($user->role === 'company') {
-            $companyId = $user->companySupervisor?->company_id;
-
-            if (!$companyId || $placement->company_id !== $companyId) {
+            if (
+                $user->role === 'student'
+                && $placement->student_id !== $user->id
+            ) {
                 abort(403);
             }
+
+            if ($user->role === 'company') {
+                $companyId = $user->companySupervisor?->company_id;
+
+                if (!$companyId || $placement->company_id !== $companyId) {
+                    abort(403);
+                }
+            }
+
+            $query->where('placement_id', $validated['placement_id']);
+        } else {
+            // Tanpa placement_id: batasi sesuai role
+            $query->whereHas('placement', function ($q) use ($user) {
+                if ($user->role === 'student') {
+                    $q->where('student_id', $user->id);
+                } elseif ($user->role === 'teacher') {
+                    $q->where('teacher_id', $user->id);
+                } elseif (in_array($user->role, ['company', 'supervisor'], true)) {
+                    $companyId = $user->companySupervisor?->company_id;
+                    if ($companyId) {
+                        $q->where('company_id', $companyId);
+                    } else {
+                        $q->whereRaw('1 = 0'); // belum ditautkan: kosong
+                    }
+                }
+                // admin: semua
+            });
         }
 
-        $journals = Journal::query()
-            ->where('placement_id', $validated['placement_id'])
-            ->orderByDesc('journal_date')
-            ->get();
+        $journals = $query->get();
 
         return response()->json([
             'message' => 'Data jurnal berhasil diambil.',
