@@ -366,6 +366,13 @@
 @media(max-width:900px){.siswa-stats4{grid-template-columns:repeat(2,1fr);gap:10px}}
 @media(max-width:480px){
 .siswa-stats{grid-template-columns:1fr;gap:10px}
+.siswa-stats-absen{grid-template-columns:1fr 1fr;gap:10px}
+.siswa-stats-absen .siswa-stat{flex-direction:column;align-items:flex-start;padding:16px}
+.siswa-stats-absen .siswa-stat-top{display:flex;align-items:center;justify-content:space-between;width:100%;margin-bottom:8px}
+.siswa-stats-absen .siswa-stat-label{font-size:10px;font-weight:700;letter-spacing:.6px;color:#94a3b8;text-transform:uppercase}
+.siswa-stats-absen .siswa-stat-ic{width:40px;height:40px;font-size:17px;border-radius:12px;display:flex;align-items:center;justify-content:center}
+.siswa-stats-absen .siswa-stat-val{font-size:26px;font-weight:800;color:#0f172a}
+.siswa-stats-absen .siswa-stat-hint{font-size:11px;color:#64748b;margin-top:2px}
 .siswa-stats4{grid-template-columns:1fr;gap:10px}
 .siswa-stats4 .siswa-stat,.siswa-stats .siswa-stat{padding:16px;min-height:0}
 .siswa-stats4 .siswa-stat-lb,.siswa-stats .siswa-stat-lb{font-size:11px;white-space:normal}

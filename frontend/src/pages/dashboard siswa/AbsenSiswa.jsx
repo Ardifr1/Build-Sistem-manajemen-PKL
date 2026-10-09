@@ -231,7 +231,7 @@ function AbsenSiswa({ onMeta, placement }) {
   return (
     <div>
       {/* kartu statistik */}
-      <div className="siswa-stats">
+      <div className="siswa-stats siswa-stats-absen">
         {stats.map((s) => (
           <div className="siswa-stat" key={s.label}>
             <div className="siswa-stat-top">
