@@ -494,7 +494,7 @@ function Pengguna({ onMeta }) {
   }
 
   return (
-    <div className="zip-page">
+    <div className="zip-page has-m-cards">
       <div className="zip-toolbar">
         <span className="zip-muted">{rows.length} akun • filter role &amp; status</span>
         <button
