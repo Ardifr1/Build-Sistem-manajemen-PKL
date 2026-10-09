@@ -55,6 +55,7 @@ export const ep = {
     store: "/application-documents",
     update: id("/application-documents"),
     destroy: id("/application-documents"),
+    download: (docId) => `/application-documents/${docId}/download`,
   },
   applicationReviews: {
     index: "/application-reviews",

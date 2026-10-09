@@ -227,6 +227,7 @@ export function RiwayatPengajuan({ onMeta }) {
   const [apps, setApps] = useState([]);
   const [companies, setCompanies] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [detail, setDetail] = useState(null);
 
   useEffect(() => {
     onMeta?.({ title: "Riwayat Pengajuan", subtitle: "Arsip — read only" });
@@ -244,13 +245,21 @@ export function RiwayatPengajuan({ onMeta }) {
 
   const coName = (id) => companies.find((c) => c.id === Number(id))?.name || "—";
 
+  const ringkas = {
+    total: apps.length,
+    menunggu: apps.filter((a) => a.status === "submitted").length,
+    diproses: apps.filter((a) => a.status === "reviewed").length,
+    diterima: apps.filter((a) => a.status === "accepted").length,
+    ditolak: apps.filter((a) => a.status === "rejected").length,
+  };
+
   return (
     <div>
       <div className="siswa-banner gray">
         <span className="b-ic"><i className="fa-solid fa-lock"></i></span>
         <div>PKL-mu sudah aktif. Riwayat pengajuan dikunci sebagai arsip dan tidak bisa diubah.</div>
       </div>
-      <div className="siswa-table-wrap">
+      <div className="siswa-table-wrap riwayat-table">
         <table className="siswa-table">
           <thead><tr><th>Perusahaan</th><th>Tgl Pengajuan</th><th>Status Akhir</th></tr></thead>
           <tbody>
@@ -266,8 +275,88 @@ export function RiwayatPengajuan({ onMeta }) {
             })}
           </tbody>
         </table>
-        {!loading && apps.length === 0 && <div className="siswa-empty"><i className="fa-solid fa-box-archive"></i>Tidak ada riwayat.</div>}
       </div>
+      {apps.length > 0 && (
+        <div className="riwayat-summary">
+          <div className="riwayat-sum"><b>{ringkas.total}</b><span>Total</span></div>
+          <div className="riwayat-sum"><b>{ringkas.menunggu}</b><span>Menunggu</span></div>
+          <div className="riwayat-sum"><b>{ringkas.diproses}</b><span>Diproses</span></div>
+          <div className="riwayat-sum"><b>{ringkas.diterima}</b><span>Diterima</span></div>
+          <div className="riwayat-sum"><b>{ringkas.ditolak}</b><span>Ditolak</span></div>
+        </div>
+      )}
+      <div className="riwayat-cards">
+        {apps.map((a) => {
+          const [cls, lb] = STATUS_BADGE[a.status] || ["s-badge-gray", a.status];
+          return (
+            <div className="riwayat-card" key={a.id}>
+              <div className="riwayat-card-top">
+                <span className="riwayat-card-ic"><i className="fa-solid fa-building"></i></span>
+                <div className="riwayat-card-tx">
+                  <b>{coName(a.company_id)}</b>
+                  <small><i className="fa-regular fa-calendar"></i> Diajukan {fmtDate(a.created_at)}</small>
+                  {a.updated_at && a.updated_at !== a.created_at && (
+                    <small><i className="fa-regular fa-clock"></i> Diperbarui {fmtDate(a.updated_at)}</small>
+                  )}
+                </div>
+                <span className={`siswa-badge ${cls}`}><span className="dot"></span>{lb}</span>
+              </div>
+              <button type="button" className="riwayat-detail-btn" onClick={() => setDetail(a)}>
+                Lihat Detail <i className="fa-solid fa-chevron-right"></i>
+              </button>
+            </div>
+          );
+        })}
+      </div>
+      {!loading && apps.length === 0 && (
+        <div className="siswa-empty riwayat-empty">
+          <i className="fa-solid fa-box-archive"></i>
+          <b>Belum Ada Riwayat Pengajuan</b>
+          <p>Riwayat pengajuan akan muncul di sini setelah kamu mengajukan PKL ke perusahaan.</p>
+        </div>
+      )}
+      {detail && (() => {
+        const [cls, lb] = STATUS_BADGE[detail.status] || ["s-badge-gray", detail.status];
+        return (
+          <div className="siswa-modal-ov" onClick={() => setDetail(null)}>
+            <div className="siswa-modal" onClick={(e) => e.stopPropagation()}>
+              <div className="siswa-between" style={{ marginBottom: 12 }}>
+                <h3 className="siswa-card-title" style={{ margin: 0 }}>Detail Pengajuan</h3>
+                <button type="button" className="siswa-btn siswa-btn-outline siswa-btn-sm" onClick={() => setDetail(null)}>
+                  <i className="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+              <div className="riwayat-detail-row">
+                <span>Perusahaan</span><b>{coName(detail.company_id)}</b>
+              </div>
+              <div className="riwayat-detail-row">
+                <span>Status</span><span className={`siswa-badge ${cls}`}><span className="dot"></span>{lb}</span>
+              </div>
+              <div className="riwayat-detail-row">
+                <span>Tanggal Pengajuan</span><b>{fmtDate(detail.created_at)}</b>
+              </div>
+              <div className="riwayat-detail-row">
+                <span>Terakhir Diperbarui</span><b>{fmtDate(detail.updated_at)}</b>
+              </div>
+              {detail.choice_order && (
+                <div className="riwayat-detail-row">
+                  <span>Urutan Pilihan</span><b>Pilihan ke-{detail.choice_order}</b>
+                </div>
+              )}
+              {detail.student_note && (
+                <div className="riwayat-detail-note">
+                  <span>Catatanmu</span><p>{detail.student_note}</p>
+                </div>
+              )}
+              {detail.company_note && (
+                <div className="riwayat-detail-note">
+                  <span>Catatan Perusahaan</span><p>{detail.company_note}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }

@@ -13,6 +13,7 @@
  */
 
 const BASE_URL = (import.meta.env.VITE_API_URL || "http://localhost:8000/api").replace(/\/$/, "");
+export const API_BASE_URL = BASE_URL;
 const TOKEN_KEY = "simagang_token";
 
 export function getToken() {
@@ -45,15 +46,16 @@ class ApiError extends Error {
 
 async function request(path, { method = "GET", body, headers = {} } = {}) {
   const token = getToken();
+  const isForm = typeof FormData !== "undefined" && body instanceof FormData;
   const res = await fetch(`${BASE_URL}${path}`, {
     method,
     headers: {
       Accept: "application/json",
-      ...(body !== undefined ? { "Content-Type": "application/json" } : {}),
+      ...(!isForm && body !== undefined ? { "Content-Type": "application/json" } : {}),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...headers,
     },
-    body: body !== undefined ? JSON.stringify(body) : undefined,
+    body: body !== undefined ? (isForm ? body : JSON.stringify(body)) : undefined,
   });
 
   // 204 No Content
