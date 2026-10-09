@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { usePolling } from "../../lib/use-polling.js";
 import { useNavigate } from "react-router-dom";
 import {
   getEnrichedPlacements,
@@ -14,6 +15,9 @@ function IndustriDashboard({ onMeta }) {
   const [menungguList, setMenungguList] = useState([]);
   const [sepiIds, setSepiIds] = useState(new Set());
   const [loading, setLoading] = useState(true);
+
+  const [refreshKey, setRefreshKey] = useState(0);
+  usePolling(() => setRefreshKey((k) => k + 1), 15000);
 
   useEffect(() => {
     (async () => {
@@ -55,7 +59,7 @@ function IndustriDashboard({ onMeta }) {
         setLoading(false);
       }
     })();
-  }, [onMeta]);
+  }, [onMeta, refreshKey]);
 
   const cards = [
     { label: "Siswa Dibimbing", value: stats?.siswa ?? "…", hint: "aktif" },

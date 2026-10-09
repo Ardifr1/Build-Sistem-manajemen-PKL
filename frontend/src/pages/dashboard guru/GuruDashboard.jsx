@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { usePolling } from "../../lib/use-polling.js";
 import { useNavigate } from "react-router-dom";
 import { getEnrichedPlacements, getJournalsForPlacements } from "../../lib/role-data.js";
 import { initials, avatarColor } from "../../components/admin/user-table.jsx";
@@ -9,6 +10,9 @@ function GuruDashboard({ onMeta }) {
   const [sepiList, setSepiList] = useState([]);
   const [revisiList, setRevisiList] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const [refreshKey, setRefreshKey] = useState(0);
+  usePolling(() => setRefreshKey((k) => k + 1), 15000);
 
   useEffect(() => {
     onMeta?.({ title: "Dashboard Guru", subtitle: "" });
@@ -53,7 +57,7 @@ function GuruDashboard({ onMeta }) {
         setLoading(false);
       }
     })();
-  }, [onMeta]);
+  }, [onMeta, refreshKey]);
 
   const cards = [
     { label: "Siswa Bimbingan", value: stats?.siswa ?? "…", hint: "aktif", icon: "fa-users", bg: "#dbeafe", color: "#1d4ed8" },

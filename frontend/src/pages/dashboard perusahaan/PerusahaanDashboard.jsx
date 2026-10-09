@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { usePolling } from "../../lib/use-polling.js";
 import { applicationsApi, placementsApi, supervisorsApi, companiesApi } from "../../api/index.js";
 
 function StatCard({ bg, ic, label, num, trend, trendColor, svg }) {
@@ -20,6 +21,9 @@ function PerusahaanDashboard({ onMeta }) {
   const [stats, setStats] = useState({ pengajuan: 0, aktif: 0, pembimbing: 0, evaluasi: 0 });
   const [bySchool, setBySchool] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const [refreshKey, setRefreshKey] = useState(0);
+  usePolling(() => setRefreshKey((k) => k + 1), 15000);
 
   useEffect(() => {
     onMeta?.({ title: "Dashboard Perusahaan", subtitle: "Kelola magang perusahaan Anda" });
@@ -51,7 +55,7 @@ function PerusahaanDashboard({ onMeta }) {
         setLoading(false);
       }
     })();
-  }, [onMeta]);
+  }, [onMeta, refreshKey]);
 
   return (
     <div className="zip-page">

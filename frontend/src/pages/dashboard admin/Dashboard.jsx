@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { usePolling } from "../../lib/use-polling.js";
 import { useNavigate } from "react-router-dom";
 import {
   usersApi, companiesApi, applicationsApi,
@@ -80,6 +81,9 @@ function Dashboard({ onMeta }) {
   // Fase 2 (menyusul): journals, periods
   const [jurnalAntre, setJurnalAntre] = useState(null);
   const [periode, setPeriode] = useState(null);
+
+  const [refreshKey, setRefreshKey] = useState(0);
+  usePolling(() => setRefreshKey((k) => k + 1), 15000);
 
   useEffect(() => {
     let alive = true;
@@ -205,7 +209,7 @@ function Dashboard({ onMeta }) {
     })();
 
     return () => { alive = false; };
-  }, [onMeta]);
+  }, [onMeta, refreshKey]);
 
   const pctPeriode = (() => {
     if (!periode?.start_date || !periode?.end_date) return 45;
