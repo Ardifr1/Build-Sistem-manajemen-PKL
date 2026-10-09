@@ -104,13 +104,38 @@ class UserController extends Controller
             'is_active' => [
                 'boolean',
             ],
+            'nis' => [
+                'nullable',
+                'string',
+                'max:50',
+            ],
+            'nip' => [
+                'nullable',
+                'string',
+                'max:50',
+            ],
         ]);
+
+        $nis = $validated['nis'] ?? null;
+        $nip = $validated['nip'] ?? null;
+        unset($validated['nis'], $validated['nip']);
 
         $validated['password'] = Hash::make(
             $validated['password']
         );
 
         $user = User::create($validated);
+
+        // Simpan NIS ke profil siswa / NIP ke user
+        if ($user->role === 'student' && $nis) {
+            \App\Models\StudentProfile::updateOrCreate(
+                ['user_id' => $user->id],
+                ['nis' => $nis]
+            );
+        }
+        if ($user->role === 'teacher' && $nip) {
+            $user->update(['nip' => $nip]);
+        }
 
         $user->makeHidden('password');
 

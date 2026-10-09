@@ -16,6 +16,7 @@ use Laravel\Sanctum\HasApiTokens;
     'name',
     'username',
     'email',
+    'nip',
     'password',
     'role',
     'school_id',

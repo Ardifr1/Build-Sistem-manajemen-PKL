@@ -263,6 +263,8 @@ function UserForm({ initial, onCancel, onSaved, onMeta }) {
     password: "",
     password_confirmation: "",
     role: initial?.role || "student",
+    nis: initial?.student_profile?.nis || "",
+    nip: "",
     is_active: initial ? !!initial.is_active : true,
   });
   const [saving, setSaving] = useState(false);
@@ -305,6 +307,8 @@ function UserForm({ initial, onCancel, onSaved, onMeta }) {
         role: form.role,
         is_active: form.is_active,
       };
+      if (form.role === "student" && form.nis.trim()) payload.nis = form.nis.trim();
+      if (form.role === "teacher" && form.nip.trim()) payload.nip = form.nip.trim();
       if (form.password) {
         payload.password = form.password;
         payload.password_confirmation = form.password_confirmation;
@@ -347,6 +351,26 @@ function UserForm({ initial, onCancel, onSaved, onMeta }) {
               ))}
             </select>
           </label>
+          {form.role === "student" && (
+            <label className="zip-field">
+              <span>NIS</span>
+              <input
+                value={form.nis}
+                onChange={set("nis")}
+                placeholder="cth 12345678"
+              />
+            </label>
+          )}
+          {form.role === "teacher" && (
+            <label className="zip-field">
+              <span>NIP</span>
+              <input
+                value={form.nip}
+                onChange={set("nip")}
+                placeholder="cth 198501012010011001"
+              />
+            </label>
+          )}
           <label className="zip-field">
             <span>Password{isEdit ? " (kosongkan jika tidak diubah)" : ""}</span>
             <span className="zip-pw-wrap">
