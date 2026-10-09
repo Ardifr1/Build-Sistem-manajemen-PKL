@@ -409,3 +409,10 @@ label.f-label{font-size:11px;font-weight:700;color:var(--text);display:block;mar
 
 .m-card-actions{display:flex;gap:8px;margin-top:10px;border-top:1px solid #f1f5f9;padding-top:10px}
 .m-card-actions .zip-act{flex:1;text-align:center}
+
+/* --- animasi form muncul --- */
+.form-slide-in{animation:formSlideIn .35s cubic-bezier(.21,1.02,.73,1)}
+@keyframes formSlideIn{
+  from{opacity:0;transform:translateY(-16px) scale(.98)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}

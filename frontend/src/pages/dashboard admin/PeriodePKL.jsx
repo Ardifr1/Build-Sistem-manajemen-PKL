@@ -280,7 +280,7 @@ function PeriodePKL({ onMeta }) {
     <div className="zip-page">
       {error && <div className="zip-error">{error}</div>}
       {showForm && (
-        <div ref={formRef} style={{ scrollMarginTop: 16 }}>
+        <div ref={formRef} className="form-slide-in" style={{ scrollMarginTop: 16 }}>
           <PeriodeForm inline onCancel={() => setShowForm(false)} onSaved={backToList} />
         </div>
       )}
