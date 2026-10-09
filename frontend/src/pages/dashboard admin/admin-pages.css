@@ -96,6 +96,7 @@ label.f-label{font-size:11px;font-weight:700;color:var(--text);display:block;mar
 .zip-stats{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
 @media(max-width:1100px){.zip-stats{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:640px){.zip-stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.zip-stats{grid-template-columns:1fr}}
 .zip-stat{background:#fff;border:1px solid #eef2f7;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:4px}
 .zip-stat-label{font-size:12px;color:#94a3b8}
 .zip-stat-value{font-size:24px;font-weight:700;color:#0f172a;line-height:1.1}
@@ -315,6 +316,9 @@ label.f-label{font-size:11px;font-weight:700;color:var(--text);display:block;mar
 @media(max-width:900px){
   .adm-grid2,.adm-grid2b{grid-template-columns:1fr}
   .adm-stats{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:480px){
+  .adm-stats{grid-template-columns:1fr}
 }
 
 /* ---------- profil ---------- */
