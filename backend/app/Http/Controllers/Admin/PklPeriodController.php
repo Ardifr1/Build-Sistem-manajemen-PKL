@@ -14,6 +14,11 @@ class PklPeriodController extends Controller
     {
         Gate::authorize('viewAny', PklPeriod::class);
 
+        // Otomatis nonaktifkan periode yang sudah lewat tanggal selesai
+        PklPeriod::where('is_active', true)
+            ->where('end_date', '<', now()->toDateString())
+            ->update(['is_active' => false]);
+
         $periods = PklPeriod::query()
             ->orderByDesc('start_date')
             ->get();
