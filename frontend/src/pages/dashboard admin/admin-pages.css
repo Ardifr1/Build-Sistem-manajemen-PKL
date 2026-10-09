@@ -388,3 +388,20 @@ label.f-label{font-size:11px;font-weight:700;color:var(--text);display:block;mar
   .nilai-actions .zip-sub{text-align:center}
   .nilai-actions .zip-btn-primary{width:100%;padding:14px}
 }
+
+/* --- skeleton generik semua role --- */
+.skel{pointer-events:none}
+.skel-line{height:12px;border-radius:6px;margin-bottom:10px;
+  background:linear-gradient(90deg,#eef2f7 25%,#e2e8f0 50%,#eef2f7 75%);
+  background-size:200% 100%;animation:skel-shimmer 1.2s infinite}
+.skel-line.big{height:24px}
+.skel-line.w40{width:40%}.skel-line.w50{width:50%}
+.skel-line.w60{width:60%}.skel-line.w70{width:70%}
+.skel-line.w80{width:80%}.skel-line.w90{width:90%}
+.skel-card{background:#fff;border:1px solid #eef2f7;border-radius:14px;padding:16px;margin-bottom:12px}
+.skel-row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.skel-avatar{width:44px;height:44px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(90deg,#eef2f7 25%,#e2e8f0 50%,#eef2f7 75%);
+  background-size:200% 100%;animation:skel-shimmer 1.2s infinite}
+.skel-block{padding:6px 0}
+@keyframes skel-shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}

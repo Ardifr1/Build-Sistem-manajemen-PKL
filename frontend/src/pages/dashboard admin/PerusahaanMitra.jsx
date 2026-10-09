@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { companiesApi, placementsApi, usersApi } from "../../api/index.js";
+import { SkelCards } from "../../components/role/skeleton.jsx";
 import "./admin-pages.css";
 
 function CompanyForm({ initial, onCancel, onSaved }) {
@@ -216,7 +217,7 @@ function PerusahaanPartner({ onMeta }) {
       </div>
       {error && <div className="zip-error">{error}</div>}
       {loading ? (
-        <p className="zip-muted">Memuat perusahaan…</p>
+        <SkelCards n={3} />
       ) : (
         <div className="zip-list">
           {rows.map((c) => (

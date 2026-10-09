@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { periodsApi, applicationsApi, placementsApi, companiesApi } from "../../api/index.js";
+import { SkelCards } from "../../components/role/skeleton.jsx";
 import "./admin-pages.css";
 
 const BULAN = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
@@ -285,7 +286,7 @@ function PeriodePKL({ onMeta }) {
       )}
 
       {loading ? (
-        <p className="zip-muted">Memuat periode…</p>
+        <SkelCards n={2} />
       ) : (
         <>
           <div className="zip-cols2" style={{ marginBottom: 16 }}>

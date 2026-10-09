@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { applicationsApi, placementsApi, usersApi, companiesApi, periodsApi, profilesApi } from "../../api/index.js";
+import { SkelCards } from "../../components/role/skeleton.jsx";
 import "./admin-pages.css";
 
 const BULAN = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
@@ -135,7 +136,7 @@ function Persetujuan({ onMeta }) {
         </div>
 
         {loading ? (
-          <p className="zip-muted">Memuat persetujuan…</p>
+          <SkelCards n={3} />
         ) : rows.length === 0 ? (
           <p className="zip-muted">Tidak ada lamaran yang menunggu persetujuan sekolah.</p>
         ) : (
