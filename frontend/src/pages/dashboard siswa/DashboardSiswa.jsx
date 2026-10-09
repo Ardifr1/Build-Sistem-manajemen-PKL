@@ -138,7 +138,7 @@ function DashboardSiswa({ onMeta, fase, placement }) {
 
   return (
     <div>
-      <div className="siswa-grid3" style={{ gridTemplateColumns: "repeat(4,1fr)" }}>
+      <div className="siswa-stats4">
         {cards.map((c) => (
           <div className="siswa-stat" key={c.lb} style={{ cursor: "pointer" }} onClick={() => navigate(c.to)}>
             <div>
