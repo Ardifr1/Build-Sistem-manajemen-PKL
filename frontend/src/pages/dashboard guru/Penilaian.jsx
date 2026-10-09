@@ -212,10 +212,10 @@ function Penilaian({ onMeta }) {
           ))}
         </div>
 
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 16 }}>
+        <div className="nilai-actions">
           <span className="zip-sub">Rata-rata dihitung otomatis dari 3 komponen.</span>
           <button type="submit" className="zip-btn-primary" disabled={saving || loading}>
-            {saving ? "Menyimpan…" : "Simpan Penilaian"}
+            <i className="fa-solid fa-floppy-disk"></i> {saving ? "Menyimpan…" : "Simpan Penilaian"}
           </button>
         </div>
       </form>

@@ -379,3 +379,12 @@ label.f-label{font-size:11px;font-weight:700;color:var(--text);display:block;mar
   .adm-recent-cards{display:block}
   .adm-recent-table{display:none}
 }
+
+/* --- aksi form penilaian --- */
+.nilai-actions{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:16px}
+.nilai-actions .zip-btn-primary{white-space:nowrap;flex-shrink:0}
+@media(max-width:480px){
+  .nilai-actions{flex-direction:column;align-items:stretch}
+  .nilai-actions .zip-sub{text-align:center}
+  .nilai-actions .zip-btn-primary{width:100%;padding:14px}
+}
