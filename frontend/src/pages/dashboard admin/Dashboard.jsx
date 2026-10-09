@@ -291,26 +291,48 @@ function Dashboard({ onMeta }) {
           {!ready ? (
             <div className="adm-skel-block"><div className="adm-skel-line w90"></div><div className="adm-skel-line w90"></div><div className="adm-skel-line w70"></div></div>
           ) : (
-            <div className="adm-table-wrap">
-              <table className="adm-table">
-                <thead>
-                  <tr><th>SISWA</th><th>PERUSAHAAN TUJUAN</th><th>STATUS</th><th className="right">TANGGAL</th></tr>
-                </thead>
-                <tbody>
-                  {recent.map((r) => {
-                    const b = badgeOf(r.status);
-                    return (
-                      <tr key={r.id}>
-                        <td><strong>{r.siswa}</strong><small className="adm-td-sub">{r.kelas}</small></td>
-                        <td>{r.perusahaan}</td>
-                        <td><span className={`adm-pill ${b.cls}`}><i className="fa-solid fa-circle"></i> {b.label}</span></td>
-                        <td className="right zip-muted">{r.tanggal}</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+            <>
+              <div className="adm-table-wrap adm-recent-table">
+                <table className="adm-table">
+                  <thead>
+                    <tr><th>SISWA</th><th>PERUSAHAAN TUJUAN</th><th>STATUS</th><th className="right">TANGGAL</th></tr>
+                  </thead>
+                  <tbody>
+                    {recent.map((r) => {
+                      const b = badgeOf(r.status);
+                      return (
+                        <tr key={r.id}>
+                          <td><strong>{r.siswa}</strong><small className="adm-td-sub">{r.kelas}</small></td>
+                          <td>{r.perusahaan}</td>
+                          <td><span className={`adm-pill ${b.cls}`}><i className="fa-solid fa-circle"></i> {b.label}</span></td>
+                          <td className="right zip-muted">{r.tanggal}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+              <div className="m-cards adm-recent-cards">
+                {recent.map((r) => {
+                  const b = badgeOf(r.status);
+                  return (
+                    <div className="m-card" key={r.id} onClick={() => navigate("/admin/persetujuan")}>
+                      <div className="m-card-top">
+                        <div className="m-card-tx">
+                          <b>{r.siswa}</b>
+                          <small>{r.kelas} • {r.perusahaan}</small>
+                        </div>
+                        <i className="fa-solid fa-chevron-right m-card-arrow"></i>
+                      </div>
+                      <div className="m-card-bottom">
+                        <span className={`adm-pill ${b.cls}`}><i className="fa-solid fa-circle"></i> {b.label}</span>
+                        <span className="zip-muted" style={{ fontSize: 12 }}>{r.tanggal}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
           )}
         </div>
 

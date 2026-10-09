@@ -344,3 +344,38 @@ label.f-label{font-size:11px;font-weight:700;color:var(--text);display:block;mar
 .adm-skel-line.w80{width:80%}.adm-skel-line.w90{width:90%}
 .adm-skel-block{padding:6px 0}
 @keyframes adm-shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* --- kartu mobile generik (semua role) --- */
+.m-cards{display:none}
+.m-card{background:#fff;border:1px solid #eef2f7;border-radius:14px;padding:14px 16px;margin-bottom:10px;box-shadow:0 1px 4px rgba(15,23,42,.04);cursor:pointer}
+.m-card:active{background:#f8fafc}
+.m-card-top{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.m-card-tx{flex:1;min-width:0}
+.m-card-tx b{display:block;font-size:14px;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-card-tx small{display:block;font-size:12px;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-card-arrow{color:#cbd5e1;font-size:12px}
+.m-card-bottom{display:flex;align-items:center;gap:8px;flex-wrap:wrap;border-top:1px solid #f1f5f9;padding-top:10px}
+@media(max-width:768px){
+  .m-cards{display:block}
+  .zip-table-wrap{display:none}
+}
+
+/* --- kartu form penilaian (mobile) --- */
+.nilai-cards .m-card{cursor:default}
+.nilai-rata{text-align:center;background:#f8fafc;border-radius:10px;padding:8px 14px}
+.nilai-rata small{display:block;font-size:10px;color:#94a3b8;text-transform:uppercase}
+.nilai-rata b{font-size:18px;color:#0f172a}
+.nilai-inputs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;border-top:1px solid #f1f5f9;padding-top:12px}
+.nilai-field{display:flex;flex-direction:column;gap:6px}
+.nilai-field span{font-size:11px;font-weight:600;color:#64748b;text-align:center}
+.nilai-field .zip-score-input{width:100%;text-align:center;padding:10px 4px;font-size:15px}
+@media(max-width:768px){
+  .nilai-cards{display:block}
+}
+
+/* --- pengajuan terbaru: kartu di HP --- */
+.adm-recent-cards{display:none}
+@media(max-width:768px){
+  .adm-recent-cards{display:block}
+  .adm-recent-table{display:none}
+}

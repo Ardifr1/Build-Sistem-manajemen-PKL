@@ -169,6 +169,33 @@ function DataSiswa({ onMeta }) {
           </tbody>
         </table>
       </div>
+      <div className="m-cards">
+        {rows.map((r) => {
+          const st = r.placement?.status;
+          const badge = !r.placement
+            ? <span className="zip-badge b-gray">Belum Ditempatkan</span>
+            : st === "active"
+              ? <span className="zip-badge b-green">PKL Aktif</span>
+              : st === "completed"
+                ? <span className="zip-badge b-blue">Selesai</span>
+                : st === "pending" || st === "submitted"
+                  ? <span className="zip-badge b-amber">Menunggu Persetujuan</span>
+                  : <span className="zip-badge b-gray">{statusLabel(st)}</span>;
+          return (
+            <div className="m-card" key={r.id} onClick={() => setDetail(r)}>
+              <div className="m-card-top">
+                <div className="m-card-tx">
+                  <b>{r.name}</b>
+                  <small>{r.kelas} • NIS {r.nis}</small>
+                  <small>{r.companyName || "-"}</small>
+                </div>
+                <i className="fa-solid fa-chevron-right m-card-arrow"></i>
+              </div>
+              <div className="m-card-bottom">{badge}</div>
+            </div>
+          );
+        })}
+      </div>
       {!loading && rows.length === 0 && (
         <div className="zip-muted">Tidak ada data siswa.</div>
       )}

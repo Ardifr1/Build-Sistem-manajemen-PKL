@@ -119,6 +119,13 @@ function PeriodePKL({ onMeta }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showForm, setShowForm] = useState(false);
+  const formRef = useRef(null);
+
+  useEffect(() => {
+    if (showForm && formRef.current) {
+      formRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [showForm]);
   const [view, setView] = useState({ name: "list", row: null });
 
   const load = async () => {
@@ -271,7 +278,11 @@ function PeriodePKL({ onMeta }) {
   return (
     <div className="zip-page">
       {error && <div className="zip-error">{error}</div>}
-      {showForm && <PeriodeForm inline onCancel={() => setShowForm(false)} onSaved={backToList} />}
+      {showForm && (
+        <div ref={formRef} style={{ scrollMarginTop: 16 }}>
+          <PeriodeForm inline onCancel={() => setShowForm(false)} onSaved={backToList} />
+        </div>
+      )}
 
       {loading ? (
         <p className="zip-muted">Memuat periode…</p>
