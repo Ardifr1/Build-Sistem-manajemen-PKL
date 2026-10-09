@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { journalsApi } from "../../api/index.js";
+import { SkelCards } from "../../components/role/skeleton.jsx";
 import {
   getEnrichedPlacements,
   getJournalsForPlacements,
@@ -160,7 +161,7 @@ function VerifikasiJurnal({ onMeta }) {
 
   return (
     <div className="zip-page">
-      {loading && <div className="zip-muted">Memuat…</div>}
+      {loading && <SkelCards n={3} />}
       <div className="zip-list">
         {journals.map((j) => (
           <div className="zip-row" key={j.id}>

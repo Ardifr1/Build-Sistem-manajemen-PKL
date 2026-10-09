@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { attendancesApi } from "../../api/index.js";
 import { getEnrichedPlacements } from "../../lib/role-data.js";
+import { SkelCards } from "../../components/role/skeleton.jsx";
 
 const STATUS = {
   present: { label: "Hadir", cls: "b-green" },
@@ -121,7 +122,7 @@ function Absensi({ onMeta }) {
         </div>
       )}
 
-      {loading && <div className="zip-muted">Memuat…</div>}
+      {loading && <SkelCards n={3} />}
       <div className="zip-list">
         {filtered.map((r) => {
           const st = STATUS[r.status] || STATUS.present;

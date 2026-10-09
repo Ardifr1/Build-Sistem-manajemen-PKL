@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { assessmentsApi, componentsApi } from "../../api/index.js";
+import { SkelCards } from "../../components/role/skeleton.jsx";
 import {
   getEnrichedPlacements,
   getMyCompanyId,
@@ -74,7 +75,7 @@ function EvaluasiIndustri({ onMeta }) {
 
   return (
     <div className="zip-page">
-      {loading && <div className="zip-muted">Memuat…</div>}
+      {loading && <SkelCards n={2} />}
 
       {sent && (
         <div className="industri-success" style={{ marginBottom: 16 }}>

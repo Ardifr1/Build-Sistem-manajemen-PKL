@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { SkelCards } from "../../components/role/skeleton.jsx";
 import {
   getEnrichedPlacements,
   getJournalsForPlacements,
@@ -52,7 +53,7 @@ function SiswaIndustri({ onMeta }) {
 
   return (
     <div className="zip-page">
-      {loading && <div className="zip-muted">Memuat…</div>}
+      {loading && <SkelCards n={3} />}
       <div className="zip-list">
         {placements.map((p) => {
           const jj = jmlJurnal[p.id] || { total: 0, ok: 0 };
