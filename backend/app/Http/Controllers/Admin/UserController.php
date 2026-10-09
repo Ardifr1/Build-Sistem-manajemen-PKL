@@ -130,7 +130,7 @@ class UserController extends Controller
         if ($user->role === 'student' && $nis) {
             \App\Models\StudentProfile::updateOrCreate(
                 ['user_id' => $user->id],
-                ['nis' => $nis]
+                ['student_number' => $nis]
             );
         }
         if ($user->role === 'teacher' && $nip) {
