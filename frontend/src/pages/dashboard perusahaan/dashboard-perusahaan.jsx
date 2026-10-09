@@ -7,6 +7,7 @@ import "./perusahaan-pages.css";
 import Dashboard from "./PerusahaanDashboard.jsx";
 import ProfilPerusahaan from "./ProfilPerusahaan.jsx";
 import PengajuanMagang from "./PengajuanMagang.jsx";
+import DaftarSiswa from "./DaftarSiswa.jsx";
 import SeleksiInterview from "./SeleksiInterview.jsx";
 import PembimbingKelola from "./PembimbingKelola.jsx";
 import EvaluasiPerusahaan from "./EvaluasiPerusahaan.jsx";
@@ -17,6 +18,7 @@ const MENUS = [
     { key: "profil", label: "Profil Perusahaan", icon: "fa-building", path: "/perusahaan/profil" },
     { key: "pengajuan", label: "Pengajuan Magang", icon: "fa-inbox", path: "/perusahaan/pengajuan" },
     { key: "interview", label: "Seleksi & Interview", icon: "fa-comments", path: "/perusahaan/interview" },
+    { key: "siswa", label: "Daftar Siswa", icon: "fa-users", path: "/perusahaan/siswa" },
     { key: "pembimbing", label: "Pembimbing", icon: "fa-user-tie", path: "/perusahaan/pembimbing" },
     { key: "evaluasi", label: "Evaluasi", icon: "fa-star", path: "/perusahaan/evaluasi" },
   ]},
@@ -71,6 +73,7 @@ function DashboardPerusahaan() {
         <Route path="profil" element={<ProfilPerusahaan onMeta={setMeta} />} />
         <Route path="pengajuan" element={<PengajuanMagang onMeta={setMeta} />} />
         <Route path="interview" element={<SeleksiInterview onMeta={setMeta} />} />
+        <Route path="siswa" element={<DaftarSiswa onMeta={setMeta} />} />
         <Route path="pembimbing" element={<PembimbingKelola onMeta={setMeta} />} />
         <Route path="evaluasi" element={<EvaluasiPerusahaan onMeta={setMeta} />} />
         <Route path="*" element={<Navigate to="/perusahaan" replace />} />

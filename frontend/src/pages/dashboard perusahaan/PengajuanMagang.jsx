@@ -3,8 +3,9 @@ import { applicationsApi, interviewsApi, placementsApi, supervisorsApi } from ".
 
 const TABS = [
   { key: "all", label: "Semua" },
-  { key: "pending", label: "Menunggu" },
-  { key: "interview", label: "Diproses" },
+  { key: "pending", label: "Diajukan" },
+  { key: "seleksi", label: "Seleksi" },
+  { key: "interview", label: "Interview" },
   { key: "accepted", label: "Diterima" },
 ];
 
@@ -48,6 +49,7 @@ function PengajuanMagang({ onMeta }) {
   const counts = {
     all: apps.length,
     pending: apps.filter((a) => a.status === "pending").length,
+    seleksi: apps.filter((a) => a.status === "seleksi").length,
     interview: apps.filter((a) => a.status === "interview").length,
     accepted: apps.filter((a) => a.status === "accepted").length,
   };
@@ -130,9 +132,9 @@ function PengajuanMagang({ onMeta }) {
   };
 
   const badge = (s) =>
-    s === "accepted" ? "b-green" : s === "interview" ? "b-blue" : s === "rejected" ? "b-red" : "b-amber";
+    s === "accepted" ? "b-green" : s === "interview" ? "b-blue" : s === "seleksi" ? "b-purple" : s === "rejected" ? "b-red" : "b-amber";
   const badgeLabel = (s) =>
-    s === "accepted" ? "Diterima" : s === "interview" ? "Interview" : s === "rejected" ? "Ditolak" : "Menunggu";
+    s === "accepted" ? "Diterima" : s === "interview" ? "Interview" : s === "seleksi" ? "Dalam Seleksi" : s === "rejected" ? "Ditolak" : s === "pending" ? "Diajukan" : s;
 
   return (
     <div className="zip-page">
@@ -160,6 +162,14 @@ function PengajuanMagang({ onMeta }) {
                 )}
                 <div className="zip-actions">
                   {a.status === "pending" && (
+                    <>
+                      <button type="button" className="zip-btn-outline" onClick={() => act(a, "seleksi")}>Masuk Seleksi</button>
+                      <button type="button" className="zip-btn-primary" onClick={() => openSchedule(a)}>Jadwalkan Interview</button>
+                      <button type="button" className="zip-btn-success" onClick={() => act(a, "accepted")}>Terima</button>
+                      <button type="button" className="zip-btn-danger" onClick={() => act(a, "rejected")}>Tolak</button>
+                    </>
+                  )}
+                  {a.status === "seleksi" && (
                     <>
                       <button type="button" className="zip-btn-primary" onClick={() => openSchedule(a)}>Jadwalkan Interview</button>
                       <button type="button" className="zip-btn-success" onClick={() => act(a, "accepted")}>Terima</button>

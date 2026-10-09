@@ -416,3 +416,8 @@ label.f-label{font-size:11px;font-weight:700;color:var(--text);display:block;mar
   from{opacity:0;transform:translateY(-16px) scale(.98)}
   to{opacity:1;transform:translateY(0) scale(1)}
 }
+
+/* --- grup per sekolah (expand/collapse) --- */
+.zip-group-head{width:100%;display:flex;align-items:center;gap:10px;background:transparent;border:0;cursor:pointer;padding:4px 0 12px;font-size:15px;font-weight:700;color:#0f172a;text-align:left}
+.zip-group-head span:first-child{flex:1}
+.zip-group-head i.fa-school{color:#1d4ed8;margin-right:2px}

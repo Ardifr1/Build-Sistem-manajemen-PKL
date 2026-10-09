@@ -4,8 +4,12 @@ import { applicationsApi, companiesApi, documentsApi, reviewsApi } from "../../a
 import { SkelCards } from "../../components/role/skeleton.jsx";
 
 const STATUS_BADGE = {
-  submitted: ["s-badge-blue", "Menunggu"],
+  draft: ["s-badge-gray", "Draf"],
+  submitted: ["s-badge-blue", "Diajukan"],
+  pending: ["s-badge-blue", "Diajukan"],
+  seleksi: ["s-badge-purple", "Dalam Seleksi"],
   reviewed: ["s-badge-amber", "Diproses"],
+  interview: ["s-badge-amber", "Interview"],
   accepted: ["s-badge-green", "Diterima"],
   rejected: ["s-badge-red", "Ditolak"],
 };

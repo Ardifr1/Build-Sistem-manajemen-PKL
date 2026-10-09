@@ -85,8 +85,18 @@ function EvaluasiPerusahaan({ onMeta }) {
             <span>Siswa</span>
             <select value={placementId} onChange={(e) => setPlacementId(e.target.value)}>
               <option value="">— Pilih siswa —</option>
-              {rows.map((p) => (
-                <option key={p.id} value={p.id}>{p.student?.name || `#${p.id}`}</option>
+              {Object.entries(
+                rows.reduce((g, p) => {
+                  const sch = p.student?.school?.name || "Sekolah";
+                  (g[sch] = g[sch] || []).push(p);
+                  return g;
+                }, {})
+              ).map(([sch, list]) => (
+                <optgroup key={sch} label={sch}>
+                  {list.map((p) => (
+                    <option key={p.id} value={p.id}>{p.student?.name || `#${p.id}`}</option>
+                  ))}
+                </optgroup>
               ))}
             </select>
           </label>
