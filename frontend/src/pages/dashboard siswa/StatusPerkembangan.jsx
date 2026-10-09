@@ -59,7 +59,7 @@ function StatusPerkembangan({ onMeta, placement }) {
   const nilaiTerkunci = placement?.status !== "completed";
 
   return (
-    <div className="siswa-grid2" style={{ gridTemplateColumns: "1.4fr 1fr", alignItems: "start" }}>
+    <div className="siswa-status-grid">
       <div>
         <div className="siswa-card">
           <div className="siswa-between" style={{ marginBottom: 14 }}>

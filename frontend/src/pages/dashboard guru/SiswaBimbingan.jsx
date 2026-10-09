@@ -88,6 +88,32 @@ function SiswaBimbingan({ onMeta }) {
           </tbody>
         </table>
       </div>
+      <div className="m-cards">
+        {placements.map((p) => (
+          <div className="m-card" key={p.id} onClick={() => navigate(`/guru/siswa/${p.id}`)}>
+            <div className="m-card-top">
+              <span className="zip-avatar" style={{ background: avatarColor(p.student?.name), width: 44, height: 44, fontSize: 16 }}>
+                {initials(p.student?.name)}
+              </span>
+              <div className="m-card-tx">
+                <b>{p.student?.name}</b>
+                <small>{p.student?.kelas || ""} • {p.company?.name || "-"}</small>
+              </div>
+              <i className="fa-solid fa-chevron-right m-card-arrow"></i>
+            </div>
+            <div className="m-card-bottom">
+              {p.status === "active"
+                ? <span className="zip-badge b-green">PKL Aktif</span>
+                : p.status === "completed"
+                  ? <span className="zip-badge b-blue">Selesai</span>
+                  : <span className="zip-badge b-gray">{statusLabel(p.status)}</span>}
+              {sepiIds.has(p.id) && p.status === "active" && (
+                <span className="zip-badge b-red"><i className="fa-solid fa-triangle-exclamation"></i> Jurnal sepi</span>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
       {!loading && placements.length === 0 && (
         <div className="zip-muted">Belum ada siswa bimbingan.</div>
       )}

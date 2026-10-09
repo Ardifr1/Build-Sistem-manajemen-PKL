@@ -176,6 +176,42 @@ function Penilaian({ onMeta }) {
           </div>
         )}
 
+        <div className="m-cards nilai-cards">
+          {placements.map((p) => (
+            <div className="m-card" key={p.id}>
+              <div className="m-card-top">
+                <span className="zip-avatar" style={{ background: avatarColor(p.student?.name), width: 44, height: 44, fontSize: 16 }}>
+                  {initials(p.student?.name)}
+                </span>
+                <div className="m-card-tx">
+                  <b>{p.student?.name}</b>
+                  <small>{p.student?.kelas || ""}</small>
+                </div>
+                <div className="nilai-rata">
+                  <small>Rata-rata</small>
+                  <b>{rataRata(p.id)}</b>
+                </div>
+              </div>
+              <div className="nilai-inputs">
+                {ASPEK.map((a) => (
+                  <label key={a.key} className="nilai-field">
+                    <span>{a.label}</span>
+                    <input
+                      type="number"
+                      min="0"
+                      max="100"
+                      className="zip-score-input"
+                      value={scores[p.id]?.[a.key] ?? ""}
+                      onChange={(e) => setScore(p.id, a.key, e.target.value)}
+                      placeholder="0"
+                    />
+                  </label>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 16 }}>
           <span className="zip-sub">Rata-rata dihitung otomatis dari 3 komponen.</span>
           <button type="submit" className="zip-btn-primary" disabled={saving || loading}>
