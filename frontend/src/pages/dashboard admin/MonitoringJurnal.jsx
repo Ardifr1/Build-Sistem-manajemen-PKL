@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { journalsApi, placementsApi, usersApi, companiesApi } from "../../api/index.js";
+import { SkelCards } from "../../components/role/skeleton.jsx";
 import "./admin-pages.css";
 
 const BULAN = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
@@ -103,7 +104,7 @@ function MonitoringJurnal({ onMeta }) {
       </div>
 
       {loading ? (
-        <p className="zip-muted">Memuat jurnal…</p>
+        <SkelCards n={3} />
       ) : byCompany.length === 0 ? (
         <p className="zip-muted">
           {filter === "menunggu"

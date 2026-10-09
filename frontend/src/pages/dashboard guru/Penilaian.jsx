@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { assessmentsApi } from "../../api/index.js";
 import { getEnrichedPlacements } from "../../lib/role-data.js";
+import { SkelCards } from "../../components/role/skeleton.jsx";
 import "./guru-pages.css";
 
 const ASPEK = [
@@ -124,7 +125,7 @@ function Penilaian({ onMeta }) {
         {success && <div className="zip-success">{success}</div>}
 
         {loading ? (
-          <p className="zip-muted">Memuat…</p>
+          <SkelCards n={2} />
         ) : placements.length === 0 ? (
           <p className="zip-muted">Belum ada siswa bimbingan.</p>
         ) : (

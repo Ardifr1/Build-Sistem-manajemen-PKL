@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { SkelCards } from "../../components/role/skeleton.jsx";
 import {
   getEnrichedPlacements,
   getJournalsForPlacements,
@@ -83,7 +84,7 @@ function MonitoringJurnal({ onMeta }) {
           </select>
         </label>
       </div>
-      {loading && <div className="zip-muted">Memuat…</div>}
+      {loading && <SkelCards n={3} />}
       <div className="zip-list">
         {shown.map((j) => (
           <div className="zip-row" key={j.id} onClick={() => setDetail(j)} style={{ cursor: "pointer" }}>

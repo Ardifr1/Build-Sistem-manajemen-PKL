@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getEnrichedPlacements, getJournalsForPlacements, statusLabel } from "../../lib/role-data.js";
 import { initials, avatarColor } from "../../components/admin/user-table.jsx";
+import { SkelCards } from "../../components/role/skeleton.jsx";
 
 function SiswaBimbingan({ onMeta }) {
   const navigate = useNavigate();
@@ -36,7 +37,7 @@ function SiswaBimbingan({ onMeta }) {
 
   return (
     <div className="zip-page">
-      {loading && <div className="zip-muted">Memuat…</div>}
+      {loading && <SkelCards n={3} />}
       <div className="zip-table-wrap">
         <table className="zip-table">
           <thead>

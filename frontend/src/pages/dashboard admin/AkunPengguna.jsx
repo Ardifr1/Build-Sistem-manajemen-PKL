@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { usersApi, journalsApi, applicationsApi, placementsApi, profilesApi, ROLE_LABEL } from "../../api/index.js";
 import { UserCell, RoleBadge, StatusBadge, initials, avatarColor } from "../../components/admin/user-table.jsx";
+import { SkelCards } from "../../components/role/skeleton.jsx";
 import "./admin-pages.css";
 
 const BULAN = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
@@ -509,7 +510,7 @@ function Pengguna({ onMeta }) {
       </div>
       {error && <div className="zip-error">{error}</div>}
       {loading ? (
-        <p className="zip-muted">Memuat pengguna…</p>
+        <SkelCards n={4} />
       ) : (
         <>
         <div className="zip-table-wrap">
