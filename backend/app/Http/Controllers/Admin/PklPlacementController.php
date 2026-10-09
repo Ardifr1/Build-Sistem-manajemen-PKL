@@ -45,6 +45,25 @@ class PklPlacementController extends Controller
             $query->where('status', $validated['status']);
         }
 
+        // Batasi sesuai role
+        $user = $request->user();
+        if ($user->role === 'student') {
+            $query->where('student_id', $user->id);
+        } elseif ($user->role === 'teacher') {
+            $query->where('teacher_id', $user->id);
+        } elseif (in_array($user->role, ['company', 'supervisor'], true)) {
+            $companyId = $user->companySupervisor?->company_id;
+            if ($companyId) {
+                $query->where('company_id', $companyId);
+            } else {
+                // Belum ditautkan: kembalikan kosong
+                return response()->json([
+                    'message' => 'Data penempatan PKL berhasil diambil.',
+                    'data' => [],
+                ]);
+            }
+        }
+
         return response()->json([
             'message' => 'Data penempatan PKL berhasil diambil.',
             'data' => $query->get(),

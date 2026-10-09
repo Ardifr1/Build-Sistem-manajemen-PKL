@@ -16,26 +16,40 @@ class AssessmentController extends Controller
 
         $validated = $request->validate([
             'placement_id' => [
-                'required',
+                'nullable',
                 'integer',
                 'exists:pkl_placements,id',
             ],
         ]);
 
-        $placement = PklPlacement::findOrFail($validated['placement_id']);
-
-        if (! Gate::forUser($request->user())->check('view', $placement)) {
-            abort(403);
-        }
-
-        $assessments = Assessment::query()
+        $query = Assessment::query()
             ->with([
                 'placement',
                 'component',
-            ])
-            ->where('placement_id', $validated['placement_id'])
-            ->orderBy('component_id')
-            ->get();
+            ]);
+
+        if (! empty($validated['placement_id'])) {
+            $placement = PklPlacement::findOrFail($validated['placement_id']);
+
+            if (! Gate::forUser($request->user())->check('view', $placement)) {
+                abort(403);
+            }
+
+            $query->where('placement_id', $validated['placement_id']);
+        } else {
+            // Tanpa placement_id: batasi ke placement yang boleh dilihat user
+            $user = $request->user();
+            $query->whereHas('placement', function ($q) use ($user) {
+                if ($user->role === 'student') {
+                    $q->where('student_id', $user->id);
+                } elseif ($user->role === 'teacher') {
+                    $q->where('teacher_id', $user->id);
+                }
+                // admin & supervisor: semua (Gate viewAny sudah mengatur akses)
+            });
+        }
+
+        $assessments = $query->orderBy('component_id')->get();
 
         return response()->json([
             'message' => 'Data penilaian PKL berhasil diambil.',

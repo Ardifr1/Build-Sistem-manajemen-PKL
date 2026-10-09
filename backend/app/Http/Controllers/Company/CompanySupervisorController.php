@@ -36,8 +36,15 @@ class CompanySupervisorController extends Controller
             ->orderBy('id', 'desc');
 
         if ($user->role === 'company') {
-            $query->where('company_id', $this->myCompanyId($user));
-        } elseif ($user->role !== 'admin') {
+            $companyId = $this->myCompanyId($user);
+            if (! $companyId) {
+                return response()->json([
+                    'message' => 'Akun perusahaan belum ditautkan ke perusahaan.',
+                    'data' => [],
+                ]);
+            }
+            $query->where('company_id', $companyId);
+        } elseif (! in_array($user->role, ['admin', 'supervisor'], true)) {
             abort(403);
         }
 

@@ -15,19 +15,38 @@ class ApplicationDocumentController extends Controller
     public function index(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'application_id' => ['required', 'integer', 'exists:pkl_applications,id'],
+            'application_id' => ['nullable', 'integer', 'exists:pkl_applications,id'],
         ]);
 
-        $application = PklApplication::findOrFail($validated['application_id']);
+        $query = ApplicationDocument::query()->orderBy('id');
 
-        if (! Gate::forUser($request->user())->check('view', $application)) {
-            abort(403);
+        if (! empty($validated['application_id'])) {
+            $application = PklApplication::findOrFail($validated['application_id']);
+
+            if (! Gate::forUser($request->user())->check('view', $application)) {
+                abort(403);
+            }
+
+            $query->where('application_id', $validated['application_id']);
+        } else {
+            $user = $request->user();
+            $query->whereHas('application', function ($q) use ($user) {
+                if ($user->role === 'student') {
+                    $q->where('student_id', $user->id);
+                } elseif ($user->role === 'teacher') {
+                    $q->whereHas('student', fn ($s) => $s->where('teacher_id', $user->id));
+                } elseif (in_array($user->role, ['company', 'supervisor'], true)) {
+                    $companyId = $user->companySupervisor?->company_id;
+                    if ($companyId) {
+                        $q->where('company_id', $companyId);
+                    } else {
+                        $q->whereRaw('1 = 0');
+                    }
+                }
+            });
         }
 
-        $documents = ApplicationDocument::query()
-            ->where('application_id', $validated['application_id'])
-            ->orderBy('id')
-            ->get();
+        $documents = $query->get();
 
         return response()->json([
             'message' => 'Dokumen pendaftaran berhasil diambil.',
@@ -47,15 +66,40 @@ class ApplicationDocumentController extends Controller
         ]);
     }
 
+    public function download(ApplicationDocument $applicationDocument)
+    {
+        Gate::authorize('view', $applicationDocument);
+
+        $path = $applicationDocument->file_path;
+
+        // Kalau URL, redirect ke URL-nya
+        if (preg_match('#^https?://#i', $path)) {
+            return redirect()->away($path);
+        }
+
+        if (! Storage::disk('public')->exists($path)) {
+            abort(404, 'File tidak ditemukan.');
+        }
+
+        return Storage::disk('public')->download($path, $applicationDocument->document_name);
+    }
+
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
             'application_id' => ['required', 'integer', 'exists:pkl_applications,id'],
             'document_type' => ['required', 'string', 'max:100'],
             'document_name' => ['required', 'string', 'max:255'],
-            'file' => ['required', 'file', 'mimes:pdf,jpg,jpeg,png,doc,docx', 'max:5120'],
-            'document_type' => ['required', 'string', 'max:100', 'in:ktp,ijazah,skck,surat_rekomendasi,others'],
+            'file' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png,doc,docx', 'max:5120'],
+            'file_url' => ['nullable', 'url', 'max:2048'],
         ]);
+
+        // Harus ada file ATAU url
+        if (!$request->hasFile('file') && empty($validated['file_url'])) {
+            return response()->json([
+                'message' => 'File atau link URL harus diisi.',
+            ], 422);
+        }
 
         $application = PklApplication::findOrFail($validated['application_id']);
 
@@ -63,10 +107,14 @@ class ApplicationDocumentController extends Controller
             abort(403);
         }
 
-        $filePath = $request->file('file')->store(
-            'application-documents',
-            'public'
-        );
+        if ($request->hasFile('file')) {
+            $filePath = $request->file('file')->store(
+                'application-documents',
+                'public'
+            );
+        } else {
+            $filePath = $validated['file_url'];
+        }
 
         $document = ApplicationDocument::create([
             'application_id' => $validated['application_id'],

@@ -13,7 +13,8 @@ class UserController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $users = User::query()
+        $me = $request->user();
+        $query = User::query()
             ->select([
                 'id',
                 'name',
@@ -28,9 +29,29 @@ class UserController extends Controller
             ->when($request->filled('q'), function ($q) use ($request) {
                 $s = '%' . $request->string('q') . '%';
                 $q->where(fn ($w) => $w->where('name', 'like', $s)->orWhere('email', 'like', $s)->orWhere('username', 'like', $s));
-            })
-            ->orderBy('name')
-            ->get();
+            });
+
+        // Batasi akses non-admin: hanya user yang relevan
+        if ($me->role === 'teacher') {
+            $query->where(function ($q) use ($me) {
+                $q->where('id', $me->id)
+                  ->orWhere(function ($w) use ($me) {
+                      $w->where('role', 'student')->where('teacher_id', $me->id);
+                  });
+            });
+        } elseif (in_array($me->role, ['company', 'supervisor'], true)) {
+            $companyId = $me->companySupervisor?->company_id;
+            $query->where(function ($q) use ($me, $companyId) {
+                $q->where('id', $me->id);
+                if ($companyId) {
+                    $q->orWhere(function ($w) use ($companyId) {
+                        $w->where('role', 'student')->whereHas('placements', fn ($p) => $p->where('company_id', $companyId));
+                    });
+                }
+            });
+        }
+
+        $users = $query->orderBy('name')->get();
 
         return response()->json([
             'message' => 'Data pengguna berhasil diambil.',
