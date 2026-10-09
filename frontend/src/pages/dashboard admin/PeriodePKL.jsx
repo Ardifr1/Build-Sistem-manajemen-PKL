@@ -21,6 +21,7 @@ const fmtShort = (iso) => {
 
 function statusOf(p) {
   if (p.is_active) return "AKTIF";
+  if (p.closed_at) return "SELESAI";
   const today = new Date().toISOString().slice(0, 10);
   if (p.end_date && String(p.end_date).slice(0, 10) < today) return "SELESAI";
   return "DRAFT";
@@ -183,7 +184,7 @@ function PeriodePKL({ onMeta }) {
     if (!confirmTutup) return;
     setTutupLoading(true);
     try {
-      await periodsApi.update(confirmTutup.id, { is_active: false });
+      await periodsApi.update(confirmTutup.id, { is_active: false, closed_at: new Date().toISOString() });
       setConfirmTutup(null);
       backToList();
     } catch (e) {

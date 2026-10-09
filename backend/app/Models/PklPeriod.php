@@ -12,6 +12,7 @@ class PklPeriod extends Model
         'end_date',
         'is_active',
         'description',
+        'closed_at',
     ];
 
     protected function casts(): array
