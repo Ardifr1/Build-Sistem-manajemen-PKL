@@ -27,6 +27,34 @@ class TestAccountsSeeder extends Seeder
                 'password' => 'admin123',
                 'role' => 'admin',
             ],
+            [
+                'name' => 'Guru Pembimbing',
+                'username' => 'guru',
+                'email' => 'guru@smk.sch.id',
+                'password' => 'guru123',
+                'role' => 'teacher',
+            ],
+            [
+                'name' => 'Siswa Test',
+                'username' => 'siswa',
+                'email' => 'siswa@smk.sch.id',
+                'password' => 'siswa123',
+                'role' => 'student',
+            ],
+            [
+                'name' => 'Admin Perusahaan',
+                'username' => 'industri',
+                'email' => 'industri@smk.sch.id',
+                'password' => 'industri123',
+                'role' => 'company',
+            ],
+            [
+                'name' => 'Pembimbing Industri',
+                'username' => 'pembimbing',
+                'email' => 'pembimbing@smk.sch.id',
+                'password' => 'pembimbing123',
+                'role' => 'supervisor',
+            ],
         ];
 
         foreach ($accounts as $account) {

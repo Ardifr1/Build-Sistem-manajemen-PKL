@@ -30,3 +30,11 @@
 .notif-item.clickable:hover{background:#f1f5f9}
 .notif-item:disabled{cursor:default}
 .notif-go{font-size:11px;color:#94a3b8;margin-left:auto;flex-shrink:0}
+
+/* --- animasi notifikasi baru --- */
+.notif-new{animation:notifRing .6s ease 3}
+@keyframes notifRing{
+  0%,100%{transform:rotate(0)}
+  25%{transform:rotate(15deg)}
+  75%{transform:rotate(-15deg)}
+}

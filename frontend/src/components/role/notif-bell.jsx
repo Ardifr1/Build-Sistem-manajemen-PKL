@@ -12,6 +12,7 @@ function NotifBell({ role, ctx = {}, btnClass = "siswa-bell", onNavigate }) {
   const [items, setItems] = useState([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [hasNew, setHasNew] = useState(false);
   const wrapRef = useRef(null);
   const ctxRef = useRef(ctx);
   ctxRef.current = ctx;
@@ -30,18 +31,29 @@ function NotifBell({ role, ctx = {}, btnClass = "siswa-bell", onNavigate }) {
 
   useEffect(() => {
     let alive = true;
-    (async () => {
+    const fetchNotifs = async (silent = false) => {
       try {
         const list = await getNotifications(role, ctxRef.current);
-        if (alive) setItems(Array.isArray(list) ? list : []);
+        if (alive) {
+          setItems(Array.isArray(list) ? list : []);
+          // Tandai ada yang baru (untuk animasi/badge)
+          if (!silent && list.length > 0) {
+            setHasNew(true);
+            setTimeout(() => alive && setHasNew(false), 3000);
+          }
+        }
       } catch {
         if (alive) setItems([]);
       } finally {
         if (alive) setLoading(false);
       }
-    })();
+    };
+    fetchNotifs();
+    // Polling realtime tiap 30 detik
+    const timer = setInterval(() => fetchNotifs(true), 30000);
     return () => {
       alive = false;
+      clearInterval(timer);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [role]);
@@ -65,7 +77,7 @@ function NotifBell({ role, ctx = {}, btnClass = "siswa-bell", onNavigate }) {
 
   return (
     <div className="notif-bell" ref={wrapRef}>
-      <button type="button" className={btnClass} aria-label="Notifikasi" onClick={toggle}>
+      <button type="button" className={`${btnClass}${hasNew ? " notif-new" : ""}`} aria-label="Notifikasi" onClick={toggle}>
         <i className="fa-regular fa-bell"></i>
         {count > 0 && (
           <span className="notif-count">{count > 9 ? "9+" : count}</span>
