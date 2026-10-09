@@ -457,7 +457,7 @@ function Pengguna({ onMeta }) {
 
   if (view.name === "tambah") {
     return (
-      <div className="zip-page">
+      <div className="zip-page has-m-cards">
         <UserForm onCancel={backToList} onSaved={backToList} onMeta={onMeta} />
       </div>
     );
@@ -538,6 +538,27 @@ function Pengguna({ onMeta }) {
               ))}
             </tbody>
           </table>
+        </div>
+        <div className="m-cards">
+          {rows.map((u) => (
+            <div className="m-card" key={u.id}>
+              <div className="m-card-top">
+                <div className="m-card-tx">
+                  <b>{u.name}</b>
+                  <small>{u.email}</small>
+                </div>
+              </div>
+              <div className="m-card-bottom">
+                <RoleBadge role={u.role} />
+                <StatusBadge active={u.is_active} />
+              </div>
+              <div className="m-card-actions">
+                <button type="button" className="zip-act zip-act-detail" onClick={() => { setView({ name: "detail", row: u }); onMeta?.({ title: "Detail Pengguna", subtitle: u.name }); }}>Detail</button>
+                <button type="button" className="zip-act zip-act-edit" onClick={() => { setView({ name: "edit", row: u }); onMeta?.({ title: "Detail / Edit Pengguna", subtitle: "Nama • username • email • password • role • status" }); }}>Edit</button>
+                <button type="button" className="zip-act zip-act-hapus" onClick={() => { setView({ name: "hapus", row: u }); onMeta?.({ title: "Konfirmasi Hapus", subtitle: "Aksi berisiko • butuh konfirmasi" }); }}>Hapus</button>
+              </div>
+            </div>
+          ))}
         </div>
         {rows.length === 0 && <p className="zip-muted">Belum ada pengguna.</p>}
         </>

@@ -103,7 +103,7 @@ function Penilaian({ onMeta }) {
   };
 
   return (
-    <div className="zip-page">
+    <div className="zip-page has-m-cards">
       <div className="zip-info-banner">
         <span className="zip-info-icon"><i className="fa-solid fa-circle-info"></i></span>
         <div>

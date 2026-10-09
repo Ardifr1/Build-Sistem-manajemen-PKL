@@ -278,7 +278,7 @@ function Dashboard({ onMeta }) {
 
       {/* Pengajuan terbaru + Distribusi */}
       <div className="adm-grid2b">
-        <div className="adm-card">
+        <div className="adm-card has-m-cards">
           <div className="adm-card-head">
             <div>
               <h3>Pengajuan Terbaru</h3>

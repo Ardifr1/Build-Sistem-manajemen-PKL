@@ -36,7 +36,7 @@ function SiswaBimbingan({ onMeta }) {
   }, [onMeta]);
 
   return (
-    <div className="zip-page">
+    <div className="zip-page has-m-cards">
       {loading && <SkelCards n={3} />}
       <div className="zip-table-wrap">
         <table className="zip-table">

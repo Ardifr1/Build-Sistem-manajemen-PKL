@@ -357,7 +357,8 @@ label.f-label{font-size:11px;font-weight:700;color:var(--text);display:block;mar
 .m-card-bottom{display:flex;align-items:center;gap:8px;flex-wrap:wrap;border-top:1px solid #f1f5f9;padding-top:10px}
 @media(max-width:768px){
   .m-cards{display:block}
-  .zip-table-wrap{display:none}
+  /* sembunyikan tabel hanya jika ada versi kartu */
+  .has-m-cards .zip-table-wrap{display:none}
 }
 
 /* --- kartu form penilaian (mobile) --- */
@@ -405,3 +406,6 @@ label.f-label{font-size:11px;font-weight:700;color:var(--text);display:block;mar
   background-size:200% 100%;animation:skel-shimmer 1.2s infinite}
 .skel-block{padding:6px 0}
 @keyframes skel-shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+.m-card-actions{display:flex;gap:8px;margin-top:10px;border-top:1px solid #f1f5f9;padding-top:10px}
+.m-card-actions .zip-act{flex:1;text-align:center}

@@ -51,7 +51,7 @@ function DataGuru({ onMeta }) {
 
   if (detail) {
     return (
-      <div className="zip-page">
+      <div className="zip-page has-m-cards">
         <div className="zip-toolbar">
           <button type="button" className="zip-btn-outline" onClick={() => setDetail(null)}>
             ← Kembali
@@ -125,6 +125,24 @@ function DataGuru({ onMeta }) {
             ))}
           </tbody>
         </table>
+      </div>
+      <div className="m-cards">
+        {rows.map((r) => (
+          <div className="m-card" key={r.id} onClick={() => setDetail(r)}>
+            <div className="m-card-top">
+              <div className="m-card-tx">
+                <b>{r.name}</b>
+                <small>{r.email}</small>
+                <small>{r.bimbingan.length} siswa bimbingan</small>
+              </div>
+              <i className="fa-solid fa-chevron-right m-card-arrow"></i>
+            </div>
+            <div className="m-card-bottom">
+              <RoleBadge role="teacher" />
+              <StatusBadge active={r.is_active} />
+            </div>
+          </div>
+        ))}
       </div>
       {!loading && rows.length === 0 && (
         <div className="zip-muted">Tidak ada data guru.</div>
