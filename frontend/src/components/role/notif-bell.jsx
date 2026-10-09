@@ -49,8 +49,8 @@ function NotifBell({ role, ctx = {}, btnClass = "siswa-bell", onNavigate }) {
       }
     };
     fetchNotifs();
-    // Polling realtime tiap 30 detik
-    const timer = setInterval(() => fetchNotifs(true), 30000);
+    // Polling realtime tiap 10 detik
+    const timer = setInterval(() => fetchNotifs(true), 10000);
     return () => {
       alive = false;
       clearInterval(timer);
