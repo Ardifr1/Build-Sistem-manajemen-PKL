@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { applicationsApi, companiesApi, documentsApi, reviewsApi } from "../../api/index.js";
+import { SkelCards } from "../../components/role/skeleton.jsx";
 
 const STATUS_BADGE = {
   submitted: ["s-badge-blue", "Menunggu"],
@@ -143,7 +144,7 @@ export function PengajuanDetail({ onMeta }) {
     })();
   }, [id, onMeta]);
 
-  if (loading) return <p className="siswa-muted">Memuat…</p>;
+  if (loading) return <SkelCards n={3} />;
   if (!app) return <div className="siswa-empty"><i className="fa-solid fa-circle-exclamation"></i>Pengajuan tidak ditemukan.</div>;
 
   const [cls, lb] = STATUS_BADGE[app.status] || ["s-badge-gray", app.status];

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { companiesApi, applicationsApi, authApi } from "../../api/index.js";
+import { SkelCards } from "../../components/role/skeleton.jsx";
 
 /* ================= PILIH PERUSAHAAN ================= */
 function PilihPerusahaan({ onMeta }) {
@@ -60,7 +61,7 @@ function PilihPerusahaan({ onMeta }) {
               value={q} onChange={(e) => setQ(e.target.value)} />
           </span>
         </div>
-        {loading ? <p className="siswa-muted">Memuat…</p> : list.length === 0 ? (
+        {loading ? <SkelCards n={3} /> : list.length === 0 ? (
           <div className="siswa-empty"><i className="fa-solid fa-building"></i>Tidak ada perusahaan ditemukan.</div>
         ) : (
           <div className="siswa-grid2">
